@@ -181,7 +181,6 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
     );
   }
 
-  /// TODO add loader
   @override
   Widget build(BuildContext context) {
     return UBScaffold(
