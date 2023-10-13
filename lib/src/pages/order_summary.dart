@@ -149,21 +149,21 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   _appBar(),
                   _title(),
                   _buildProducts(),
-                  if ((widget.homeScreenController?.employees?.firstWhere(
-                            (element) =>
-                                element.phoneNumber ==
-                                FirebaseAuth.instance.currentUser?.phoneNumber,
-                            orElse: () => null,
-                          ) !=
-                          null) ??
-                      false)
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
-                      ),
-                      child: _buildUserPhoneNumber(),
-                    ),
+                  // if ((widget.homeScreenController?.employees?.firstWhere(
+                  //           (element) =>
+                  //               element.phoneNumber ==
+                  //               FirebaseAuth.instance.currentUser?.phoneNumber,
+                  //           orElse: () => null,
+                  //         ) !=
+                  //         null) ??
+                  //     false)
+                  //   Padding(
+                  //     padding: EdgeInsets.symmetric(
+                  //       horizontal: 12,
+                  //       vertical: 16,
+                  //     ),
+                  //     child: _buildUserPhoneNumber(),
+                  //   ),
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 62,
@@ -251,7 +251,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                       label: Localization.of(context, 'submit'),
                     ),
                   ),
-                  if (!widget.homeScreenController.hideContents)
+                  if (!(widget.homeScreenController.hideDisclaimer ?? true))
                     Padding(
                       padding: const EdgeInsets.only(
                           left: 16.0, right: 16.0, top: 16, bottom: 48),
@@ -537,6 +537,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                     color: Colors.black26.withOpacity(0.3),
                   ),
                 ),
+              if (isLastIndex &&
+                  !(widget.homeScreenController.showProductsSubtotal ?? false))
+                SizedBox(height: 24),
               if (isLastIndex &&
                   (widget.homeScreenController.showProductsSubtotal ?? false))
                 Padding(

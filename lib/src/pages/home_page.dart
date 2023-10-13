@@ -782,7 +782,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   void updateApp() async {
     StoreRedirect.redirect(
-      androidAppId: "com.wkbeast.buy_sell_usdt",
+      androidAppId: widget.homeScreenController.androidAppId,
       iOSAppId: widget.homeScreenController.iOSAppId,
     );
   }

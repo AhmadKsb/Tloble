@@ -102,6 +102,7 @@ class HomeScreenController {
       _checkForOpeningHours,
       _showSellRate,
       _hideContents,
+      _hideDisclaimer,
       _checkForRoot,
       _checkForMinimumOrder,
       _openMiningItemDetailsScreen,
@@ -136,6 +137,7 @@ class HomeScreenController {
   String SearchInOrdersCollectionName;
   String androidAppVersion;
   String iOSAppId;
+  String androidAppId;
   String _telegramPublicLink;
   String _telegramIDBotLink;
   String versionNumber;
@@ -281,6 +283,11 @@ class HomeScreenController {
   bool get hideContents => _hideContents;
   set hideContents(value) {
     _hideContents = value;
+  }
+
+  bool get hideDisclaimer => _hideDisclaimer;
+  set hideDisclaimer(value) {
+    _hideDisclaimer = value;
   }
 
   bool get openMiningItemDetailsScreen => _openMiningItemDetailsScreen;
@@ -1031,6 +1038,7 @@ class HomeScreenController {
     _telegramPublicLink = appInfoSnapshot['telegramPublicLink'] ?? '';
     _telegramIDBotLink = appInfoSnapshot['telegramIDBotLink'] ?? '';
     iOSAppId = appInfoSnapshot['iosAppID'] ?? '';
+    androidAppId = appInfoSnapshot['androidAppId'] ?? '';
     customError = appInfoSnapshot['customError'] ?? '';
     customErrorAR = appInfoSnapshot['customErrorAR'] ?? '';
     nextText = appInfoSnapshot['nextText'] ?? '';
@@ -1051,6 +1059,7 @@ class HomeScreenController {
     _checkForRoot = appInfoSnapshot['checkForRoot'] ?? false;
     _showSellRate = appInfoSnapshot['showSellRate'] ?? false;
     _hideContents = appInfoSnapshot['hideContents'] ?? false;
+    _hideDisclaimer = appInfoSnapshot['hideDisclaimer'] ?? false;
     openMiningItemDetailsScreen =
         appInfoSnapshot['openMiningItemDetailsScreen'] ?? false;
 

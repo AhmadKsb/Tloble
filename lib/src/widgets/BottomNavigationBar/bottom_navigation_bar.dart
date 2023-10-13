@@ -114,7 +114,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
               height: 16,
               width: 16,
               fontSize: 12,
-              offset: Offset(13, -8),
+              offset: Offset(13, 0),
               notification:
                   (widget.homeScreenController.productsLinks.length ?? 0)
                       .toString(),
