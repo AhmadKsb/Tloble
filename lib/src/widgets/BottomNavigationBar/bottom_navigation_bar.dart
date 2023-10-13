@@ -73,6 +73,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
       fit: StackFit.loose,
       children: <Widget>[
         Container(
+          padding: EdgeInsets.only(top: 12),
           // width: 50,
           // height: 40,
           // color: Colors.red,

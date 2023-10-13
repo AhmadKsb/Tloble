@@ -251,17 +251,20 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                       label: Localization.of(context, 'submit'),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16.0, right: 16.0, top: 16, bottom: 48),
-                    child: Text(
-                      (Localizations.localeOf(context).languageCode == 'ar')
-                          ? widget.homeScreenController.orderSummaryDisclaimerAR
-                          : widget.homeScreenController.orderSummaryDisclaimer,
-                      style: TextStyle(
-                          fontSize: 12, color: Colors.black.withOpacity(0.6)),
+                  if (!widget.homeScreenController.hideContents)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, top: 16, bottom: 48),
+                      child: Text(
+                        (Localizations.localeOf(context).languageCode == 'ar')
+                            ? widget
+                                .homeScreenController.orderSummaryDisclaimerAR
+                            : widget
+                                .homeScreenController.orderSummaryDisclaimer,
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.black.withOpacity(0.6)),
+                      ),
                     ),
-                  ),
                 ],
               ),
             ),
@@ -377,10 +380,12 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                       child: WKNetworkImage(
                         widget.homeScreenController.productsImages[index],
                         fit: BoxFit.contain,
-                        // width: 100,
-                        // height: 100,
+                        width: 60,
+                        height: 60,
                         defaultWidget: Image.asset(
                           "assets/images/login_logo.png",
+                          width: 60,
+                          height: 60,
                         ),
                         placeHolder: AssetImage(
                           'assets/images/placeholder.png',
@@ -393,47 +398,46 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                            Container(
-                              width: (widget.homeScreenController
-                                          .showProductPrice ??
-                                      false)
-                                  ? 100
-                                  : 150,
-                              child: Text(
-                                widget
-                                    .homeScreenController.productsTitles[index],
-                                maxLines: 2,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                ),
+                          Container(
+                            width:
+                                (widget.homeScreenController.showProductPrice ??
+                                        false)
+                                    ? 100
+                                    : 150,
+                            child: Text(
+                              widget.homeScreenController.productsTitles[index],
+                              maxLines: 2,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
-                            Container(
-                              width: 150,
-                              margin: EdgeInsets.symmetric(vertical: 2),
-                              child: Text(
-                                "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController.productsColors[index]) ? widget.homeScreenController.productsColors[index] : Localization.of(context, 'not_specified')}",
-                                maxLines: 1,
-                                style: TextStyle(
-                                  // fontSize: 15,
-                                  overflow: TextOverflow.ellipsis,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                          ),
+                          Container(
+                            width: 150,
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            child: Text(
+                              "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController.productsColors[index]) ? widget.homeScreenController.productsColors[index] : Localization.of(context, 'not_specified')}",
+                              maxLines: 1,
+                              style: TextStyle(
+                                // fontSize: 15,
+                                overflow: TextOverflow.ellipsis,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
-                            Container(
-                              width: 150,
-                              margin: EdgeInsets.symmetric(vertical: 2),
-                              child: Text(
-                                "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController.productsSizes[index]) ? widget.homeScreenController.productsSizes[index] : Localization.of(context, 'not_specified')}",
-                                maxLines: 1,
-                                style: TextStyle(
-                                  // fontSize: 15,
-                                  overflow: TextOverflow.ellipsis,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                          ),
+                          Container(
+                            width: 150,
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            child: Text(
+                              "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController.productsSizes[index]) ? widget.homeScreenController.productsSizes[index] : Localization.of(context, 'not_specified')}",
+                              maxLines: 1,
+                              style: TextStyle(
+                                // fontSize: 15,
+                                overflow: TextOverflow.ellipsis,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
+                          ),
                           if ((widget.homeScreenController.showProductPrice ??
                                   false) &&
                               widget.homeScreenController
@@ -1092,7 +1096,13 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
 
   Widget _icon(IconData icon, {Color color = LightColor.iconColor}) {
     return GestureDetector(
-      onTap: () => Navigator.of(context).pop(),
+      onTap: () {
+        if (_isSubmittingOrder || _isLoadingLogin)
+          return;
+        else {
+          Navigator.of(context).pop();
+        }
+      },
       // onTap: null,
       child: Container(
         // padding: EdgeInsets.all(10),
@@ -1151,7 +1161,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
       context: context,
       isScrollControlled: true,
       dismissOnTouchOutside: closeOnTapOutside ?? true,
-      height: MediaQuery.of(context).size.height * 0.25,
+      height: MediaQuery.of(context).size.height *
+          (Theme.of(context).platform == TargetPlatform.iOS ? 0.27 : 0.3),
       upperWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[

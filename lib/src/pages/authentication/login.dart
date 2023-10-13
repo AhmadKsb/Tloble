@@ -191,15 +191,15 @@ class _LoginPageState extends State<LoginPage> {
           child: Container(
             margin: EdgeInsets.only(top: 68),
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xfffcfcfc),
-                    Color(0xfffcfcfc),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                ),
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xfffcfcfc),
+                  Color(0xfffcfcfc),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
             child: Form(
               key: _formKey,
               child: Column(
@@ -207,9 +207,13 @@ class _LoginPageState extends State<LoginPage> {
                 children: <Widget>[
                   _appBar(),
                   Container(
-                    padding: EdgeInsets.all(80.0),
+                    padding: EdgeInsets.all(0.0),
                     child: Center(
-                      child: Image.asset("assets/images/login_logo.png"),
+                      child: Image.asset(
+                        "assets/images/login_logo.png",
+                        width: 250,
+                        height: 250,
+                      ),
                     ),
                   ),
                   Column(

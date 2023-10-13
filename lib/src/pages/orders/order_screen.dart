@@ -852,7 +852,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
             "%0AOrder%20Summary%20for%20Order%20%20%2A%23${_order.referenceID}%2A%0A";
         for (int index = 0; index < _order.productsTitles.length; index++) {
           text +=
-              "%0A%2A%20%2A${isEmpty(_order.productsTitles[index]) || (_order.productsTitles[index].toString().toLowerCase() == "product") ? "${_order.productsTitles[index]}%20${index + 1}" : Uri.encodeComponent(_order.productsTitles[index])}%3A%2A%0A-%20Quantity%3A%20${_order.productsQuantities[index]}${isNotEmpty(_order.productsColors[index]) ? "%0A-%20Color%3A%20${_order.productsColors[index]}" : ""}${isNotEmpty(_order.productsSizes[index]) ? "%0A-%20Size%3A%20${_order.productsSizes[index]}" : ""}${isNotEmpty(_order.productsLinks[index]) ? "%0A-%20Link%3A%20${Uri.encodeComponent(_order.productsLinks[index])}" : ""}%0A";
+              "%0A%2A%20%2A${isEmpty(_order.productsTitles[index]) || (_order.productsTitles[index].toString().toLowerCase() == "product") ? "${_order.productsTitles[index]}%20${index + 1}" : Uri.encodeComponent(_order.productsTitles[index])}%3A%2A%0A-%20Quantity%3A%20${_order.productsQuantities[index]}${isNotEmpty(_order.productsColors[index]) ? "%0A-%20Color%3A%20${_order.productsColors[index]}" : "%0A-%20Color%3A%20Not%20specified"}${isNotEmpty(_order.productsSizes[index]) ? "%0A-%20Size%3A%20${_order.productsSizes[index]}" : "%0A-%20Size%3A%20Not%20specified"}${isNotEmpty(_order.productsLinks[index]) ? "%0A-%20Link%3A%20${Uri.encodeComponent(_order.productsLinks[index])}" : ""}%0A";
         }
         text +=
             "%0AWe%20will%20begin%20processing%20your%20order%20after%20receiving%20the%20payment.%20You%20may%20pay%20through%20%2AOMT%2A%2C%20%2AWhish%2A%2C%20%2AUSDT%2A%20or%20%2Acash%2A%20at%20our%20office.";
@@ -1203,10 +1203,12 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                       child: WKNetworkImage(
                         _order.productsImages[index],
                         fit: BoxFit.contain,
-                        // width: 100,
-                        // height: 100,
+                        width: 60,
+                        height: 60,
                         defaultWidget: Image.asset(
                           "assets/images/login_logo.png",
+                          width: 60,
+                          height: 60,
                         ),
                         placeHolder: AssetImage(
                           'assets/images/placeholder.png',

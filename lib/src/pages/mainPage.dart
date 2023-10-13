@@ -1129,12 +1129,15 @@ class _MainPageState extends State<MainPage>
               Positioned(
                 bottom: 0,
                 right: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: CustomBottomNavigationBar(
-                    onIconPresedCallback: onBottomIconPressed,
-                    homeScreenController: homeScreenController,
-                    // selectedTab: index,
+                child: Container(
+                  height: 100,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 24.0),
+                    child: CustomBottomNavigationBar(
+                      onIconPresedCallback: onBottomIconPressed,
+                      homeScreenController: homeScreenController,
+                      // selectedTab: index,
+                    ),
                   ),
                 ),
               ),

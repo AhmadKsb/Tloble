@@ -10,6 +10,7 @@ import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/loader.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
@@ -109,10 +110,12 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
           WKNetworkImage(
             order.productsImages[index],
             fit: BoxFit.contain,
-            width: 100,
-            height: 100,
+            width: 60,
+            height: 60,
             defaultWidget: Image.asset(
               "assets/images/login_logo.png",
+              width: 60,
+              height: 60,
             ),
             placeHolder: AssetImage(
               'assets/images/placeholder.png',
@@ -129,36 +132,36 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Container(
-                      width: 150,
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      child: Text(
-                        "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors[index]) ? order.productsColors[index] : Localization.of(context, 'not_specified')}",
-                        maxLines: 1,
-                        style: TextStyle(
-                          // fontSize: 15,
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.w500,
-                        ),
+                  Container(
+                    width: 150,
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    child: Text(
+                      "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors[index]) ? order.productsColors[index] : Localization.of(context, 'not_specified')}",
+                      maxLines: 1,
+                      style: TextStyle(
+                        // fontSize: 15,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Container(
-                      width: 150,
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      child: Text(
-                        "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes[index]) ? order.productsSizes[index] : Localization.of(context, 'not_specified')}",
-                        maxLines: 1,
-                        style: TextStyle(
-                          // fontSize: 15,
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.w500,
-                        ),
+                  ),
+                  Container(
+                    width: 150,
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    child: Text(
+                      "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes[index]) ? order.productsSizes[index] : Localization.of(context, 'not_specified')}",
+                      maxLines: 1,
+                      style: TextStyle(
+                        // fontSize: 15,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
+                  ),
                 ],
               ),
               trailing: Container(
-                width: 100,
+                width: 80,
                 height: 40,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
@@ -178,32 +181,41 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
     );
   }
 
+  /// TODO add loader
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: AppTheme.padding,
-      child: ((orders?.isEmpty ?? true) ||
-              widget.homeScreenController.hideContents)
-          ? Padding(
-              padding: const EdgeInsets.only(bottom: 75.0),
-              child: Center(
-                  child: Text(
-                widget.homeScreenController.hideContents
-                    ? Localization.of(context, 'coming_soon')
-                    : Localization.of(context, 'no_upcoming_orders'),
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
+    return UBScaffold(
+      backgroundColor: Colors.transparent,
+      state: AppState(
+        pageState: _state,
+        onRetry: _load,
+      ),
+      builder: (context) => Container(
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+        child: ((orders?.isEmpty ?? true) ||
+                widget.homeScreenController.hideContents)
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 75.0),
+                child: Center(
+                    child: Text(
+                  widget.homeScreenController.hideContents
+                      ? Localization.of(context, 'coming_soon')
+                      : Localization.of(context, 'no_upcoming_orders'),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                  ),
+                )),
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    _cartItems(),
+                    SizedBox(height: 80),
+                  ],
                 ),
-              )),
-            )
-          : SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  _cartItems(),
-                ],
               ),
-            ),
+      ),
     );
   }
 }

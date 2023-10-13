@@ -96,10 +96,12 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
             WKNetworkImage(
               widget.homeScreenController.productsImages[index],
               fit: BoxFit.contain,
-              width: 100,
-              height: 100,
+              width: 60,
+              height: 60,
               defaultWidget: Image.asset(
                 "assets/images/login_logo.png",
+                width: 60,
+                height: 60,
               ),
               placeHolder: AssetImage(
                 'assets/images/placeholder.png',
@@ -258,15 +260,12 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   Widget build(BuildContext context) {
     return Container(
       padding: AppTheme.padding,
-      child: widget.homeScreenController.productsLinks.isEmpty ||
-              widget.homeScreenController.hideContents
+      child: widget.homeScreenController.productsLinks.isEmpty
           ? Padding(
               padding: const EdgeInsets.only(bottom: 75.0),
               child: Center(
                   child: Text(
-                widget.homeScreenController.hideContents
-                    ? Localization.of(context, 'coming_soon')
-                    : Localization.of(context, 'shopping_cart_empty'),
+                Localization.of(context, 'shopping_cart_empty'),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,

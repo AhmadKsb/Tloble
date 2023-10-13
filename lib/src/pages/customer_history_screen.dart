@@ -221,10 +221,12 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
           WKNetworkImage(
             order.productsImages[index],
             fit: BoxFit.contain,
-            // width: 100,
-            // height: 100,
+            width: 60,
+            height: 60,
             defaultWidget: Image.asset(
               "assets/images/login_logo.png",
+              width: 60,
+              height: 60,
             ),
             placeHolder: AssetImage(
               'assets/images/placeholder.png',
