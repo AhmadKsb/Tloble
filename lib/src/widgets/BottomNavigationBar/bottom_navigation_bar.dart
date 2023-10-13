@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
+import 'package:flutter_ecommerce_app/src/pages/mainPage.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/widgets/BottomNavigationBar/bottom_curved_Painter.dart';
 
 class CustomBottomNavigationBar extends StatefulWidget {
   final Function(int) onIconPresedCallback;
-  CustomBottomNavigationBar({Key key, this.onIconPresedCallback})
-      : super(key: key);
+  final HomeScreenController homeScreenController;
+  // final int selectedTab;
+
+  CustomBottomNavigationBar({
+    Key key,
+    this.onIconPresedCallback,
+    this.homeScreenController,
+  }) : super(key: key);
 
   @override
   _CustomBottomNavigationBarState createState() =>
@@ -61,39 +69,57 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
   }
 
   Widget _icon(IconData icon, bool isEnable, int index) {
-    return Expanded(
-      child: InkWell(
-        borderRadius: BorderRadius.all(Radius.circular(50)),
-        onTap: () {
-          _handlePressed(index);
-        },
-        child: AnimatedContainer(
-          duration: Duration(milliseconds: 500),
-          alignment: isEnable ? Alignment.topCenter : Alignment.center,
-          child: AnimatedContainer(
-              height: isEnable ? 40 : 20,
-              duration: Duration(milliseconds: 300),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: isEnable ? LightColor.orange : Colors.white,
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: isEnable ? Color(0xfffeece2) : Colors.white,
-                      blurRadius: 10,
-                      spreadRadius: 5,
-                      offset: Offset(5, 5),
+    return Stack(
+      fit: StackFit.loose,
+      children: <Widget>[
+        Container(
+          // width: 50,
+          // height: 40,
+          // color: Colors.red,
+          child: InkWell(
+            borderRadius: BorderRadius.all(Radius.circular(50)),
+            onTap: () {
+              _handlePressed(index);
+            },
+            child: Opacity(
+              opacity: isEnable ? _yController.value : 1,
+              child: index == 1
+                  ? Image.asset(
+                      'assets/images/delivery.png',
+                      width: 26,
+                      color: isEnable
+                          ? LightColor.orange
+                          : Theme.of(context).iconTheme.color,
+                    )
+                  : Icon(
+                      icon,
+                      key: icon == Icons.shopping_cart_outlined ? coachMarkKey : null,
+                      color: isEnable
+                          ? LightColor.orange
+                          : Theme.of(context).iconTheme.color,
                     ),
-                  ],
-                  shape: BoxShape.circle),
-              child: Opacity(
-                opacity: isEnable ? _yController.value : 1,
-                child: Icon(icon,
-                    color: isEnable
-                        ? LightColor.background
-                        : Theme.of(context).iconTheme.color),
-              )),
+            ),
+          ),
         ),
-      ),
+        if (icon == Icons.shopping_cart_outlined &&
+            ((widget.homeScreenController.productsLinks.length ?? 0) > 0))
+          Positioned.directional(
+            textDirection: Localizations.localeOf(context).languageCode == 'ar'
+                ? TextDirection.rtl
+                : TextDirection.ltr,
+            top: 0,
+            end: 0,
+            child: NotificationBadge(
+              height: 16,
+              width: 16,
+              fontSize: 12,
+              offset: Offset(13, -8),
+              notification:
+                  (widget.homeScreenController.productsLinks.length ?? 0)
+                      .toString(),
+            ),
+          ),
+      ],
     );
   }
 
@@ -141,35 +167,86 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
   @override
   Widget build(BuildContext context) {
     final appSize = MediaQuery.of(context).size;
-    final height = 60.0;
+    final height = 100.0;
     return Container(
       width: appSize.width,
+      color: Color(0xfff7f7f7),
       height: 60,
       child: Stack(
         children: [
-          Positioned(
-            left: 0,
-            bottom: 0,
-            width: appSize.width,
-            height: height - 10,
-            child: _buildBackground(),
-          ),
+          // Positioned(
+          //   left: 0,
+          //   bottom: 0,
+          //   width: appSize.width,
+          //   height: height - 10,
+          //   child: _buildBackground(),
+          // ),
           Positioned(
             left: (appSize.width - _getButtonContainerWidth()) / 2,
             top: 0,
             width: _getButtonContainerWidth(),
-            height: height,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                _icon(Icons.home, _selectedIndex == 0, 0),
-                _icon(Icons.search, _selectedIndex == 1, 1),
-                _icon(Icons.card_travel, _selectedIndex == 2, 2),
-                _icon(Icons.favorite_border, _selectedIndex == 3, 3),
-              ],
+            // height: height,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 0.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  _icon(Icons.home, _selectedIndex == 0, 0),
+                  // _icon(Icons.search, _selectedIndex == 1, 1),
+                  _icon(Icons.history, _selectedIndex == 1, 1),
+                  _icon(Icons.shopping_cart_outlined, _selectedIndex == 2, 2),
+                ],
+              ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class NotificationBadge extends StatelessWidget {
+  final String notification;
+  final Color color;
+  final Offset offset;
+  final double width, height, fontSize;
+  final Color textColor;
+
+  final TextStyle styleOverride;
+
+  const NotificationBadge({
+    Key key,
+    this.notification,
+    this.color,
+    this.offset,
+    this.width = 26,
+    this.height = 26,
+    this.fontSize = 12,
+    this.textColor,
+    this.styleOverride,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.translate(
+      offset: offset,
+      child: Container(
+        decoration:
+            new BoxDecoration(shape: BoxShape.circle, color: Colors.red),
+        width: width,
+        height: height,
+        child: Center(
+          child: Text(
+            notification,
+            overflow: TextOverflow.visible,
+            maxLines: 1,
+            style: styleOverride ??
+                TextStyle(
+                  fontSize: fontSize,
+                  color: Colors.white,
+                ),
+          ),
+        ),
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:wkbeast/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 
 const double _kBarSize = 45.0;
 
@@ -52,13 +52,13 @@ class KeyboardFormActions extends StatefulWidget {
   /// Color of the background to the Custom keyboard buttons
   final Color keyboardBarColor;
 
-  KeyboardFormActions(
-      {this.child,
-      this.keyboardActionsPlatform = KeyboardActionsPlatform.ALL,
-      this.nextFocus = true,
-      this.actions,
-      this.keyboardBarColor})
-      : assert(child != null);
+  KeyboardFormActions({
+    this.child,
+    this.keyboardActionsPlatform = KeyboardActionsPlatform.ALL,
+    this.nextFocus = true,
+    this.actions,
+    this.keyboardBarColor,
+  }) : assert(child != null);
 
   @override
   _KeyboardFormActionsState createState() => _KeyboardFormActionsState();

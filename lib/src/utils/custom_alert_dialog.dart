@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wkbeast/utils/custom_base_dialog.dart';
+
+import 'custom_base_dialog.dart';
 
 /// Widget that displays Giffy Dialog with local asset.
 ///

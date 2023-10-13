@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
+import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
+import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
+import 'package:flutter_ecommerce_app/src/utils/util.dart';
 import 'package:vibration/vibration.dart';
-import 'package:wkbeast/controllers/home_screen_controller.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/utils/BottomSheets/bottom_sheet_helper.dart';
-import 'package:wkbeast/utils/BottomSheets/operation_status.dart';
-import 'package:wkbeast/utils/buttons/raised_button.dart';
-import 'package:wkbeast/utils/string_util.dart';
-import 'package:wkbeast/utils/util.dart';
 
 class SendNotificationBottomsheet extends StatefulWidget {
   final HomeScreenController controller;
@@ -82,12 +83,12 @@ class _SendNotificationBottomsheetState
 
     try {
       CollectionReference notifications =
-          FirebaseFirestore.instance.collection('notifications');
+          FirebaseFirestore.instance.collection('Notifications');
 
       await Future.wait([
         notifications
             .doc(
-                '${getNumberWithPrefixZero(DateTime.now().day)}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().year)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}')
+                '${getNumberWithPrefixZero(DateTime.now().year)}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}')
             .set({'description': capitalize(notification)}),
       ]);
 

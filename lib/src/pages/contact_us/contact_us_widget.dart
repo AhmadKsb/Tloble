@@ -1,9 +1,10 @@
 library contactus;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/utils/string_util.dart';
 
 ///Class for adding contact details/profile details as a complete new page in your flutter app.
 class ContactUs extends StatelessWidget {
@@ -264,16 +265,21 @@ class ContactUs extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50.0),
                 ),
                 // color:
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch(website);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -290,13 +296,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch(website);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
@@ -312,16 +311,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch('https://wa.me/' + salesNumber);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -338,13 +342,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch('https://wa.me/' + salesNumber);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
@@ -360,16 +357,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch(tiktok);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -386,13 +388,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch(tiktok);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
@@ -408,16 +403,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch('https://instagram.com/' + instagram);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -434,13 +434,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch('https://instagram.com/' + instagram);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
@@ -456,16 +449,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch(telegram);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -482,13 +480,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch(telegram);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
@@ -504,16 +495,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch('tel:' + salesNumber);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -531,62 +527,11 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch('tel:' + salesNumber);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
             ),
-            Card(
-              clipBehavior: Clip.antiAlias,
-              margin: EdgeInsets.symmetric(
-                vertical: 10.0,
-                horizontal: 25.0,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50.0),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Color.fromARGB(255, 210, 34, 49),
-                      Colors.red,
-                    ],
-                    begin: Alignment.centerRight,
-                    end: Alignment.centerLeft,
-                  ),
-                ),
-                child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 24),
-                  leading: Image.asset(
-                    "assets/images/email.png",
-                    width: 24,
-                    height: 24,
-                    color: Colors.white,
-                  ),
-                  title: Text(
-                    emailText ?? Localization.of(buildContext, 'email'),
-                    style: TextStyle(
-                      color: textColor,
-                      fontFamily: textFont,
-                    ),
-                  ),
-                  onTap: () {
-                    try {
-                      launch('mailto:' + salesEmail);
-                    } catch (e) {
-                      print(e.toString());
-                    }
-                  },
-                ),
-              ),
-            ),
+
             Visibility(
               visible: supportEmail != null,
               child: Card(
@@ -598,16 +543,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch('mailto:' + supportEmail);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -625,13 +575,49 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch('mailto:' + supportEmail);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
+                  ),
+                ),
+              ),
+            ),
+            Card(
+              clipBehavior: Clip.antiAlias,
+              margin: EdgeInsets.symmetric(
+                vertical: 10.0,
+                horizontal: 25.0,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
+              ),
+              child: TextButton(
+                onPressed: () {
+                  try {
+                    launch('mailto:' + salesEmail);
+                  } catch (e) {
+                    print(e.toString());
+                  }
+                },
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                  ),
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(LightColor.orange),
+                ),
+                child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 24),
+                  leading: Image.asset(
+                    "assets/images/email.png",
+                    width: 24,
+                    height: 24,
+                    color: Colors.white,
+                  ),
+                  title: Text(
+                    emailText ?? Localization.of(buildContext, 'email'),
+                    style: TextStyle(
+                      color: textColor,
+                      fontFamily: textFont,
+                    ),
                   ),
                 ),
               ),
@@ -675,16 +661,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch('https://twitter.com/' + twitterHandle);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -701,13 +692,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch('https://twitter.com/' + twitterHandle);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
@@ -723,16 +707,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch('https://www.facebook.com/' + facebookHandle);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -749,13 +738,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch('https://www.facebook.com/' + facebookHandle);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
@@ -771,16 +753,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch('https://github.com/' + githubUserName);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -797,13 +784,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch('https://github.com/' + githubUserName);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),
@@ -819,16 +799,21 @@ class ContactUs extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch(linkedinURL);
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                     ),
+                    backgroundColor:
+                    MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -845,13 +830,6 @@ class ContactUs extends StatelessWidget {
                         fontFamily: textFont,
                       ),
                     ),
-                    onTap: () {
-                      try {
-                        launch(linkedinURL);
-                      } catch (e) {
-                        print(e.toString());
-                      }
-                    },
                   ),
                 ),
               ),

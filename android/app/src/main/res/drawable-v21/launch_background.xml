@@ -3,6 +3,10 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="?android:colorBackground" />
 
+    <item>
+        <color android:color="#FCFCFC" />
+    </item>
+
     <!-- You can insert your own image assets here -->
     <!-- <item>
         <bitmap

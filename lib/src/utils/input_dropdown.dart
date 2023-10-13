@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wkbeast/utils/string_util.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 
 class InputDropdown extends StatelessWidget {
   const InputDropdown({

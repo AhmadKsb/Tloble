@@ -5,20 +5,22 @@ import 'package:country_pickers/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/pages/country_picker/country_picker.dart';
+import 'package:flutter_ecommerce_app/src/pages/home_page.dart';
+import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
+import 'package:flutter_ecommerce_app/src/themes/theme.dart';
+import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
+import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
+import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
+import 'package:flutter_ecommerce_app/src/utils/keyboard_actions_form.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wkbeast/controllers/home_screen_controller.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/main.dart';
-import 'package:wkbeast/screens/home/home_screen.dart';
-import 'package:wkbeast/utils/BottomSheets/bottom_sheet_helper.dart';
-import 'package:wkbeast/utils/BottomSheets/operation_status.dart';
-import 'package:wkbeast/utils/UBScaffold/page_state.dart';
-import 'package:wkbeast/utils/UBScaffold/ub_scaffold.dart';
-import 'package:wkbeast/utils/buttons/raised_button.dart';
-import 'package:wkbeast/utils/keyboard_actions_form.dart';
-import 'package:wkbeast/widgets/country_picker/country_picker.dart';
 
+import '../../../main.dart';
 import 'otp.dart';
 
 class LoginPage extends StatefulWidget {
@@ -35,6 +37,9 @@ class _LoginPageState extends State<LoginPage> {
   String _phoneNumber = '';
   countryPickers.Country selectedCountry;
   SharedPreferences prefs;
+
+  TextEditingController _nameController = TextEditingController();
+  FocusNode _nameNode = new FocusNode();
 
   HomeScreenController _controller;
   PageState _state;
@@ -62,11 +67,11 @@ class _LoginPageState extends State<LoginPage> {
     try {
       prefs = await SharedPreferences.getInstance();
       prefs.setString(
-        'wk_phoneCode',
+        'swiftShop_phoneCode',
         '961',
       );
       prefs.setString(
-        'wk_isoCode',
+        'swiftShop_isoCode',
         'LB',
       );
 
@@ -77,15 +82,11 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       _controller = HomeScreenController(
-        ((data[0] as QuerySnapshot)
-            .docs
-            .firstWhere((document) => document.id == 'rates')).data(),
+        {},
         ((data[0] as QuerySnapshot)
             .docs
             .firstWhere((document) => document.id == 'app')).data(),
-        ((data[0] as QuerySnapshot)
-            .docs
-            .firstWhere((document) => document.id == 'sell rates')).data(),
+        {},
       );
 
       setState(() {
@@ -99,14 +100,47 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Widget _appBar() {
+    return Container(
+      padding: AppTheme.padding,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          RotatedBox(
+            quarterTurns: 4,
+            child: _icon(Icons.arrow_back_ios_new, color: Colors.black54),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _icon(IconData icon, {Color color = LightColor.iconColor}) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      // onTap: null,
+      child: Container(
+        // padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(13)),
+            // color: Theme.of(context).backgroundColor,
+            boxShadow: AppTheme.shadow),
+        child: Icon(
+          icon,
+          color: color,
+        ),
+      ),
+    );
+  }
+
   // Future<void> _load() async {
   //   prefs = await SharedPreferences.getInstance();
   //   prefs.setString(
-  //     'wk_phoneCode',
+  //     'swiftShop_phoneCode',
   //     '961',
   //   );
   //   prefs.setString(
-  //     'wk_isoCode',
+  //     'swiftShop_isoCode',
   //     'LB',
   //   );
   // }
@@ -130,6 +164,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     phoneField?.dispose();
+    _nameNode?.dispose();
     super.dispose();
   }
 
@@ -146,29 +181,70 @@ class _LoginPageState extends State<LoginPage> {
         keyboardBarColor: Colors.black54,
         actions: [
           KeyboardFormAction(
+            focusNode: _nameNode,
+          ),
+          KeyboardFormAction(
             focusNode: phoneField,
-          )
+          ),
         ],
-        child: Form(
-          key: _formKey,
+        child: SingleChildScrollView(
           child: Container(
+            margin: EdgeInsets.only(top: 68),
             decoration: BoxDecoration(
-              color: Colors.white,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: Container(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xfffcfcfc),
+                    Color(0xfffcfcfc),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _appBar(),
+                  Container(
                     padding: EdgeInsets.all(80.0),
                     child: Center(
-                      child: Image.asset("assets/images/login_logo.jpeg"),
+                      child: Image.asset("assets/images/login_logo.png"),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
+                  Column(
                     children: <Widget>[
+                      layoutContainer(
+                        child: TextFormField(
+                          textDirection:
+                              (Localizations.localeOf(context).languageCode ==
+                                      'ar'
+                                  ? TextDirection.rtl
+                                  : TextDirection.ltr),
+                          controller: _nameController,
+                          focusNode: _nameNode,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(
+                                  r"[a-zA-Z0-9 .,()-_!?@+=;:!$'()*+-./:<=>[\]_{|}«»ÇÈÊÒÓÖ×÷،؛؟ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىيًٌٍَُِّْٕٓٔ٠١٢٣٤٥٦٧٨٩٪٫٬٭ٰٱپچژڤ۰۱۲۳۴۵۶۷۸۹‌‍‐“”␡ﭐﭑﭖﭗﭘﭙﭪﭫﭬﭭﭺﭻﭼﭽﮊﮋﯾﯿﱞﱟﱠﱡﱢﴼﴽ﴾﴿ﷲﹰﹲﹴﹶﹸﹺﹼﹾﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾ]"),
+                            ),
+                          ],
+                          decoration: inputDecoration(
+                            Localization.of(context, 'name'),
+                          ),
+                          validator: (String value) {
+                            if (value.isEmpty) {
+                              return Localization.of(
+                                  context, 'name_cannot_be_empty');
+                            }
+                            // if (value.length > 0 && value.length > 8) {
+                            //   return 'Phone Number can not be more than 8 characters long.';
+                            // }
+                            return null;
+                          },
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
                       Container(
                         width: MediaQuery.of(context).size.width,
                         margin: EdgeInsets.only(
@@ -195,7 +271,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ],
                             validator: (String value) {
-                              if (value.length > 0 && value.length < 1) {
+                              if (value.isEmpty) {
                                 return Localization.of(
                                     context, 'phone_number_cannot_be_empty');
                               }
@@ -232,11 +308,11 @@ class _LoginPageState extends State<LoginPage> {
                                             .getCountryByPhoneCode(
                                                 country.phoneCode);
                                         prefs.setString(
-                                          'wk_phoneCode',
+                                          'swiftShop_phoneCode',
                                           selectedCountry.phoneCode,
                                         );
                                         prefs.setString(
-                                          'wk_isoCode',
+                                          'swiftShop_isoCode',
                                           selectedCountry.isoCode,
                                         );
                                       });
@@ -315,107 +391,65 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         alignment: Alignment.center,
                         child: RaisedButtonV2(
-                          label: _phoneNumber.isEmpty
-                              ? Localization.of(context, 'skip')
-                              : Localization.of(context, 'login'),
+                          label: Localization.of(context, 'login_register'),
                           onPressed: () async {
                             if (_formKey.currentState.validate()) {
-                              _phoneNumber.isEmpty
-                                  ? showConfirmationBottomSheet(
-                                      context: context,
-                                      flare: 'assets/flare/pending.flr',
-                                      title: Localization.of(context,
-                                          'are_you_sure_you_want_to_proceed_without_logging_in'),
-                                      message: Localization.of(context,
-                                          'by_proceeding_you_wont_be_able'),
-                                      confirmMessage:
-                                          Localization.of(context, 'proceed'),
-                                      confirmAction: () async {
-                                        Navigator.of(context).pop();
-                                        await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => HomeScreen(),
-                                          ),
-                                        );
-                                      },
-                                      cancelMessage:
-                                          Localization.of(context, 'cancel'),
-                                    )
-                                  : Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Otp(
-                                          country: selectedCountry,
-                                          mobileNumber: _phoneNumber,
-                                        ),
-                                      ),
-                                    );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Otp(
+                                    name: _nameController?.text ?? "",
+                                    country: selectedCountry,
+                                    mobileNumber: _phoneNumber,
+                                  ),
+                                ),
+                              );
                             }
                           },
                         ),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                          left: 45.0,
-                          right: 45.0,
-                          top: 45.0,
-                          bottom: 10.0,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(),
-                            InkWell(
-                              onTap: () async {
-                                if (_controller?.showChangeLanguage ?? false) {
-                                  final isArabic =
-                                      (Localizations.localeOf(context)
-                                              .languageCode ==
-                                          'ar');
-                                  MyApp.setLocale(
-                                    context,
-                                    Locale(isArabic ? "en" : "ar"),
-                                  );
-                                  await prefs.setString(
-                                    'wkbeast_language',
-                                    isArabic ? "en" : "ar",
-                                  );
-
-                                  Phoenix.rebirth(context);
-                                }
-                              },
-                              child: Container(
-                                padding: EdgeInsetsDirectional.only(start: 42),
-                                child: (_controller?.showChangeLanguage ??
-                                        false)
-                                    ? Text(
-                                        (Localizations.localeOf(context)
-                                                    .languageCode ==
-                                                'ar')
-                                            ? "English"
-                                            : "العربية",
-                                        style: TextStyle(
-                                            fontSize:
-                                                (Localizations.localeOf(context)
-                                                            .languageCode ==
-                                                        'ar')
-                                                    ? 14
-                                                    : 16),
-                                      )
-                                    : SizedBox.shrink(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  InputDecoration inputDecoration(String hintText, {Widget prefixIcon}) {
+    return InputDecoration(
+      labelText: hintText,
+      counterText: "",
+      labelStyle: TextStyle(
+        color: Colors.black,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.black),
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.black),
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+      prefixIcon: prefixIcon,
+    );
+  }
+
+  Widget layoutContainer({Widget child}) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      margin: EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),
+      alignment: Alignment.center,
+      padding: EdgeInsetsDirectional.only(start: 0.0, end: 10.0),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: 12.0),
+        child: child,
       ),
     );
   }

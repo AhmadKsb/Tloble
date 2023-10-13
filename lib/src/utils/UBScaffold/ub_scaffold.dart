@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:wkbeast/utils/UBScaffold/page_state.dart';
-import 'package:wkbeast/utils/UBScaffold/ub_appbar.dart';
-import 'package:wkbeast/utils/UBScaffold/ub_page_state_widget.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_appbar.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_page_state_widget.dart';
 
 class UBScaffold extends StatefulWidget {
   /// Extras:

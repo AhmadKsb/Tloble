@@ -1,86 +1,186 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecommerce_app/src/model/data.dart';
-import 'package:flutter_ecommerce_app/src/model/product.dart';
+import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
+import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/loader.dart';
+import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ShoppingCartPage extends StatelessWidget {
-  const ShoppingCartPage({Key key}) : super(key: key);
+import 'order_summary.dart';
 
+class ShoppingCartPage extends StatefulWidget {
+  final HomeScreenController homeScreenController;
+
+  const ShoppingCartPage({
+    Key key,
+    this.homeScreenController,
+  }) : super(key: key);
+
+  @override
+  _ShoppingCartPageState createState() => _ShoppingCartPageState();
+}
+
+class _ShoppingCartPageState extends State<ShoppingCartPage> {
+  final SlidableController slidableController = SlidableController();
+
+  var index = -1;
   Widget _cartItems() {
-    return Column(children: AppData.cartList.map((x) => _item(x)).toList());
+    index = -1;
+    return Column(
+        children: widget.homeScreenController.productsLinks.map((x) {
+      index += 1;
+      return _item(index,
+          isLastIndex: index ==
+              (widget.homeScreenController.productsLinks.length ?? 0) - 1);
+    }).toList());
   }
 
-  Widget _item(Product model) {
-    return Container(
-      height: 80,
-      child: Row(
-        children: <Widget>[
-          AspectRatio(
-            aspectRatio: 1.2,
-            child: Stack(
+  Widget _item(var index, {bool isLastIndex = false}) {
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      controller: slidableController,
+      actionExtentRatio: 0.20,
+      enabled: true,
+      secondaryActions: <Widget>[
+        SlideAction(
+          color: LightColor.lightGrey.withAlpha(75),
+          child: Padding(
+            padding: EdgeInsets.only(top: 28.0),
+            child: Column(
               children: <Widget>[
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: Container(
-                    height: 70,
-                    width: 70,
-                    child: Stack(
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: LightColor.lightGrey,
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                Icon(
+                  Icons.delete_outline,
+                  color: Colors.red,
+                  size: 24,
                 ),
-                Positioned(
-                  left: -20,
-                  bottom: -20,
-                  child: Image.asset(model.image),
-                )
               ],
             ),
           ),
-          Expanded(
+          onTap: () async {
+            await showConfirmationBottomSheet(
+              context: context,
+              flare: 'assets/flare/pending.flr',
+              title: Localization.of(
+                context,
+                'are_you_sure_you_want_to_remove_this_item_from_your_cart',
+              ),
+              confirmMessage: Localization.of(context, 'confirm'),
+              confirmAction: () async {
+                await Navigator.of(context).pop();
+                widget.homeScreenController.productsTitles.removeAt(index);
+                widget.homeScreenController.productsLinks.removeAt(index);
+                widget.homeScreenController.productsQuantities.removeAt(index);
+                widget.homeScreenController.productsColors.removeAt(index);
+                widget.homeScreenController.productsSizes.removeAt(index);
+                widget.homeScreenController.productsPrices.removeAt(index);
+                widget.homeScreenController.productsImages.removeAt(index);
+
+                widget.homeScreenController.refreshView();
+
+                setState(() {});
+              },
+              cancelMessage: Localization.of(context, 'cancel'),
+            );
+          },
+        ),
+      ],
+      child: Container(
+        margin: EdgeInsets.only(bottom: isLastIndex ? 0 : 36),
+        height: 80,
+        child: Row(
+          children: <Widget>[
+            WKNetworkImage(
+              widget.homeScreenController.productsImages[index],
+              fit: BoxFit.contain,
+              width: 100,
+              height: 100,
+              defaultWidget: Image.asset(
+                "assets/images/login_logo.png",
+              ),
+              placeHolder: AssetImage(
+                'assets/images/placeholder.png',
+              ),
+            ),
+            Expanded(
               child: ListTile(
-                  title: TitleText(
-                    text: model.name,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  subtitle: Row(
-                    children: <Widget>[
-                      TitleText(
-                        text: '\$ ',
-                        color: LightColor.red,
-                        fontSize: 12,
+                title: TitleText(
+                  text: widget.homeScreenController.productsTitles[index],
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+                subtitle: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(height: 2),
+                    Container(
+                      width: 150,
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      child: Text(
+                        "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController.productsColors[index]) ? widget.homeScreenController.productsColors[index] : Localization.of(context, 'not_specified')}",
+                        maxLines: 1,
+                        style: TextStyle(
+                          // fontSize: 15,
+                          overflow: TextOverflow.ellipsis,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      TitleText(
-                        text: model.price.toString(),
-                        fontSize: 14,
-                      ),
-                    ],
-                  ),
-                  trailing: Container(
-                    width: 35,
-                    height: 35,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: LightColor.lightGrey.withAlpha(150),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TitleText(
-                      text: 'x${model.id}',
-                      fontSize: 12,
                     ),
-                  )))
-        ],
+                    SizedBox(height: 2),
+                    Container(
+                      width: 150,
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      child: Text(
+                        "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController.productsSizes[index]) ? widget.homeScreenController.productsSizes[index] : Localization.of(context, 'not_specified')}",
+                        maxLines: 1,
+                        style: TextStyle(
+                          // fontSize: 15,
+                          overflow: TextOverflow.ellipsis,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    if ((widget.homeScreenController.showProductPrice ??
+                            false) &&
+                        widget.homeScreenController.productsPrices[index] !=
+                            "0")
+                      Row(
+                        children: <Widget>[
+                          TitleText(
+                            text: '\$ ',
+                            color: LightColor.red,
+                            fontSize: 12,
+                          ),
+                          TitleText(
+                            text: widget
+                                .homeScreenController.productsPrices[index],
+                            fontSize: 14,
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+                trailing: Container(
+                  width: 45,
+                  height: 35,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: LightColor.lightGrey.withAlpha(150),
+                      borderRadius: BorderRadius.circular(10)),
+                  child: TitleText(
+                    text:
+                        'x${widget.homeScreenController.productsQuantities[index]}',
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -90,13 +190,14 @@ class ShoppingCartPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         TitleText(
-          text: '${AppData.cartList.length} Items',
+          text:
+              '${widget.homeScreenController.productsImages.length} ${(widget.homeScreenController.productsImages.length ?? 0) > 1 ? "Items" : "Item"}',
           color: LightColor.grey,
           fontSize: 14,
           fontWeight: FontWeight.w500,
         ),
         TitleText(
-          text: '\$${getPrice()}',
+          text: '\$${getPrice().toStringAsFixed(2)}',
           fontSize: 18,
         ),
       ],
@@ -104,22 +205,34 @@ class ShoppingCartPage extends StatelessWidget {
   }
 
   Widget _submitButton(BuildContext context) {
-    return TextButton(
-      onPressed: () {},
-      style: ButtonStyle(
-        shape: MaterialStateProperty.all(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 96.0),
+      child: TextButton(
+        onPressed: () async {
+          await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => OrderSummaryScreen(
+                homeScreenController: widget.homeScreenController,
+              ),
+            ),
+          );
+          setState(() {});
+        },
+        style: ButtonStyle(
+          shape: MaterialStateProperty.all(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          ),
+          backgroundColor: MaterialStateProperty.all<Color>(LightColor.orange),
         ),
-        backgroundColor: MaterialStateProperty.all<Color>(LightColor.orange),
-      ),
-      child: Container(
-        alignment: Alignment.center,
-        padding: EdgeInsets.symmetric(vertical: 4),
-        width: AppTheme.fullWidth(context) * .75,
-        child: TitleText(
-          text: 'Next',
-          color: LightColor.background,
-          fontWeight: FontWeight.w500,
+        child: Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.symmetric(vertical: 4),
+          width: AppTheme.fullWidth(context) * .75,
+          child: TitleText(
+            text: Localization.of(context, 'checkout'),
+            color: LightColor.background,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
     );
@@ -127,9 +240,17 @@ class ShoppingCartPage extends StatelessWidget {
 
   double getPrice() {
     double price = 0;
-    AppData.cartList.forEach((x) {
-      price += x.price * x.id;
-    });
+    for (int i = 0;
+        i < widget.homeScreenController.productsPrices.length;
+        i++) {
+      price += num.tryParse(widget.homeScreenController.productsPrices[i]
+                  .replaceAll(',', '') ??
+              "0") *
+          num.tryParse(widget.homeScreenController.productsQuantities[i]
+                  .replaceAll(',', '') ??
+              "0");
+    }
+
     return price;
   }
 
@@ -137,20 +258,37 @@ class ShoppingCartPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: AppTheme.padding,
-      child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            _cartItems(),
-            Divider(
-              thickness: 1,
-              height: 70,
+      child: widget.homeScreenController.productsLinks.isEmpty ||
+              widget.homeScreenController.hideContents
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 75.0),
+              child: Center(
+                  child: Text(
+                widget.homeScreenController.hideContents
+                    ? Localization.of(context, 'coming_soon')
+                    : Localization.of(context, 'shopping_cart_empty'),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                ),
+              )),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  _cartItems(),
+                  Divider(
+                    thickness: 1,
+                    height: 70,
+                  ),
+                  if ((widget.homeScreenController.showProductPrice ?? false) &&
+                      getPrice().toStringAsFixed(2) != "0.00")
+                    _price(),
+                  SizedBox(height: 30),
+                  _submitButton(context),
+                ],
+              ),
             ),
-            _price(),
-            SizedBox(height: 30),
-            _submitButton(context),
-          ],
-        ),
-      ),
     );
   }
 }

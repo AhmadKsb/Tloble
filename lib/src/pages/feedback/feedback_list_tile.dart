@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/models/feedback.dart' as Feedback;
+import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wkbeast/controllers/home_screen_controller.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/models/feedback.dart' as Feedback;
-import 'package:wkbeast/screens/feedback/feedback_details_screen.dart';
-import 'package:wkbeast/utils/string_util.dart';
+
+import 'feedback_details_screen.dart';
 
 class FeedbackListTile extends StatefulWidget {
   final Feedback.Feedback feedback;
@@ -84,12 +85,12 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
                                               widget.feedback.dateTime))
                                           ? DateFormat(
                                               widget.prefs.getString(
-                                                          "wkbeast_language") ==
+                                                          "swiftShop_language") ==
                                                       'ar'
                                                   ? 'EEEE d MMMM yyyy'
                                                   : 'EEEE MMMM d, yyyy',
                                               widget.prefs.getString(
-                                                  "wkbeast_language"),
+                                                  "swiftShop_language"),
                                             ).format(
                                               getFormattedDate(
                                                   widget.feedback.dateTime),
@@ -144,8 +145,8 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
   DateTime getFormattedDate(String date) {
     String splitted = date.split(" ")[0];
     int year = int.tryParse(splitted.substring(0, 4));
-    int month = int.tryParse(splitted.substring(4, 6));
-    int day = int.tryParse(splitted.substring(6, 8));
+    int month = int.tryParse(splitted.substring(5, 7));
+    int day = int.tryParse(splitted.substring(7, 9));
     return DateTime(
       year,
       month,
@@ -171,12 +172,12 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
 
   String getDateTime(String time) {
     if (time == null) return "";
-    int day = int.tryParse(time.substring(6, 8).substring(0, 1) == "0"
-        ? time.substring(7, 8)
-        : time.substring(6, 8));
-    int month = int.tryParse(time.substring(4, 6).substring(0, 1) == "0"
-        ? time.substring(5, 6)
-        : time.substring(4, 6));
+    int day = int.tryParse(time.substring(7, 9).substring(0, 1) == "0"
+        ? time.substring(8, 9)
+        : time.substring(7, 9));
+    int month = int.tryParse(time.substring(5, 7).substring(0, 1) == "0"
+        ? time.substring(6, 7)
+        : time.substring(5, 7));
     int year = int.tryParse(time.substring(0, 4));
     int hour = int.tryParse(time.split("at ")[1].split(":")[0]);
     int minute = int.tryParse(time.split("at ")[1].split(":")[1]);
@@ -205,7 +206,6 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
       MaterialPageRoute(
         builder: (context) => FeedbackDetailsScreen(
             feedback: widget.feedback,
-            controller: widget.controller,
             shouldRefresh: (shouldRfrsh) {
               widget.shouldRefresh(shouldRfrsh);
             }),

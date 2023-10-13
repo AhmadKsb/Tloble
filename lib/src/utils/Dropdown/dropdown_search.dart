@@ -5,8 +5,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:wkbeast/utils/Dropdown/popup_menu.dart';
-import 'package:wkbeast/utils/Dropdown/select_dialog.dart';
+import 'package:flutter_ecommerce_app/src/utils/Dropdown/popup_menu.dart';
+import 'package:flutter_ecommerce_app/src/utils/Dropdown/select_dialog.dart';
 
 import '../string_util.dart';
 

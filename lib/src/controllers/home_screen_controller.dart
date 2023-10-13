@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:wkbeast/models/driver.dart';
+import 'package:flutter_ecommerce_app/src/models/customer.dart';
+import 'package:flutter_ecommerce_app/src/models/employee.dart';
 
 class HomeScreenController {
   final Map<String, dynamic> ratesAppInfoSnapshot;
-  final Map<String, dynamic> appInfoSnapshot;
+  Map<String, dynamic> appInfoSnapshot;
   final Map<String, dynamic> sellRatesAppInfoSnapshot;
 
   HomeScreenController(
@@ -11,7 +12,8 @@ class HomeScreenController {
     this.appInfoSnapshot,
     this.sellRatesAppInfoSnapshot,
   ) {
-    fillFieldsFromData();
+    if (appInfoSnapshot != null)
+      fillFieldsFromData(appInfoSnapshott: appInfoSnapshot);
   }
 
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -40,11 +42,19 @@ class HomeScreenController {
 
   String _weekdayOpeningHours,
       _lastResetDate,
+      _orderSummaryDisclaimer,
+      _orderSummaryDisclaimerAR,
       _feedbackSuccessMessage,
       _feedbackSuccessMessageAR,
       _signalsGroupWalletAddress,
       _contactUsNumber,
       _mainCurrency,
+      nextText,
+      nextTextSize,
+      nextTextColor,
+      nextTextSizeAR,
+      nextTextColorAR,
+      nextTextAR,
       submissionText,
       submissionTextAR,
       _detailsAboutYourLocationHint,
@@ -54,6 +64,7 @@ class HomeScreenController {
       _coachMarkText,
       _coachMarkTextAR,
       _coachMarkCampaign,
+      _aedConversion,
       _miningDisabledMessage,
       _miningDisabledMessageAR,
       _rewardsDisabledMessage,
@@ -90,15 +101,17 @@ class HomeScreenController {
       _shouldLoadAgainAfterTimer,
       _checkForOpeningHours,
       _showSellRate,
+      _hideContents,
       _checkForRoot,
       _checkForMinimumOrder,
       _openMiningItemDetailsScreen,
       _isHoliday,
       _showCoachMark,
+      _showProductPrice,
+      _showProductsSubtotal,
       showCustomError,
       _forceUpdate,
       _showMinableItemSearchBar,
-      _isAdmin = false,
       _feedbackReceiver = false,
       _scrollToEndInTelegramScreen = false,
       _showLargeOrders = false,
@@ -120,6 +133,7 @@ class HomeScreenController {
   String customErrorAR;
   String amount;
   String iosAppVersion;
+  String SearchInOrdersCollectionName;
   String androidAppVersion;
   String iOSAppId;
   String _telegramPublicLink;
@@ -148,24 +162,48 @@ class HomeScreenController {
   int _cashOut;
   int _usdtOut;
   String smallAmountsGoogleSheetURL;
-  String largeAmountsGoogleSheetURL;
+  String spreadSheetScriptURL;
+  HomeScreenControllerView homeScreenControllerView;
 
-  String smallAmountsSpreadSheetID;
+  String spreadSheetID;
   String largeAmountsSpreadSheetID;
   String worksheetTitle;
 
+  Customer _customer;
+
+  List<dynamic> admins;
+  List<dynamic> canCheckOtherCustomersOrders;
   List<dynamic> cities;
   List<dynamic> _bansList;
-  List<dynamic> _driversDrawerList;
+  List<dynamic> _employeesList;
   List<dynamic> _feedbackReceiversList;
   List<dynamic> _allowedPeopleToAddOrRemoveMiningItems;
   List<dynamic> _allowedPeopleToAddOrRemoveRewardItems;
-  List<Driver> _driversList = [];
+  List<dynamic> productsTitles = [];
+  List<dynamic> productsQuantities = [];
+  List<dynamic> productsLinks = [];
+  List<dynamic> productsColors = [];
+  List<dynamic> productsSizes = [];
+  List<dynamic> productsPrices = [];
+  List<dynamic> productsImages = [];
+  List<Employee> _employees = [];
   String _cryptoCurrencies = "";
 
   int get cashOut => _cashOut;
   set cashOut(value) {
     _cashOut = value;
+  }
+
+  void setView(HomeScreenControllerView view) {
+    this.homeScreenControllerView = view;
+  }
+
+  void refreshView() {
+    this.homeScreenControllerView?.refreshState();
+  }
+
+  void jumpToCartScreen() {
+    this.homeScreenControllerView?.jumpToCartScreen();
   }
 
   int get usdtOut => _usdtOut;
@@ -225,6 +263,11 @@ class HomeScreenController {
     _checkForMinimumOrder = value;
   }
 
+  Customer get customer => _customer;
+  set customer(value) {
+    _customer = value;
+  }
+
   bool get checkForRoot => _checkForRoot;
   set checkForRoot(value) {
     _checkForRoot = value;
@@ -233,6 +276,11 @@ class HomeScreenController {
   bool get showSellRate => _showSellRate;
   set showSellRate(value) {
     _showSellRate = value;
+  }
+
+  bool get hideContents => _hideContents;
+  set hideContents(value) {
+    _hideContents = value;
   }
 
   bool get openMiningItemDetailsScreen => _openMiningItemDetailsScreen;
@@ -248,6 +296,16 @@ class HomeScreenController {
   bool get showCoachMark => _showCoachMark;
   set showCoachMark(value) {
     _showCoachMark = value;
+  }
+
+  bool get showProductPrice => _showProductPrice;
+  set showProductPrice(value) {
+    _showProductPrice = value;
+  }
+
+  bool get showProductsSubtotal => _showProductsSubtotal;
+  set showProductsSubtotal(value) {
+    _showProductsSubtotal = value;
   }
 
   String get coachMarkText => _coachMarkText;
@@ -280,6 +338,11 @@ class HomeScreenController {
     _coachMarkCampaign = value;
   }
 
+  String get aedConversion => _aedConversion;
+  set aedConversion(value) {
+    _aedConversion = value;
+  }
+
   bool get forceUpdate => _forceUpdate;
 
   set forceUpdate(value) {
@@ -295,6 +358,16 @@ class HomeScreenController {
   String get campaignName => _campaignName;
   set campaignName(value) {
     _campaignName = value;
+  }
+
+  String get orderSummaryDisclaimer => _orderSummaryDisclaimer;
+  set orderSummaryDisclaimer(value) {
+    _orderSummaryDisclaimer = value;
+  }
+
+  String get orderSummaryDisclaimerAR => _orderSummaryDisclaimerAR;
+  set orderSummaryDisclaimerAR(value) {
+    _orderSummaryDisclaimerAR = value;
   }
 
   String get feedbackSuccessMessage => _feedbackSuccessMessage;
@@ -636,10 +709,13 @@ class HomeScreenController {
     _signalsSubscriptionPrice = value;
   }
 
-  bool get isAdmin => _isAdmin;
-  set isAdmin(value) {
-    _isAdmin = value;
-  }
+  bool get isAdmin =>
+      admins?.contains(_firebaseAuth?.currentUser?.phoneNumber) ?? false;
+
+  bool get canUserCheckOtherCustomersOrders =>
+      canCheckOtherCustomersOrders
+          ?.contains(_firebaseAuth?.currentUser?.phoneNumber) ??
+      false;
 
   bool get feedbackReceiver => _feedbackReceiver;
   set feedbackReceiver(value) {
@@ -756,9 +832,9 @@ class HomeScreenController {
     _bansList = value;
   }
 
-  List<dynamic> get driversDrawerList => _driversDrawerList;
-  set driversDrawerList(value) {
-    _driversDrawerList = value;
+  List<dynamic> get employeesList => _employeesList;
+  set employeesList(value) {
+    _employeesList = value;
   }
 
   List<dynamic> get feedbackReceiversList => _feedbackReceiversList;
@@ -766,9 +842,9 @@ class HomeScreenController {
     _feedbackReceiversList = value;
   }
 
-  List<Driver> get driversList => _driversList;
-  set driversList(value) {
-    _driversList = value;
+  List<Employee> get employees => _employees;
+  set employees(value) {
+    _employees = value;
   }
 
   String get cryptoCurrencies => _cryptoCurrencies;
@@ -788,7 +864,9 @@ class HomeScreenController {
     _allowedPeopleToAddOrRemoveRewardItems = value;
   }
 
-  void fillFieldsFromData() {
+  void fillFieldsFromData({var appInfoSnapshott}) {
+    if (appInfoSnapshott != null) appInfoSnapshot = appInfoSnapshott;
+
     _signalsSubscriptionPrice =
         appInfoSnapshot['signalsSubscriptionPrice'] ?? 30;
     _newsUpdateDuration = appInfoSnapshot['newsUpdateDuration'] ?? 5;
@@ -800,45 +878,39 @@ class HomeScreenController {
     _totalProfit = appInfoSnapshot['totalProfit'] ?? 0;
     _totalProfitFromSignals = appInfoSnapshot['totalProfitFromSignals'] ?? 0;
 
-    fiftyToHundred = ratesAppInfoSnapshot['50to100'] ?? 7;
-    hundredToThousand = ratesAppInfoSnapshot['100to1000'] ?? 5;
-    thousandToThreeThousand = ratesAppInfoSnapshot['1000to3000'] ?? 4.5;
-    threeThousandToFiveThousand = ratesAppInfoSnapshot['3000to5000'] ?? 4;
-    fiveThousandToTenThousand = ratesAppInfoSnapshot['5000to10000'] ?? 4;
-    sellFiftyToHundred = sellRatesAppInfoSnapshot['50to100'] ?? 7;
-    sellHundredToThousand = sellRatesAppInfoSnapshot['100to1000'] ?? 5;
-    sellThousandToThreeThousand = sellRatesAppInfoSnapshot['1000to3000'] ?? 4.5;
-    sellThreeThousandToFiveThousand =
-        sellRatesAppInfoSnapshot['3000to5000'] ?? 4;
-    sellFiveThousandToTenThousand =
-        sellRatesAppInfoSnapshot['5000to10000'] ?? 4;
+    admins = appInfoSnapshot['admins'] ?? [];
+    canCheckOtherCustomersOrders =
+        appInfoSnapshot['canCheckOtherCustomersOrders'] ?? [];
 
-    isAdmin = appInfoSnapshot['admins']
-        .contains(_firebaseAuth?.currentUser?.phoneNumber);
+    _feedbackReceiver = appInfoSnapshot['FeedbackReceivers']
+            ?.contains(_firebaseAuth?.currentUser?.phoneNumber) ??
+        false;
 
-    _feedbackReceiver = appInfoSnapshot['feedbackReceivers']
-        .contains(_firebaseAuth?.currentUser?.phoneNumber);
-
-    _feedbackReceiversList = appInfoSnapshot['feedbackReceivers'];
+    _feedbackReceiversList = appInfoSnapshot['FeedbackReceivers'];
 
     _scrollToEndInTelegramScreen =
         appInfoSnapshot['scrollToEndInTelegramScreen'] ?? false;
 
     _showLargeOrders = appInfoSnapshot['largeOrderAccess']
-        .contains(_firebaseAuth?.currentUser?.phoneNumber);
+            ?.contains(_firebaseAuth?.currentUser?.phoneNumber) ??
+        false;
 
     _showMisc = appInfoSnapshot['showMisc']
-        .contains(_firebaseAuth?.currentUser?.phoneNumber);
+            ?.contains(_firebaseAuth?.currentUser?.phoneNumber) ??
+        false;
 
     _showAddToAhmadSalary = appInfoSnapshot['showAddToAhmadSalary']
-        .contains(_firebaseAuth?.currentUser?.phoneNumber);
+            ?.contains(_firebaseAuth?.currentUser?.phoneNumber) ??
+        false;
 
     _allowedToCheckCustomersBalance =
         appInfoSnapshot['allowedToCheckCustomersBalance']
-            .contains(_firebaseAuth?.currentUser?.phoneNumber);
+                ?.contains(_firebaseAuth?.currentUser?.phoneNumber) ??
+            false;
 
     isBanned = appInfoSnapshot['banned']
-        .contains(_firebaseAuth?.currentUser?.phoneNumber);
+            ?.contains(_firebaseAuth?.currentUser?.phoneNumber) ??
+        false;
 
     _cryptoCurrencies = appInfoSnapshot['cryptoCurrencies'] ?? "";
 
@@ -860,6 +932,8 @@ class HomeScreenController {
     _showCampaignOnLaunch = appInfoSnapshot['showCampaignOnLaunch'] ?? true;
     _showSortingButton = appInfoSnapshot['showSortingButton'] ?? true;
     _showCoachMark = appInfoSnapshot['showCoachMark'] ?? true;
+    _showProductPrice = appInfoSnapshot['showProductPrice'] ?? true;
+    _showProductsSubtotal = appInfoSnapshot['showProductsSubtotal'] ?? true;
     _showMinableItemSearchBar =
         appInfoSnapshot['showMinableItemSearchBar'] ?? true;
 
@@ -876,9 +950,13 @@ class HomeScreenController {
     _coachMarkText = appInfoSnapshot['coachMarkText'] ?? "";
     _coachMarkTextAR = appInfoSnapshot['coachMarkTextAR'] ?? "";
     _coachMarkCampaign = appInfoSnapshot['coachMarkCampaign'] ?? "";
+    _aedConversion = appInfoSnapshot['aedConversion'] ?? "";
     _minableCoinsHintText = appInfoSnapshot['minableCoinsHintText'] ?? "";
     _priceHintText = appInfoSnapshot['priceHintText'] ?? "";
     _campaignName = appInfoSnapshot['campaignName'] ?? "";
+    _orderSummaryDisclaimer = appInfoSnapshot['orderSummaryDisclaimer'] ?? "";
+    _orderSummaryDisclaimerAR =
+        appInfoSnapshot['orderSummaryDisclaimerAR'] ?? "";
     _feedbackSuccessMessage = appInfoSnapshot['feedbacksuccessmessage'] ?? "";
     _feedbackSuccessMessageAR =
         appInfoSnapshot['feedbackSuccessMessageAR'] ?? "";
@@ -902,7 +980,7 @@ class HomeScreenController {
     _signalsGroupWalletAddress =
         appInfoSnapshot['signalsGroupWalletAddress'] ?? "";
 
-    driversDrawerList = appInfoSnapshot['drivers'];
+    _employeesList = appInfoSnapshot['Employees'];
 
     salesEmail = appInfoSnapshot['salesEmail'];
     supportEmail = appInfoSnapshot['supportEmail'];
@@ -933,11 +1011,11 @@ class HomeScreenController {
     _rewardsDisabledMessageAR =
         appInfoSnapshot['rewardsDisabledMessageAR'] ?? "Coming Soon!";
 
-    largeAmountsGoogleSheetURL = appInfoSnapshot['largeAmountsScriptURL'] ??
-        'https://script.google.com/macros/s/AKfycbzWblzX2gCXcg0q1m5roVl8B8j-Oh5f3vkZHIN6d6scUVgRvTUXlytRy5s7UIvpdGMm/exec';
+    spreadSheetScriptURL = appInfoSnapshot['spreadSheetScriptURL'] ??
+        'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
 
-    smallAmountsSpreadSheetID = appInfoSnapshot['smallAmountsSpreadSheetID'] ??
-        '1vKJVTEdLZqRgiWfzdv2KekF76yAGkBeyHuZiMyw6IYY';
+    spreadSheetID = appInfoSnapshot['spreadSheetID'] ??
+        '1_FMmquecebW5jTZalv3Ti5Wqv3bzx7nyTxMuzQdq-H8';
 
     largeAmountsSpreadSheetID = appInfoSnapshot['largeAmountsSpreadSheetID'] ??
         '1vKJVTEdLZqRgiWfzdv2KekF76yAGkBeyHuZiMyw6IYY';
@@ -955,15 +1033,24 @@ class HomeScreenController {
     iOSAppId = appInfoSnapshot['iosAppID'] ?? '';
     customError = appInfoSnapshot['customError'] ?? '';
     customErrorAR = appInfoSnapshot['customErrorAR'] ?? '';
+    nextText = appInfoSnapshot['nextText'] ?? '';
+    nextTextSize = appInfoSnapshot['nextTextSize'] ?? '';
+    nextTextSizeAR = appInfoSnapshot['nextTextSizeAR'] ?? '';
+    nextTextColor = appInfoSnapshot['nextTextColor'] ?? '';
+    nextTextColorAR = appInfoSnapshot['nextTextColorAR'] ?? '';
+    nextTextAR = appInfoSnapshot['nextTextAR'] ?? '';
     submissionTextAR = appInfoSnapshot['submissionTextAR'] ?? '';
     submissionText = appInfoSnapshot['submissionText'] ?? '';
     iosAppVersion = appInfoSnapshot['iosVersion'] ?? '';
+    SearchInOrdersCollectionName =
+        appInfoSnapshot['SearchInOrdersCollectionName'] ?? '';
     androidAppVersion = appInfoSnapshot['androidVersion'] ?? '';
     smallAmountsLimit = num.tryParse(appInfoSnapshot['smallAmountsLimit']) ?? 0;
     isSundayOff = appInfoSnapshot['isSundayOff'] ?? false;
     checkForOpeningHours = appInfoSnapshot['checkForOpeningHours'];
     _checkForRoot = appInfoSnapshot['checkForRoot'] ?? false;
     _showSellRate = appInfoSnapshot['showSellRate'] ?? false;
+    _hideContents = appInfoSnapshot['hideContents'] ?? false;
     openMiningItemDetailsScreen =
         appInfoSnapshot['openMiningItemDetailsScreen'] ?? false;
 
@@ -974,17 +1061,23 @@ class HomeScreenController {
     weekdayOpeningHours =
         appInfoSnapshot['weekdayWorkingHours'].toString().split('-')[0] ??
             false;
-    weekdayClosingHours =
-        appInfoSnapshot['weekdayWorkingHours'].toString().split('-')[1] ??
-            false;
+    // weekdayClosingHours =
+    //     appInfoSnapshot['weekdayWorkingHours'].toString().split('-')[1] ??
+    //         false;
     weekendOpeningHours =
         appInfoSnapshot['weekendWorkingHours'].toString().split('-')[0] ??
             false;
-    weekendClosingHours =
-        appInfoSnapshot['weekendWorkingHours'].toString().split('-')[1] ??
-            false;
+    // weekendClosingHours =
+    //     appInfoSnapshot['weekendWorkingHours'].toString().split('-')[1] ??
+    //         false;
 
     minimumOrder = appInfoSnapshot['minimumOrder'] ?? 0;
     cities = appInfoSnapshot['cities'] ?? 0;
+    refreshView();
   }
+}
+
+abstract class HomeScreenControllerView {
+  void refreshState();
+  void jumpToCartScreen();
 }

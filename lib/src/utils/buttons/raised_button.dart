@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
+import 'package:flutter_ecommerce_app/src/themes/theme.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_helper_extension.dart';
+import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 
 class RaisedButtonV2 extends StatelessWidget {
   const RaisedButtonV2({
@@ -22,41 +26,25 @@ class RaisedButtonV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-      key: Key('raised_${label}'),
-      elevation: disabled ? 0.0 : null,
-      padding: const EdgeInsets.all(0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+    return TextButton(
+      onPressed: (disabled ?? false)
+          ? null
+          : isLoading
+              ? () {}
+              : onPressed,
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        ),
+        backgroundColor: MaterialStateProperty.all<Color>(
+            (disabled && !isLoading)
+                ? (disabledColor ?? Colors.grey)
+                : LightColor.orange),
       ),
       child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: getHorizontalPadding(context),
-        ),
-        decoration: BoxDecoration(
-          color: disabledColor ?? Colors.grey,
-          borderRadius: BorderRadius.circular(8),
-          gradient: disabled
-              ? null
-              : green
-                  ? LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 76, 187, 23),
-                        Color.fromARGB(255, 50, 205, 50),
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
-                    )
-                  : LinearGradient(
-                      colors: [
-                        Color.fromARGB(255, 210, 34, 49),
-                        Colors.red,
-                      ],
-                      begin: Alignment.centerRight,
-                      end: Alignment.centerLeft,
-                    ),
-        ),
+        alignment: Alignment.center,
+        padding: EdgeInsets.symmetric(vertical: 4),
+        width: AppTheme.fullWidth(context) * .75,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -67,25 +55,18 @@ class RaisedButtonV2 extends StatelessWidget {
                     child: CircularProgressIndicator(
                       backgroundColor: Colors.white,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                          Color.fromARGB(255, 210, 34, 49)),
+                        LightColor.orange,
+                      ),
                     ),
                   )
-                : Text(
-                    label ?? '',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 16,
-                    ).merge(labelStyle),
+                : TitleText(
+                    text: label?.capitalize ?? '',
+                    color: LightColor.background,
+                    fontWeight: FontWeight.w500,
                   ),
           ],
         ),
       ),
-      onPressed: (disabled ?? false)
-          ? null
-          : isLoading
-              ? () {}
-              : onPressed,
     );
   }
 

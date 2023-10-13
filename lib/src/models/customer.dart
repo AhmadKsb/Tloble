@@ -1,13 +1,11 @@
 class Customer {
+  String name;
   String phoneNumber;
   String notificationToken;
-  num totalMoneyIn;
-  num totalMoneyOut;
   num coins;
 
   Customer({
-    this.totalMoneyIn,
-    this.totalMoneyOut,
+    this.name,
     this.phoneNumber,
     this.notificationToken,
     this.coins,
@@ -17,14 +15,9 @@ class Customer {
     if (json == null) return null;
 
     return Customer(
-      phoneNumber: json.containsKey('phoneNumber')
-          ? json['phoneNumber']
-          : json['phone number'],
-      notificationToken: json.containsKey('notificationToken')
-          ? json['notificationToken']
-          : json['notification_token'],
-      totalMoneyIn: num.tryParse(json['totalMoneyIn'].toString()),
-      totalMoneyOut: num.tryParse(json['totalMoneyOut'].toString()),
+      name: json['name'],
+      phoneNumber: json['phoneNumber'],
+      notificationToken: json['notificationToken'],
       coins: num.tryParse(json['coins'].toString()),
     );
   }
@@ -37,10 +30,9 @@ class Customer {
 
   Map<String, dynamic> toJson({bool received = false}) {
     Map<String, dynamic> json = {
-      'phone number': phoneNumber,
-      'notification_token': notificationToken,
-      'totalMoneyIn': totalMoneyIn ?? 0,
-      'totalMoneyOut': totalMoneyOut ?? 0,
+      'name': name,
+      'phoneNumber': phoneNumber,
+      'notificationToken': notificationToken,
       'coins': coins ?? 0,
     };
 

@@ -3,8 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wkbeast/utils/string_util.dart';
 
 class Localization {
   Localization(this.locale, {this.isTest});
@@ -60,7 +60,7 @@ class LocalizationDelegate extends LocalizationsDelegate<Localization> {
   @override
   Future<Localization> load(Locale locale) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String language = prefs.getString("wkbeast_language");
+    String language = prefs.getString("swiftShop_language");
     Locale locale = isNotEmpty(language) ? Locale(language) : null;
 
     Localization localization =

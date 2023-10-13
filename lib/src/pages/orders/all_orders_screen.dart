@@ -3,32 +3,37 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/mixins/home_screen_controller_mixin.dart';
+import 'package:flutter_ecommerce_app/src/models/order.dart';
+import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
+import 'package:flutter_ecommerce_app/src/themes/theme.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_page_state_widget.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
+import 'package:flutter_ecommerce_app/src/utils/util.dart';
+import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/models/order.dart';
-import 'package:wkbeast/utils/UBScaffold/page_state.dart';
-import 'package:wkbeast/utils/UBScaffold/ub_page_state_widget.dart';
-import 'package:wkbeast/utils/UBScaffold/ub_scaffold.dart';
-import 'package:wkbeast/utils/string_util.dart';
-
 import '../../controllers/home_screen_controller.dart';
 import 'orders_list_tile.dart';
 
-class SmallOrdersScreen extends StatefulWidget {
+class AllOrdersScreen extends StatefulWidget {
   final HomeScreenController controller;
 
-  SmallOrdersScreen({
+  AllOrdersScreen({
     Key key,
     this.controller,
   }) : super(key: key);
 
   @override
-  _SmallOrdersScreenState createState() => _SmallOrdersScreenState();
+  _AllOrdersScreenState createState() => _AllOrdersScreenState();
 }
 
-class _SmallOrdersScreenState extends State<SmallOrdersScreen> {
+class _AllOrdersScreenState extends State<AllOrdersScreen>
+    with HomeScreenControllerMixin {
   PageState _state;
   DateTime dateSelected;
   String selectedDateAsString;
@@ -39,12 +44,24 @@ class _SmallOrdersScreenState extends State<SmallOrdersScreen> {
   HomeScreenController _controller;
   bool _isRefreshing = false;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
-
+  var balance = 0;
   @override
   void initState() {
     super.initState();
     if (!mounted) return;
     _controller = widget.controller;
+    _scrollController = ScrollController();
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 45) {
+        setState(() {
+          _isScrolled = true;
+        });
+      } else {
+        setState(() {
+          _isScrolled = false;
+        });
+      }
+    });
     _load();
   }
 
@@ -53,6 +70,10 @@ class _SmallOrdersScreenState extends State<SmallOrdersScreen> {
     String selectedDate,
     DateTime selectedDateFormatted,
   }) async {
+    if (_controller == null || widget.controller == null) {
+      await loadHomeScreenController();
+      _controller = homeScreenController;
+    }
     if (newController != null) _controller = newController;
 
     setState(() {
@@ -63,17 +84,24 @@ class _SmallOrdersScreenState extends State<SmallOrdersScreen> {
     try {
       prefs = await SharedPreferences.getInstance();
       selectedDateAsString = selectedDate ??
-          "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}";
+          "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)}";
+      print(selectedDateAsString);
       List data = await Future.wait([
         FirebaseFirestore.instance
-            .collection('ordersv2')
-            .doc('smallOrders')
+            .collection('Orders')
+            .doc('Orders')
             .collection(selectedDateAsString)
             .snapshots()
-            .first,
+            .first
+        // .get()
+        // .collection("2023-10-07 at 08:34:28")
+        //     .snapshots()
+        //     .first,
       ]);
-
+      // print("OOO ${(data[0] as QuerySnapshot).docs}");
+      // print("OOO ${(data[0] as DocumentSnapshot).data()}");
       orders = (data[0] as QuerySnapshot).docs;
+      // print("OOO ${(data[0] as QuerySnapshot).docs}");
 
       orders.sort((a, b) => -(getDateTime(a.id)).compareTo(getDateTime(b.id)));
 
@@ -126,14 +154,104 @@ class _SmallOrdersScreenState extends State<SmallOrdersScreen> {
       initialDate: dateSelected ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
+      builder: (BuildContext context, Widget child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            primaryColor: LightColor.orange,
+            accentColor: LightColor.orange,
+            colorScheme: ColorScheme.light(
+              primary: LightColor.orange,
+            ),
+            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
+          ),
+          child: child,
+        );
+      },
     );
+
     if (chosen != null) {
       _load(
-        selectedDate: "${chosen.day}-${chosen.month}-${chosen.year}",
+        selectedDate:
+            "${getNumberWithPrefixZero(chosen.year)}-${getNumberWithPrefixZero(chosen.month)}-${getNumberWithPrefixZero(chosen.day)}",
         selectedDateFormatted: chosen,
       );
     }
   }
+
+  Widget _title() {
+    return Container(
+        margin: AppTheme.padding,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TitleText(
+                  text: Localization.of(context, 'all'),
+                  fontSize: 27,
+                  fontWeight: FontWeight.w400,
+                ),
+                TitleText(
+                  text: Localization.of(context, 'orders'),
+                  fontSize: 27,
+                  fontWeight: FontWeight.w700,
+                ),
+              ],
+            ),
+          ],
+        ));
+  }
+
+  Widget _appBar() {
+    return Container(
+      padding: AppTheme.padding,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          RotatedBox(
+            quarterTurns:
+                (Localizations.localeOf(context).languageCode == 'ar') ? 2 : 4,
+            child: _icon(Icons.arrow_back_ios_new, color: Colors.black54),
+          ),
+          Padding(
+            padding: EdgeInsetsDirectional.only(end: 24),
+            child: GestureDetector(
+              onTap: () {
+                _selectDate();
+              },
+              child: SvgPicture.asset(
+                'assets/svgs/calendar.svg',
+                width: 20,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _icon(IconData icon, {Color color = LightColor.iconColor}) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      // onTap: null,
+      child: Container(
+        // padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(13)),
+            // color: Theme.of(context).backgroundColor,
+            boxShadow: AppTheme.shadow),
+        child: Icon(
+          icon,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  ScrollController _scrollController = ScrollController();
+  bool _isScrolled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -143,121 +261,164 @@ class _SmallOrdersScreenState extends State<SmallOrdersScreen> {
           pageState: _state,
           onRetry: _load,
         ),
-        appBar: AppBar(
-          title: Text(
-            Localization.of(context, 'orders'),
-            style: Theme.of(context)
-                .textTheme
-                .headline5
-                .copyWith(color: Colors.white),
-          ),
-          centerTitle: true,
-          backgroundColor: Color.fromARGB(255, 210, 34, 49),
-          actions: _state == PageState.loaded
-              ? [
-                  Padding(
-                    padding: EdgeInsetsDirectional.only(end: 24),
-                    child: GestureDetector(
-                      onTap: () {
-                        _selectDate();
-                      },
-                      child: SvgPicture.asset(
-                        'assets/svgs/calendar.svg',
-                        width: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ]
-              : null,
-        ),
-        builder: (context) => RefreshIndicator(
-          key: refreshKey,
-          onRefresh: refresh,
-          child: orders.isEmpty
-              ? Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: NoData(
-                    replaceVariable(
-                      Localization.of(
-                        context,
-                        'no_orders_on',
-                      ),
-                      'value',
-                      DateFormat(
-                        prefs.getString("wkbeast_language") == 'ar'
-                            ? 'EEEE d MMMM yyyy'
-                            : 'EEEE MMMM d, yyyy',
-                        prefs.getString("wkbeast_language"),
-                      ).format(dateSelected),
-                    ),
-                  ),
-                )
-              : Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Text(
-                        DateFormat(
-                          prefs.getString("wkbeast_language") == 'ar'
-                              ? 'EEEE d MMMM yyyy'
-                              : 'EEEE MMMM d, yyyy',
-                          prefs.getString("wkbeast_language"),
-                        ).format(dateSelected),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    if (_controller.isAdmin ?? false)
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 16),
-                        child: Text(
-                          replaceVariable(
-                            Localization.of(
-                              context,
-                              'total_orders',
+        backgroundColor: Colors.transparent,
+        builder: (context) => NestedScrollView(
+          controller: _scrollController,
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                pinned: true,
+                toolbarHeight: _isScrolled ? 50.0 : 0.0,
+                expandedHeight: _isScrolled ? 50.0 : 0.0,
+                backgroundColor: Color(0xfffbfbfb),
+                iconTheme: IconThemeData(color: Colors.black54),
+              ),
+            ];
+          },
+          body: Container(
+            margin: EdgeInsets.only(top: 36),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xfffbfbfb),
+                  Color(0xfff7f7f7),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: RefreshIndicator(
+              key: refreshKey,
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    _appBar(),
+                    _title(),
+                    orders.isEmpty
+                        ? Container(
+                            height: MediaQuery.of(context).size.height / 2,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                              child: NoData(
+                                replaceVariable(
+                                  Localization.of(
+                                    context,
+                                    'no_orders_on',
+                                  ),
+                                  'value',
+                                  DateFormat(
+                                    prefs.getString("swiftShop_language") ==
+                                            'ar'
+                                        ? 'EEEE d MMMM yyyy'
+                                        : 'EEEE MMMM d, yyyy',
+                                    prefs.getString("swiftShop_language"),
+                                  ).format(dateSelected),
+                                ),
+                              ),
                             ),
-                            'value',
-                            "${orders.length ?? 0}",
+                          )
+                        : Column(
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Text(
+                                  DateFormat(
+                                    prefs.getString("swiftShop_language") ==
+                                            'ar'
+                                        ? 'EEEE d MMMM yyyy'
+                                        : 'EEEE MMMM d, yyyy',
+                                    prefs.getString("swiftShop_language"),
+                                  ).format(dateSelected),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              if (_controller?.isAdmin ?? false)
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 16),
+                                  child: Text(
+                                    replaceVariable(
+                                      Localization.of(
+                                        context,
+                                        'total_orders',
+                                      ),
+                                      'value',
+                                      "${orders.length ?? 0}",
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              if (_controller?.isAdmin ?? false)
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: 16),
+                                  child: Text(
+                                    replaceVariable(
+                                      Localization.of(
+                                        context,
+                                        'total_balance_today',
+                                      ),
+                                      'value',
+                                      "${getBalance()}",
+                                    ),
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ListView.builder(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                physics:
+                                    NeverScrollableScrollPhysics(), // Disable inner ListView scrolling
+
+                                itemCount: orders.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return OrdersListTile(
+                                    order: Order.fromJson(orders[index].data()),
+                                    controller: _controller,
+                                    isLastRow: index == orders.length - 1,
+                                    selectedTime: selectedDateAsString,
+                                    selectedPhoneNumber:
+                                        _firebaseAuth.currentUser.phoneNumber,
+                                    shouldRefresh: (shouldRefrsh) {
+                                      if (shouldRefrsh) _load();
+                                    },
+                                  );
+                                },
+                              ),
+                              if (orders.isNotEmpty) SizedBox(height: 64),
+                            ],
                           ),
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    Expanded(
-                      child: ListView.builder(
-                        padding: EdgeInsets.zero,
-                        shrinkWrap: true,
-                        itemCount: orders.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return OrdersListTile(
-                            order: Order.fromJson(orders[index].data()),
-                            acceptedTime: null,
-                            controller: _controller,
-                            isLastRow: index == orders.length - 1,
-                            selectedTime: selectedDateAsString,
-                            selectedPhoneNumber:
-                                _firebaseAuth.currentUser.phoneNumber,
-                            isAccepted:
-                                Order.fromJson(orders[index].data()).driver ==
-                                    _firebaseAuth.currentUser.phoneNumber,
-                            shouldRefresh: (shouldRefrsh) {
-                              if (shouldRefrsh) _load();
-                            },
-                          );
-                        },
-                      ),
-                    ),
                   ],
                 ),
+              ),
+            ),
+          ),
         ),
       ),
     );
+  }
+
+  String getBalance() {
+    if (balance == null || balance == 0) {
+      orders.forEach((element) {
+        if (balance == null) balance = 0;
+        balance += Order.fromJson(element.data()).firstPayment +
+            Order.fromJson(element.data()).secondPayment;
+      });
+    }
+    return balance.toString();
   }
 }

@@ -4,14 +4,13 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/models/order.dart';
+import 'package:flutter_ecommerce_app/src/pages/feedback/feedback_details_screen.dart';
+import 'package:flutter_ecommerce_app/src/pages/orders/all_orders_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
-import 'package:wkbeast/models/feedback.dart' as Feedback;
-import 'package:wkbeast/models/order.dart';
-import 'package:wkbeast/screens/feedback/feedback_details_screen.dart';
-
-import '../screens/orders/order_screen.dart';
+import 'package:flutter_ecommerce_app/src/models/feedback.dart' as Feedback;
 
 /// FirebaseNotification widget
 class FirebaseNotification extends StatefulWidget {
@@ -172,9 +171,15 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
     var data = (message != null ? message['data'] : null) ?? message;
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    print(data['productsTitles'].runtimeType);
+
+    if (message.containsKey('notificationSentToCustomer')
+        ? data['notificationSentToCustomer'] == 'true'
+        : false) return;
+
     if ((data['feedback'] != null) &&
         (prefs
-                .getStringList('wkbeast_feedback_receivers')
+                .getStringList('swiftShop_feedback_receivers')
                 .contains(FirebaseAuth.instance?.currentUser?.phoneNumber) ??
             false)) {
       Feedback.Feedback feedback = Feedback.Feedback.fromJson(data);
@@ -187,20 +192,19 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
       );
     }
 
-    if (data['action'] != null &&
-        data['amount'] != null &&
-        data['name'] != null &&
+    if (data['phoneNumber'] != null &&
+        data['customerName'] != null &&
         (prefs
-                .getStringList('wkbeast_drivers')
+                .getStringList('swiftShop_employees')
                 .contains(FirebaseAuth.instance?.currentUser?.phoneNumber) ??
             false)) {
       Order order = Order.fromJson(data);
 
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => OrderScreen(
-            order: order,
-          ),
+          builder: (context) => AllOrdersScreen(
+              // order: order,
+              ),
         ),
       );
     }

@@ -1,22 +1,26 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:country_pickers/country.dart' as countryPickers;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/models/customer.dart';
+import 'package:flutter_ecommerce_app/src/pages/home_page.dart';
+import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
+import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/screens/home/home_screen.dart';
-import 'package:wkbeast/utils/BottomSheets/bottom_sheet_helper.dart';
-import 'package:wkbeast/utils/BottomSheets/operation_status.dart';
-import 'package:wkbeast/utils/UBScaffold/page_state.dart';
-import 'package:wkbeast/utils/UBScaffold/ub_scaffold.dart';
-import 'package:wkbeast/utils/string_util.dart';
 
-import '../widgets/firebase_notification.dart';
+import '../../firebase_notification.dart';
 
 class Otp extends StatefulWidget {
+  final String name;
   final String email;
   final String newEmail;
   final bool isGuestCheckOut;
@@ -25,6 +29,7 @@ class Otp extends StatefulWidget {
 
   const Otp({
     Key key,
+    this.name,
     this.email,
     this.newEmail = "",
     this.isGuestCheckOut,
@@ -44,6 +49,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
   TextEditingController _pinEditingController = TextEditingController();
 
   PageState _state;
+  PageState _registerCustomerState;
 
   bool isCodeSent = false;
   bool _rootAccess = false;
@@ -386,7 +392,10 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
     _screenSize = MediaQuery.of(context).size;
     return UBScaffold(
       state: AppState(
-        pageState: _state,
+        pageState: _registerCustomerState == PageState.loading ||
+                _state == PageState.loading
+            ? PageState.loading
+            : _state,
       ),
       appBar: _getAppbar,
       backgroundColor: Colors.white,
@@ -525,18 +534,56 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
         (AuthCredential phoneAuthCredential) {
       _firebaseAuth
           .signInWithCredential(phoneAuthCredential)
-          .then((UserCredential value) {
+          .then((UserCredential value) async {
         if (value.user != null) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FirebaseNotification(
-                  child: HomeScreen(
-                    user: value.user,
-                  ),
-                ),
-              ),
-              (Route<dynamic> route) => false);
+          try {
+            setState(() {
+              _registerCustomerState = PageState.loading;
+            });
+            var notificationToken = await FirebaseMessaging.instance.getToken();
+            var result = await FirebaseFirestore.instance
+                .collection('Customers')
+                .doc(_firebaseAuth.currentUser?.phoneNumber ?? '')
+                .snapshots()
+                .first;
+            if (result.data() == null) {
+              await FirebaseFirestore.instance
+                  .collection('Customers')
+                  .doc(value.user.phoneNumber)
+                  .set(
+                    Customer(
+                      name: widget.name,
+                      phoneNumber: value.user.phoneNumber,
+                      notificationToken: notificationToken,
+                      coins: 0,
+                    ).toJson(),
+                  );
+            } else {
+              var customer = Customer.fromJson(result.data());
+              await FirebaseFirestore.instance
+                  .collection('Customers')
+                  .doc(customer.phoneNumber)
+                  .set(
+                    Customer(
+                      name: widget.name,
+                      phoneNumber: customer.phoneNumber,
+                      notificationToken: notificationToken,
+                      coins: customer?.coins ?? 0,
+                    ).toJson(),
+                  );
+            }
+
+            setState(() {
+              _registerCustomerState = PageState.loaded;
+            });
+          } catch (e) {
+            setState(() {
+              _registerCustomerState = PageState.loaded;
+            });
+          }
+
+          Navigator.of(context).pop(widget.name);
+          Navigator.of(context).pop(widget.name);
         } else {
           showErrorBottomsheet("Error validating OTP, try again");
         }
@@ -604,21 +651,58 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
 
     _firebaseAuth
         .signInWithCredential(_authCredential)
-        .then((UserCredential value) {
+        .then((UserCredential value) async {
       setState(() {
         _state = PageState.loaded;
       });
       if (value.user != null) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FirebaseNotification(
-                child: HomeScreen(
-                  user: value.user,
-                ),
-              ),
-            ),
-            (Route<dynamic> route) => false);
+        try {
+          setState(() {
+            _registerCustomerState = PageState.loading;
+          });
+          var notificationToken = await FirebaseMessaging.instance.getToken();
+          var result = await FirebaseFirestore.instance
+              .collection('Customers')
+              .doc(_firebaseAuth.currentUser?.phoneNumber ?? '')
+              .snapshots()
+              .first;
+          if (result.data() == null) {
+            await FirebaseFirestore.instance
+                .collection('Customers')
+                .doc(value.user.phoneNumber)
+                .set(
+                  Customer(
+                    name: widget.name,
+                    phoneNumber: value.user.phoneNumber,
+                    notificationToken: notificationToken,
+                    coins: 0,
+                  ).toJson(),
+                );
+          } else {
+            var customer = Customer.fromJson(result.data());
+            await FirebaseFirestore.instance
+                .collection('Customers')
+                .doc(customer.phoneNumber)
+                .set(
+                  Customer(
+                    name: widget.name,
+                    phoneNumber: customer.phoneNumber,
+                    notificationToken: notificationToken,
+                    coins: customer?.coins ?? 0,
+                  ).toJson(),
+                );
+          }
+
+          setState(() {
+            _registerCustomerState = PageState.loaded;
+          });
+        } catch (e) {
+          setState(() {
+            _registerCustomerState = PageState.loaded;
+          });
+        }
+        Navigator.of(context).pop(widget.name);
+        Navigator.of(context).pop(widget.name);
       } else {
         showErrorBottomsheet("Error validating OTP, try again");
       }

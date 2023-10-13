@@ -110,7 +110,12 @@ class WKTextField extends StatelessWidget {
       inputFormatters: inputFormatters,
       onChanged: onChanged,
       decoration: InputDecoration(
-        labelText: hintText,
+        hintText: hintText,
+        hintStyle: TextStyle(
+          color: Colors.black54,
+          fontSize: hintTextSize,
+        ),
+        hintMaxLines: 3,
         counterText: "",
         labelStyle: TextStyle(
           color: Colors.black,
@@ -133,27 +138,6 @@ class WKTextField extends StatelessWidget {
         errorText: errorText,
         fillColor: fillColor,
         suffixIcon: suffixIcon,
-        // counterStyle: Theme.of(context).textTheme.bodyText2.copyWith(
-        //   color: Color(
-        //     ZLAppColors.screenSurfacePrimaryText.hex,
-        //   ),
-        // ),
-        // helperStyle: Theme.of(context).textTheme.bodyText2.copyWith(
-        //   color: Color(ZLAppColors.textfieldHelpText.hex),
-        // ),
-        // hintStyle: Theme.of(context).textTheme.bodyText2.copyWith(
-        //   color: Color(ZLAppColors.secondaryText.hex),
-        //   fontWeight: FontWeight.normal,
-        //   fontSize: hintTextSize,
-        // ),
-        // errorStyle: Theme.of(context).textTheme.bodyText2.copyWith(
-        //   color: Color(ZLAppColors.error.hex),
-        // ),
-        // labelStyle: Theme.of(context).textTheme.bodyText2.copyWith(
-        //   color: Color(ZLAppColors.textfieldLabelText.hex),
-        //   fontWeight: FontWeight.normal,
-        //   fontFamily: AppFonts.defaultFont,
-        // ),
       ),
       onSubmitted: onSubmitted,
       textInputAction: textInputAction,

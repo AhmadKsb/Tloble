@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:wkbeast/utils/buttons/raised_button.dart';
-import 'package:wkbeast/utils/string_util.dart';
+import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
+
+import '../string_util.dart';
 
 class ButtonsButtonSheet extends StatelessWidget {
   final String confirmMessage;

@@ -1,16 +1,17 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/models/feedback.dart' as Feedback;
+import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
+import 'package:flutter_ecommerce_app/src/themes/theme.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_page_state_widget.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
+import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/models/feedback.dart' as Feedback;
-import 'package:wkbeast/screens/feedback/feedback_list_tile.dart';
-import 'package:wkbeast/utils/UBScaffold/page_state.dart';
-import 'package:wkbeast/utils/UBScaffold/ub_page_state_widget.dart';
-import 'package:wkbeast/utils/UBScaffold/ub_scaffold.dart';
 
-import '../../../controllers/home_screen_controller.dart';
+import '../../controllers/home_screen_controller.dart';
+import 'feedback_list_tile.dart';
 
 class FeedbackListScreen extends StatefulWidget {
   final HomeScreenController controller;
@@ -65,7 +66,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
       prefs = await SharedPreferences.getInstance();
       List data = await Future.wait([
         FirebaseFirestore.instance
-            .collection('feedbacks')
+            .collection('Feedbacks')
             .orderBy("dateTime", descending: true)
             .limit(_limit)
             .snapshots()
@@ -96,7 +97,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
     try {
       List data = await Future.wait([
         FirebaseFirestore.instance
-            .collection('feedbacks')
+            .collection('Feedbacks')
             .orderBy("dateTime", descending: true)
             .limit(_offset)
             .snapshots()
@@ -126,76 +127,174 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
     }
   }
 
+  Widget _title() {
+    return Container(
+        margin: AppTheme.padding,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TitleText(
+                  text: Localization.of(context, 'received'),
+                  fontSize: 27,
+                  fontWeight: FontWeight.w400,
+                ),
+                TitleText(
+                  text: Localization.of(context, 'feedbacks'),
+                  fontSize: 27,
+                  fontWeight: FontWeight.w700,
+                ),
+              ],
+            ),
+          ],
+        ));
+  }
+
+  Widget _appBar() {
+    return Container(
+      padding: AppTheme.padding,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          RotatedBox(
+            quarterTurns:
+                (Localizations.localeOf(context).languageCode == 'ar') ? 2 : 4,
+            child: _icon(Icons.arrow_back_ios_new, color: Colors.black54),
+          ),
+          // Padding(
+          //   padding: EdgeInsetsDirectional.only(end: 24),
+          //   child: GestureDetector(
+          //     onTap: () {
+          //       // _selectDate();
+          //     },
+          //     child: SvgPicture.asset(
+          //       'assets/svgs/calendar.svg',
+          //       width: 20,
+          //       color: Colors.black54,
+          //     ),
+          //   ),
+          // ),
+        ],
+      ),
+    );
+  }
+
+  Widget _icon(IconData icon, {Color color = LightColor.iconColor}) {
+    return GestureDetector(
+      onTap: () => Navigator.of(context).pop(),
+      // onTap: null,
+      child: Container(
+        // padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(13)),
+            // color: Theme.of(context).backgroundColor,
+            boxShadow: AppTheme.shadow),
+        child: Icon(
+          icon,
+          color: color,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: UBScaffold(
-        state: AppState(
-          pageState: _state,
-          onRetry: _load,
-        ),
-        appBar: AppBar(
-          title: Text(
-            Localization.of(context, 'feedbacks'),
-            style: Theme.of(context)
-                .textTheme
-                .headline5
-                .copyWith(color: Colors.white),
-          ),
-          centerTitle: true,
-          backgroundColor: Color.fromARGB(255, 210, 34, 49),
-        ),
-        builder: (context) => feedbacks.isEmpty
-            ? Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: NoData(
-                  Localization.of(context, 'you_dont_have_any_feedbacks_yet'),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          UBScaffold(
+            backgroundColor: Colors.transparent,
+            state: AppState(
+              pageState: _state,
+              onRetry: _load,
+            ),
+            builder: (context) => Container(
+              margin: EdgeInsets.only(top: 68),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xfffbfbfb),
+                    Color(0xfff7f7f7),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-              )
-            : Padding(
-                padding: EdgeInsets.only(top: 32),
+              ),
+              child: SingleChildScrollView(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 4),
-                        child: CustomScrollView(
-                          controller: _scrollController,
-                          slivers: <Widget>[
-                            SliverList(
-                              delegate: SliverChildBuilderDelegate(
-                                (context, index) => FeedbackListTile(
-                                  feedback: Feedback.Feedback.fromJson(
-                                    feedbacks[index].data(),
+                    _appBar(),
+                    _title(),
+                    feedbacks.isEmpty
+                        ? Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: NoData(
+                              Localization.of(
+                                  context, 'you_dont_have_any_feedbacks_yet'),
+                            ),
+                          )
+                        : Padding(
+                            padding: EdgeInsets.only(top: 32),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 4),
+                                  child: Center(
+                                    child: CustomScrollView(
+                                      shrinkWrap: true,
+                                      controller: _scrollController,
+                                      slivers: <Widget>[
+                                        SliverList(
+                                          delegate:
+                                              SliverChildBuilderDelegate(
+                                            (context, index) =>
+                                                FeedbackListTile(
+                                              feedback:
+                                                  Feedback.Feedback.fromJson(
+                                                feedbacks[index].data(),
+                                              ),
+                                              prefs: prefs,
+                                              controller: widget.controller,
+                                              isLastRow: index ==
+                                                  feedbacks.length - 1,
+                                              shouldRefresh: (shouldRefrsh) {
+                                                if (shouldRefrsh) _load();
+                                              },
+                                            ),
+                                            childCount: feedbacks.length,
+                                          ),
+                                        ),
+                                        SliverToBoxAdapter(
+                                          child: isLoadingMore
+                                              ? Padding(
+                                                  padding:
+                                                      EdgeInsets.all(16.0),
+                                                  child: Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  ),
+                                                )
+                                              : SizedBox.shrink(),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                  prefs: prefs,
-                                  controller: widget.controller,
-                                  isLastRow: index == feedbacks.length - 1,
-                                  shouldRefresh: (shouldRefrsh) {
-                                    if (shouldRefrsh) _load();
-                                  },
                                 ),
-                                childCount: feedbacks.length,
-                              ),
+                              ],
                             ),
-                            SliverToBoxAdapter(
-                              child: isLoadingMore
-                                  ? Padding(
-                                      padding: EdgeInsets.all(16.0),
-                                      child: Center(
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    )
-                                  : SizedBox.shrink(),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                          ),
                   ],
                 ),
               ),
+            ),
+          ),
+        ],
       ),
     );
   }

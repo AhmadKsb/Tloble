@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/utils/Dropdown/dropdown_search.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+
+import 'dropdown_search.dart';
 
 class SelectDialog<T> extends StatefulWidget {
   final T selectedValue;

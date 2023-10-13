@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wkbeast/localization/localization.dart';
-import 'package:wkbeast/utils/UBScaffold/page_state.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
 
 import 'error_switcher.dart';
 import 'loader.dart';

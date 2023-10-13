@@ -1,7 +1,7 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:country_picker/src/extensions.dart';
 import 'package:flutter/material.dart';
-import 'package:wkbeast/localization/localization.dart';
+import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 
 import 'country_codes.dart';
 
