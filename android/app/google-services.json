@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "199247579885",
+    "project_id": "swiftlb-aec19",
+    "storage_bucket": "swiftlb-aec19.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:199247579885:android:8b7825955aa3b6fb615ae4",
+        "android_client_info": {
+          "package_name": "com.swiftShop.lb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfwLFqQOb7bC_esyXicK7VvPKl3MwclXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
