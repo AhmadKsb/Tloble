@@ -1424,6 +1424,7 @@ class _MyHomePageState extends State<MyHomePage>
 
                                         FocusManager.instance.primaryFocus
                                             ?.unfocus();
+
                                         showSuccessBottomsheet();
 
                                         // if (widget.homeScreenController
