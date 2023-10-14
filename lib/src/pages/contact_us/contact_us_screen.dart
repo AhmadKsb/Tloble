@@ -13,8 +13,8 @@ class ContactUsScreen extends StatefulWidget {
   final HomeScreenController controller;
 
   const ContactUsScreen({
-    Key key,
-    this.controller,
+    Key? key,
+    required this.controller,
   }) : super(key: key);
 
   @override

@@ -12,13 +12,13 @@ enum KeyboardActionsPlatform {
 
 class KeyboardFormAction {
   /// The Focus object coupled to TextField, listening for got/lost focus events
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   /// Optional callback if the button for TextField was tapped
-  final VoidCallback onTapAction;
+  final VoidCallback? onTapAction;
 
   /// Optional widget to display to the right of the bar
-  final Widget closeWidget;
+  final Widget? closeWidget;
 
   /// true [default] to display a closeWidget
   final bool displayCloseWidget;
@@ -37,7 +37,7 @@ class KeyboardFormAction {
 
 class KeyboardFormActions extends StatefulWidget {
   /// Pass any widget, ideally it should content a textfield
-  final Widget child;
+  final Widget? child;
 
   /// Keyboard Action for specific platform
   /// KeyboardActionsPlatform : ANDROID , IOS , ALL
@@ -47,10 +47,10 @@ class KeyboardFormActions extends StatefulWidget {
   final bool nextFocus;
 
   /// KeyboardAction for each textfield
-  final List<KeyboardFormAction> actions;
+  final List<KeyboardFormAction>? actions;
 
   /// Color of the background to the Custom keyboard buttons
-  final Color keyboardBarColor;
+  final Color? keyboardBarColor;
 
   KeyboardFormActions({
     this.child,
@@ -68,7 +68,7 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
     with WidgetsBindingObserver {
   Map<int, KeyboardFormAction> _map = Map();
   bool _isKeyboardVisible = false;
-  KeyboardFormAction _currentAction;
+  KeyboardFormAction? _currentAction;
   int _currentIndex = 0;
 
   _addAction(int index, KeyboardFormAction action) {
@@ -87,9 +87,10 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
     bool hasFocusFound = false;
     _map.keys.forEach((key) {
       final currentAction = _map[key];
-      if (currentAction.focusNode != null && currentAction.focusNode.hasFocus) {
+      if (currentAction?.focusNode != null &&
+          (currentAction?.focusNode?.hasFocus ?? false)) {
         hasFocusFound = true;
-        _currentAction = currentAction;
+        _currentAction = currentAction!;
         _currentIndex = key;
         return;
       }
@@ -101,7 +102,7 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
     if (action.focusNode != null) {
       _currentAction = action;
       _currentIndex = nextIndex;
-      FocusScope.of(context).requestFocus(_currentAction.focusNode);
+      FocusScope.of(context).requestFocus(_currentAction?.focusNode);
       _shouldRefresh(true);
     }
   }
@@ -110,8 +111,8 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
     final nextIndex = _currentIndex - 1;
     if (nextIndex >= 0) {
       final currentAction = _map[nextIndex];
-      if (currentAction.enabled) {
-        _shouldGoToNextFocus(currentAction, nextIndex);
+      if (currentAction?.enabled ?? false) {
+        _shouldGoToNextFocus(currentAction!, nextIndex);
       } else if (currentAction != null) {
         _currentIndex = nextIndex;
         _onTapUp();
@@ -123,8 +124,8 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
     final nextIndex = _currentIndex + 1;
     if (nextIndex < _map.length) {
       final currentAction = _map[nextIndex];
-      if (currentAction.enabled) {
-        _shouldGoToNextFocus(currentAction, nextIndex);
+      if (currentAction?.enabled ?? false) {
+        _shouldGoToNextFocus(currentAction!, nextIndex);
       } else {
         _currentIndex = nextIndex;
         _onTapDown();
@@ -140,12 +141,12 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
 
   _startListeningFocus() {
     _map.values
-        .forEach((action) => action.focusNode.addListener(_focusNodeListener));
+        .forEach((action) => action.focusNode?.addListener(_focusNodeListener));
   }
 
   _dismissListeningFocus() {
     _map.values.forEach(
-        (action) => action.focusNode.removeListener(_focusNodeListener));
+        (action) => action.focusNode?.removeListener(_focusNodeListener));
   }
 
   @override
@@ -176,10 +177,10 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
 
   @override
   Widget build(BuildContext context) {
-    if (widget.actions.isNotEmpty) {
+    if (widget.actions?.isNotEmpty ?? false) {
       _clearAllFocusNode();
-      for (int i = 0; i < widget.actions.length; i++) {
-        _addAction(i, widget.actions[i]);
+      for (int i = 0; i < (widget.actions?.length ?? 0); i++) {
+        _addAction(i, widget.actions![i]);
       }
       _dismissListeningFocus();
       _startListeningFocus();
@@ -192,7 +193,6 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
             defaultTargetPlatform == TargetPlatform.android);
     return Stack(
       fit: StackFit.expand,
-      overflow: Overflow.visible,
       children: [
         Padding(
           padding: EdgeInsets.only(
@@ -227,13 +227,13 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
                             : SizedBox(),
                         Spacer(),
                         _currentAction?.displayCloseWidget != null &&
-                                _currentAction.displayCloseWidget
+                                (_currentAction?.displayCloseWidget ?? false)
                             ? Padding(
                                 padding: const EdgeInsets.all(5.0),
                                 child: InkWell(
                                   onTap: () {
                                     if (_currentAction?.onTapAction != null) {
-                                      _currentAction.onTapAction();
+                                      _currentAction?.onTapAction!();
                                     }
                                     _clearFocus();
                                   },

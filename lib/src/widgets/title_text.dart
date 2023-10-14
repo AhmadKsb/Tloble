@@ -3,15 +3,15 @@ import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TitleText extends StatelessWidget {
-  final String text;
+  final String? text;
   final double fontSize;
   final Color color;
   final FontWeight fontWeight;
   final TextAlign textAlign;
-  final TextStyle style;
+  final TextStyle? style;
 
   const TitleText({
-    Key key,
+    Key? key,
     this.text,
     this.fontSize = 18,
     this.color = LightColor.titleTextColor,
@@ -22,9 +22,9 @@ class TitleText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      text,
+      text ?? "",
       maxLines: 2,
-      textAlign: textAlign ?? TextAlign.start,
+      textAlign: textAlign,
       style: style ??
           GoogleFonts.mulish(
             fontSize: fontSize,

@@ -1,10 +1,10 @@
 class Feedback {
-  String name;
-  String email;
-  String phoneNumber;
-  String feedback;
-  String dateTime;
-  bool alreadyContacted;
+  String? name;
+  String? email;
+  String? phoneNumber;
+  String? feedback;
+  String? dateTime;
+  bool? alreadyContacted;
 
   Feedback({
     this.name,
@@ -16,7 +16,6 @@ class Feedback {
   });
 
   factory Feedback.fromJson(Map<dynamic, dynamic> json) {
-    if (json == null) return null;
 
     return Feedback(
       name: json.containsKey('name') ? json['name'] : null,
@@ -33,8 +32,8 @@ class Feedback {
   }
 
   static List<Feedback> fromJsonList(List json) {
-    List<Feedback> feedbacks =
-        json?.map((feedback) => Feedback.fromJson(feedback))?.toList();
+    List<Feedback>? feedbacks =
+        json.map((feedback) => Feedback.fromJson(feedback)).toList();
     return feedbacks;
   }
 

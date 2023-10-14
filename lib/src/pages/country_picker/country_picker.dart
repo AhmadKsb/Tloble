@@ -27,13 +27,13 @@ import 'country_list_bottom_sheet.dart';
 /// sheet. It is only used when the method is called. Its corresponding widget
 /// can be safely removed from the tree before the bottom sheet is closed.
 void wkShowCountryPicker({
-  BuildContext context,
-  ValueChanged<Country> onSelect,
-  VoidCallback onClosed,
-  List<String> exclude,
-  List<String> countryFilter,
+  BuildContext? context,
+  ValueChanged<Country>? onSelect,
+  VoidCallback? onClosed,
+  List<String>? exclude,
+  List<String>? countryFilter,
   bool showPhoneCode = false,
-  CountryListThemeData countryListTheme,
+  CountryListThemeData? countryListTheme,
   bool searchAutofocus = false,
   bool showWorldWide = false,
 }) {

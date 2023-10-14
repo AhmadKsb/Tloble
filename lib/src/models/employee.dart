@@ -1,7 +1,7 @@
 class Employee {
-  String name;
-  String phoneNumber;
-  String token;
+  String? name;
+  String? phoneNumber;
+  String? token;
 
   Employee({
     this.name,
@@ -18,8 +18,8 @@ class Employee {
   }
 
   static List<Employee> fromJsonList(List json) {
-    List<Employee> orders =
-        json?.map((driver) => Employee.fromJson(driver.data()))?.toList();
+    List<Employee>? orders =
+        json.map((driver) => Employee.fromJson(driver.data())).toList();
     return orders;
   }
 

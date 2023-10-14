@@ -6,21 +6,21 @@ import 'flare_actor.dart';
 import 'operation_status.dart';
 
 class ActionBottomSheet extends StatelessWidget {
-  final OperationStatus status;
-  final String message;
-  final String buttonMessage;
-  final VoidCallback onPressed;
-  final bool dismissOnTouchOutside;
-  final bool showCancelButton;
-  final bool showDoneButton;
-  final Widget extraButton;
-  final String title;
+  final OperationStatus? status;
+  final String? message;
+  final String? buttonMessage;
+  final VoidCallback? onPressed;
+  final bool? dismissOnTouchOutside;
+  final bool? showCancelButton;
+  final bool? showDoneButton;
+  final Widget? extraButton;
+  final String? title;
 
   ///Use when you want to override the default widgets under the divider
-  final Widget bottomWidget;
+  final Widget? bottomWidget;
 
   const ActionBottomSheet({
-    Key key,
+    Key? key,
     this.status,
     this.message,
     this.buttonMessage,
@@ -68,7 +68,7 @@ class ActionBottomSheet extends StatelessWidget {
   }
 
   Widget _buildButton(BuildContext context) {
-    if (!showDoneButton) return Container();
+    if (!(showDoneButton ?? true)) return Container();
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 18),
       child: Container(
@@ -77,7 +77,7 @@ class ActionBottomSheet extends StatelessWidget {
           padding: EdgeInsets.only(bottom: 16),
           child: RaisedButtonV2(
             label: buttonMessage ?? 'DONE',
-            onPressed: onPressed,
+            onPressed: onPressed ?? () => null,
           ),
         ),
       ),
@@ -108,8 +108,8 @@ class ActionBottomSheet extends StatelessWidget {
         if (title != null) SizedBox(height: 16),
         if (title != null)
           Text(
-            title,
-            style: Theme.of(context).textTheme.headline6.copyWith(
+            title ?? "",
+            style: Theme.of(context).textTheme.headline6?.copyWith(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -122,8 +122,8 @@ class ActionBottomSheet extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
-            message,
-            style: Theme.of(context).textTheme.bodyText2.copyWith(
+            message ?? "",
+            style: Theme.of(context).textTheme.bodyText2?.copyWith(
                   fontSize: 16,
                   color: status == OperationStatus.error
                       ? Color.fromARGB(255, 210, 34, 49)
@@ -147,7 +147,7 @@ class ActionBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return dismissOnTouchOutside;
+        return dismissOnTouchOutside ?? false;
       },
       child: ClipRRect(
         borderRadius: BorderRadius.only(
@@ -164,22 +164,23 @@ class ActionBottomSheet extends StatelessWidget {
                   : SingleChildScrollView(
                       child: _buildBody(context),
                     ),
-              if (bottomWidget != null) bottomWidget,
+              if (bottomWidget != null) bottomWidget!,
               if (bottomWidget == null)
-                (showCancelButton || extraButton != null)
+                ((showCancelButton ?? false) || extraButton != null)
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          if (extraButton != null) Expanded(child: extraButton),
+                          if (extraButton != null)
+                            Expanded(child: extraButton ?? SizedBox()),
                           _buildButton(context),
-                          if (showCancelButton)
+                          if (showCancelButton ?? false)
                             FlatButton(
                               child: Text(
                                 'CANCEL',
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyText2
-                                    .copyWith(
+                                    ?.copyWith(
                                         fontSize: 16,
                                         color:
                                             Color.fromARGB(255, 210, 34, 49)),

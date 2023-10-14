@@ -12,22 +12,18 @@ import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_page_state_widget.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
-import 'package:flutter_ecommerce_app/src/utils/util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../controllers/home_screen_controller.dart';
 import '../../firebase_notification.dart';
 import '../mainPage.dart';
 import 'orders_list_tile.dart';
 
 class PaidOrdersScreen extends StatefulWidget {
-  final HomeScreenController controller;
-  final ShipmentStatus shipmentStatus;
+  final HomeScreenController? controller;
+  final ShipmentStatus? shipmentStatus;
 
   PaidOrdersScreen({
-    Key key,
+    Key? key,
     this.controller,
     this.shipmentStatus,
   }) : super(key: key);
@@ -38,12 +34,11 @@ class PaidOrdersScreen extends StatefulWidget {
 
 class _PaidOrdersScreenState extends State<PaidOrdersScreen>
     with HomeScreenControllerMixin {
-  PageState _state;
+  late PageState _state;
   List<QueryDocumentSnapshot> orders = [];
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  SharedPreferences prefs;
 
-  HomeScreenController _controller;
+  HomeScreenController? _controller;
   bool _isRefreshing = false;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
@@ -56,7 +51,7 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen>
   }
 
   void _load({
-    HomeScreenController newController,
+    HomeScreenController? newController,
   }) async {
     if (_controller == null || widget.controller == null) {
       await loadHomeScreenController();
@@ -69,19 +64,17 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen>
     });
 
     try {
-      prefs = await SharedPreferences.getInstance();
       var result = await FirebaseFirestore.instance
-          .collection(_controller.SearchInOrdersCollectionName)
+          .collection(_controller?.SearchInOrdersCollectionName ?? "")
           .where("shipmentStatus", arrayContainsAny: [
-        widget.shipmentStatus.value,
+        widget.shipmentStatus?.value,
         // ShipmentStatus.paid.value,
         // ShipmentStatus.awaitingShipment.value,
         // ShipmentStatus.orderOnTheWay.value,
         // ShipmentStatus.awaitingCustomerPickup.value,
       ]).get();
 
-      print((result as QuerySnapshot).docs);
-      orders = (result as QuerySnapshot).docs;
+      orders = result.docs;
 
       orders.sort((a, b) => -(getDateTime(a.id)).compareTo(getDateTime(b.id)));
 
@@ -108,22 +101,25 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen>
     });
   }
 
-  DateTime getDateTime(String acceptedTime) {
-    int year = int.tryParse(acceptedTime.split("-")[0].split(" ")[1]);
-    int month = int.tryParse(acceptedTime.split("-")[1]);
-    int day = int.tryParse(acceptedTime.split(" at")[0].split("-")[2]);
+  DateTime getDateTime(String? acceptedTime) {
+    int? year = int.tryParse(acceptedTime?.split("-")[0].split(" ")[1] ?? "0");
+    int? month = int.tryParse(acceptedTime?.split("-")[1] ?? "0");
+    int? day = int.tryParse(acceptedTime?.split(" at")[0].split("-")[2] ?? "0");
 
-    int hour = int.tryParse(acceptedTime.split("at ")[1].split(":")[0]);
-    int minute = int.tryParse(acceptedTime.split("at ")[1].split(":")[1]);
-    int second = int.tryParse(acceptedTime.split("at ")[1].split(":")[2]);
+    int? hour =
+        int.tryParse(acceptedTime?.split("at ")[1].split(":")[0] ?? "0");
+    int? minute =
+        int.tryParse(acceptedTime?.split("at ")[1].split(":")[1] ?? "0");
+    int? second =
+        int.tryParse(acceptedTime?.split("at ")[1].split(":")[2] ?? "0");
 
     return DateTime(
-      year,
-      month,
-      day,
-      hour,
-      minute,
-      second,
+      year ?? 0,
+      month ?? 0,
+      day ?? 0,
+      hour ?? 0,
+      minute ?? 0,
+      second ?? 0,
     );
   }
 
@@ -254,13 +250,14 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen>
                                     padding: EdgeInsets.only(bottom: 16),
                                     child: Text(
                                       replaceVariable(
-                                        Localization.of(
-                                          context,
-                                          'total_orders',
-                                        ),
-                                        'value',
-                                        "${orders.length ?? 0}",
-                                      ),
+                                            Localization.of(
+                                              context,
+                                              'total_orders',
+                                            ),
+                                            'value',
+                                            "${orders.length}",
+                                          ) ??
+                                          "",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
@@ -278,12 +275,13 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen>
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return OrdersListTile(
-                                      order:
-                                          Order.fromJson(orders[index].data()),
+                                      order: Order.fromJson(orders[index].data()
+                                          as Map<dynamic, dynamic>),
                                       controller: _controller,
                                       isLastRow: index == orders.length - 1,
-                                      selectedPhoneNumber:
-                                          _firebaseAuth.currentUser.phoneNumber,
+                                      selectedPhoneNumber: _firebaseAuth
+                                              .currentUser?.phoneNumber ??
+                                          "",
                                       shouldRefresh: (shouldRefrsh) {
                                         if (shouldRefrsh) _load();
                                       },

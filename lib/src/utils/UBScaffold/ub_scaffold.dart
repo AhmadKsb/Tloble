@@ -11,7 +11,7 @@ class UBScaffold extends StatefulWidget {
   ///  - Handles different [PageState] widgets using `state`
   ///  - Handles search bar
   UBScaffold({
-    Key key,
+    Key? key,
     this.scaffoldKey,
     this.appBar,
     this.builder,
@@ -27,7 +27,7 @@ class UBScaffold extends StatefulWidget {
     this.backgroundColor,
     this.resizeToAvoidBottomInset = true,
     this.primary = true,
-    this.state = const AppState(),
+    this.state,
     this.disablePointer = false,
     this.forceAppBar = false,
     this.textUnderLoader,
@@ -35,35 +35,34 @@ class UBScaffold extends StatefulWidget {
     this.error,
     this.disablePopOnBackIfLoading = false,
     this.loadingWidget,
-  })  : assert(primary != null),
-        super(key: key);
+  }) : super(key: key);
 
-  final Key scaffoldKey;
-  final PreferredSizeWidget appBar;
-  final WidgetBuilder builder;
-  final WidgetBuilder noDataBuilder;
-  final Widget floatingActionButton;
-  final FloatingActionButtonLocation floatingActionButtonLocation;
-  final FloatingActionButtonAnimator floatingActionButtonAnimator;
-  final List<Widget> persistentFooterButtons;
-  final Widget drawer;
-  final Widget endDrawer;
-  final Color backgroundColor;
-  final Widget bottomNavigationBar;
-  final Widget bottomSheet;
+  final Key? scaffoldKey;
+  final PreferredSizeWidget? appBar;
+  final WidgetBuilder? builder;
+  final WidgetBuilder? noDataBuilder;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final FloatingActionButtonAnimator? floatingActionButtonAnimator;
+  final List<Widget>? persistentFooterButtons;
+  final Widget? drawer;
+  final Widget? endDrawer;
+  final Color? backgroundColor;
+  final Widget? bottomNavigationBar;
+  final Widget? bottomSheet;
   final bool resizeToAvoidBottomInset;
   final bool primary;
-  final AppState state;
+  final AppState? state;
   final bool disablePointer;
   final bool forceAppBar;
-  final String textUnderLoader;
+  final String? textUnderLoader;
   final bool extendBodyBehindAppBar;
   final dynamic error;
   final bool disablePopOnBackIfLoading;
-  final Widget loadingWidget;
+  final Widget? loadingWidget;
 
-  static UBScaffoldState of(BuildContext context, {bool nullOk = false}) {
-    final UBScaffoldState result =
+  static UBScaffoldState? of(BuildContext context, {bool nullOk = false}) {
+    final UBScaffoldState? result =
         context.findAncestorStateOfType<UBScaffoldState>();
     return result;
   }
@@ -79,25 +78,28 @@ class UBScaffoldState extends State<UBScaffold> {
     return _isSearching;
   }
 
-  List<Widget> _requestedActions;
-  Widget _requestedAppbar;
-  AppState _requestedState;
+  List<Widget>? _requestedActions;
+  Widget? _requestedAppbar;
+  AppState? _requestedState;
 
   bool _showBlur = false;
 
   set isSearching(bool value) {
     _isSearching = value;
     if (!value) {
-      if (_requestedState?.onSearchChanged != null) {
-        _requestedState.onSearchChanged(null);
-      } else if (widget.state.onSearchChanged != null) {
-        widget.state.onSearchChanged(null);
-      }
+      // if (_requestedState?.onSearchChanged != null) {
+      //   _requestedState?.onSearchChanged(null);
+      // } else if (widget.state?.onSearchChanged != null) {
+      //   widget.state?.onSearchChanged(null);
+      // }
     }
   }
 
-  void requestAppBarRefresh(PreferredSizeWidget appbar,
-      {AppState appState, bool forceAppbar = false}) {
+  void requestAppBarRefresh(
+    PreferredSizeWidget appbar, {
+    AppState? appState,
+    bool forceAppbar = false,
+  }) {
     _requestedState = appState;
     bool hadAppbar = _requestedAppbar != null;
     bool requestingAppbar = appbar != null;
@@ -135,43 +137,47 @@ class UBScaffoldState extends State<UBScaffold> {
     _resetSearch();
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    UBScaffoldState state = UBScaffold.of(context);
+  PreferredSizeWidget? _buildAppBar(BuildContext context) {
+    UBScaffoldState? state = UBScaffold.of(context);
 
-    PreferredSizeWidget appbar;
-    UBAppBar ubAppBar = widget.appBar is UBAppBar ? widget.appBar : null;
+    PreferredSizeWidget? appbar;
+    PreferredSizeWidget? ubAppBar =
+        widget.appBar is UBAppBar ? widget.appBar : null;
 
     if (_requestedAppbar != null) {
-      appbar = _requestedAppbar;
+      appbar = _requestedAppbar as PreferredSizeWidget?;
     } else if (_requestedActions != null &&
-        _requestedActions.isNotEmpty &&
+        (_requestedActions?.isNotEmpty ?? false) &&
         ubAppBar != null) {
       appbar = UBAppBar(
-        backgroundColor: ubAppBar?.backgroundColor,
-        bottom: ubAppBar.bottom,
-        title: ubAppBar.title,
+        // backgroundColor: ubAppBar?.backgroundColor,
+        // bottom: ubAppBar.bottom,
+        // title: ubAppBar.title,
         actions: _requestedActions,
-        leading: ubAppBar.leading,
-        centerTitle: ubAppBar.centerTitle,
-        elevation: ubAppBar.elevation,
+        // leading: ubAppBar.leading,
+        // centerTitle: ubAppBar.centerTitle,
+        // elevation: ubAppBar.elevation,
       );
-    } else if (widget.state.pageState == PageState.loaded &&
-        widget.state.hasSearch &&
-        state == null &&
-        ubAppBar != null) {
-      appbar = UBAppBar(
-        backgroundColor: ubAppBar.backgroundColor,
-        bottom: ubAppBar.bottom,
-        title: ubAppBar.title,
-        centerTitle: ubAppBar.centerTitle,
-        elevation: ubAppBar.elevation,
-      );
-    } else {
+    }
+    // else if (widget.state.pageState == PageState.loaded &&
+    //     widget.state.hasSearch &&
+    //     state == null &&
+    //     ubAppBar != null) {
+    //   appbar = UBAppBar(
+    //     backgroundColor: ubAppBar.backgroundColor,
+    //     bottom: ubAppBar.bottom,
+    //     title: ubAppBar.title,
+    //     centerTitle: ubAppBar.centerTitle,
+    //     elevation: ubAppBar.elevation,
+    //   );
+    // }
+    else {
       appbar = widget.appBar;
     }
-    if (state != null) {
+    if (state != null && appbar != null) {
       state.requestAppBarRefresh(appbar,
-          appState: widget.state, forceAppbar: widget.forceAppBar);
+          appState: widget.state ?? AppState(),
+          forceAppbar: widget.forceAppBar);
       return _EmptyAppBar();
     } else {
       return appbar;
@@ -191,14 +197,14 @@ class UBScaffoldState extends State<UBScaffold> {
             children: [
               SizedBox.expand(
                   child: UBPageStateWidget(
-                pageState: widget.state.pageState,
+                pageState: widget.state?.pageState,
                 loadingWidget: widget.loadingWidget,
                 builder: widget.builder,
                 noDataBuilder: widget.noDataBuilder,
                 textUnderLoader: widget.textUnderLoader,
-                onRetry: widget.state.onRetry,
+                onRetry: widget.state?.onRetry,
                 error: widget.error,
-                noDataMessage: widget.state.noDataMessage,
+                noDataMessage: widget.state?.noDataMessage,
               )),
               _buildBlur(),
             ],
@@ -253,9 +259,9 @@ class UBScaffoldState extends State<UBScaffold> {
 
   void _resetSearch() {
     if (_requestedState?.onSearchChanged != null) {
-      _requestedState.onSearchChanged('');
-    } else if (widget.state.onSearchChanged != null) {
-      widget.state.onSearchChanged('');
+      _requestedState?.onSearchChanged!('');
+    } else if (widget.state?.onSearchChanged != null) {
+      widget.state?.onSearchChanged!('');
     }
   }
 
@@ -286,13 +292,13 @@ class AppState {
 
   /// to show search button, it's added at the end of the actions
   final bool hasSearch;
-  final ValueChanged<String> onSearchChanged;
+  final ValueChanged<String>? onSearchChanged;
 
   /// when an error is showing, a retry button will be display
-  final VoidCallback onRetry;
+  final VoidCallback? onRetry;
 
   /// when the keyboard done button for the search textfield is pressed
-  final VoidCallback onSearchSubmit;
+  final VoidCallback? onSearchSubmit;
 
   // final String query;
 

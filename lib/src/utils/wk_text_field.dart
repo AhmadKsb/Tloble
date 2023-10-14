@@ -2,48 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class WKTextField extends StatelessWidget {
-  final FocusNode focusNode;
-  final ValueChanged<String> onChanged;
-  final ValueChanged<String> onSubmitted;
-  final String hintText;
-  final String labelText;
-  final bool obscureText;
-  final TextEditingController controller;
-  final bool autocorrect;
-  final bool isDense;
-  final Widget suffixIcon;
-  final Widget prefixIcon;
-  final TextInputType keyboardType;
-  final int maxLength;
-  final List<TextInputFormatter> inputFormatters;
-  final TextInputAction textInputAction;
-  final bool autofocus;
-  final bool enableInteractiveSelection;
-  final GestureTapCallback onTap;
-  final bool enabled;
-  final TextAlign textAlign;
-  final String errorText;
-  final String counterText;
-  final String helperText;
-  final bool expanded;
-  final int maxLines;
-  final int minLines;
-  final EdgeInsetsGeometry contentPadding;
-  final TextAlignVertical textAlignVertical;
-  final Widget suffix;
-  final double radius;
-  final bool enableSuggestions;
-  final Color fillColor;
-  final bool noBorder;
-  final double hintTextSize;
-  final Color outlineColor;
-  final double borderRadius;
-  final bool hasDefaultStyle;
-  final TextDirection textDirection;
-  final TextStyle style;
+  final FocusNode? focusNode;
+  final ValueChanged<String>? onChanged;
+  final ValueChanged<String>? onSubmitted;
+  final String? hintText;
+  final String? labelText;
+  final bool? obscureText;
+  final TextEditingController? controller;
+  final bool? autocorrect;
+  final bool? isDense;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final TextInputType? keyboardType;
+  final int? maxLength;
+  final List<TextInputFormatter>? inputFormatters;
+  final TextInputAction? textInputAction;
+  final bool? autofocus;
+  final bool? enableInteractiveSelection;
+  final GestureTapCallback? onTap;
+  final bool? enabled;
+  final TextAlign? textAlign;
+  final String? errorText;
+  final String? counterText;
+  final String? helperText;
+  final bool? expanded;
+  final int? maxLines;
+  final int? minLines;
+  final EdgeInsetsGeometry? contentPadding;
+  final TextAlignVertical? textAlignVertical;
+  final Widget? suffix;
+  final double? radius;
+  final bool? enableSuggestions;
+  final Color? fillColor;
+  final bool? noBorder;
+  final double? hintTextSize;
+  final Color? outlineColor;
+  final double? borderRadius;
+  final bool? hasDefaultStyle;
+  final TextDirection? textDirection;
+  final TextStyle? style;
 
   const WKTextField({
-    Key key,
+    Key? key,
     this.focusNode,
     this.onChanged,
     this.maxLength,
@@ -95,18 +95,18 @@ class WKTextField extends StatelessWidget {
               ? TextDirection.rtl
               : TextDirection.ltr),
       focusNode: focusNode,
-      expands: this.expanded,
+      expands: this.expanded ?? false,
       controller: controller,
-      autocorrect: autocorrect,
+      autocorrect: autocorrect ?? false,
       keyboardType: keyboardType,
       maxLines: maxLines,
       minLines: minLines,
       maxLength: maxLength,
       enabled: enabled,
-      textAlign: textAlign,
+      textAlign: textAlign ?? TextAlign.start,
       textAlignVertical: textAlignVertical,
       style: style,
-      obscureText: obscureText,
+      obscureText: obscureText ?? false,
       inputFormatters: inputFormatters,
       onChanged: onChanged,
       decoration: InputDecoration(
@@ -141,10 +141,10 @@ class WKTextField extends StatelessWidget {
       ),
       onSubmitted: onSubmitted,
       textInputAction: textInputAction,
-      autofocus: autofocus,
+      autofocus: autofocus ?? false,
       enableInteractiveSelection: enableInteractiveSelection,
       onTap: onTap,
-      enableSuggestions: enableSuggestions,
+      enableSuggestions: enableSuggestions ?? true,
     );
   }
 }

@@ -7,26 +7,30 @@ import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Localization {
-  Localization(this.locale, {this.isTest});
+  Localization(
+    this.locale, {
+    required this.isTest,
+  });
 
   final bool isTest;
-  final Locale locale;
+  final Locale? locale;
 
   static String of(BuildContext context, String key) {
     return Localizations.of<Localization>(context, Localization)
-        ?.translate(key)
-        ?.replaceAll("\\n", "\n");
+            ?.translate(key)
+            .replaceAll("\\n", "\n") ??
+        "";
   }
 
-  Map<String, String> _sentences;
+  Map<String, String> _sentences = {};
 
   Future<Localization> loadTest(Locale locale) async {
-    return Localization(locale);
+    return Localization(locale, isTest: false);
   }
 
   Future<bool> load() async {
     String data = await rootBundle
-        .loadString('assets/localizations/${this.locale.languageCode}.json');
+        .loadString('assets/localizations/${this.locale?.languageCode}.json');
     Map<String, dynamic> _result = json.decode(data);
 
     this._sentences = new Map();
@@ -38,7 +42,7 @@ class Localization {
   }
 
   String translate(String key) {
-    if (isTest ?? true) return key;
+    if (isTest) return key;
     return this._sentences[key] ?? key;
   }
 }
@@ -60,13 +64,13 @@ class LocalizationDelegate extends LocalizationsDelegate<Localization> {
   @override
   Future<Localization> load(Locale locale) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String language = prefs.getString("swiftShop_language");
-    Locale locale = isNotEmpty(language) ? Locale(language) : null;
+    String? language = prefs.getString("swiftShop_language");
+    Locale? locale = isNotEmpty(language ?? "") ? Locale(language ?? "") : null;
 
     Localization localization =
         new Localization(locale ?? Locale("en"), isTest: isTest);
     if (isTest) {
-      await localization.loadTest(locale);
+      await localization.loadTest(locale!);
     } else {
       await localization.load();
     }

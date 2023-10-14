@@ -14,10 +14,10 @@ import '../../controllers/home_screen_controller.dart';
 import 'feedback_list_tile.dart';
 
 class FeedbackListScreen extends StatefulWidget {
-  final HomeScreenController controller;
+  final HomeScreenController? controller;
 
   FeedbackListScreen({
-    Key key,
+    Key? key,
     this.controller,
   }) : super(key: key);
 
@@ -26,15 +26,15 @@ class FeedbackListScreen extends StatefulWidget {
 }
 
 class _FeedbackListScreenState extends State<FeedbackListScreen> {
-  PageState _state;
+  late PageState _state;
   List<QueryDocumentSnapshot> feedbacks = [];
-  ScrollController _scrollController;
+  late ScrollController _scrollController;
 
   bool canLoadMore = true;
   bool isLoadingMore = false;
   int _offset = 0;
   int _limit = 10;
-  SharedPreferences prefs;
+  SharedPreferences? prefs;
 
   @override
   void initState() {
@@ -106,8 +106,8 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
 
       var newFeedbacks = (data[0] as QuerySnapshot).docs;
 
-      if (newFeedbacks.isNotEmpty ?? false) {
-        if ((feedbacks?.length ?? 0) == (newFeedbacks?.length ?? 0))
+      if (newFeedbacks.isNotEmpty) {
+        if ((feedbacks.length) == (newFeedbacks.length))
           canLoadMore = false;
         feedbacks = newFeedbacks;
         if (newFeedbacks.length % _limit != 0) canLoadMore = false;
@@ -243,26 +243,25 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: <Widget>[
                                 Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 4),
+                                  padding: EdgeInsets.symmetric(horizontal: 4),
                                   child: Center(
                                     child: CustomScrollView(
                                       shrinkWrap: true,
                                       controller: _scrollController,
                                       slivers: <Widget>[
                                         SliverList(
-                                          delegate:
-                                              SliverChildBuilderDelegate(
+                                          delegate: SliverChildBuilderDelegate(
                                             (context, index) =>
                                                 FeedbackListTile(
                                               feedback:
                                                   Feedback.Feedback.fromJson(
-                                                feedbacks[index].data(),
+                                                feedbacks[index].data()
+                                                    as Map<dynamic, dynamic>,
                                               ),
-                                              prefs: prefs,
-                                              controller: widget.controller,
-                                              isLastRow: index ==
-                                                  feedbacks.length - 1,
+                                              prefs: prefs!,
+                                              controller: widget.controller!,
+                                              isLastRow:
+                                                  index == feedbacks.length - 1,
                                               shouldRefresh: (shouldRefrsh) {
                                                 if (shouldRefrsh) _load();
                                               },
@@ -273,8 +272,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
                                         SliverToBoxAdapter(
                                           child: isLoadingMore
                                               ? Padding(
-                                                  padding:
-                                                      EdgeInsets.all(16.0),
+                                                  padding: EdgeInsets.all(16.0),
                                                   child: Center(
                                                     child:
                                                         CircularProgressIndicator(),

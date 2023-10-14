@@ -14,20 +14,11 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: ">=2.15.0 <3.0.0"
 
 dependency_overrides:
+  firebase_core_platform_interface: 4.5.1
   archive: ^3.1.2
-  firebase_messaging_platform_interface: 3.1.6
-  firebase_crashlytics_platform_interface: 3.1.13
-  cloud_firestore_platform_interface: 5.4.13
-  firebase_auth_platform_interface: 6.1.11
-  firebase_storage_platform_interface: 4.0.14
-  cloud_functions_platform_interface: 5.0.21
-  firebase_analytics_platform_interface: 3.0.5
-  firebase_remote_config_platform_interface: 1.0.5
-  firebase_performance_platform_interface: 0.1.0+5
-  firebase_app_installations_platform_interface: 0.1.0+6
   highlighter_coachmark: ^0.0.3
 
 
@@ -42,26 +33,26 @@ dependencies:
   google_fonts: 2.2.0
   http: 0.13.3
   highlighter_coachmark: ^0.0.3
-  flare_flutter: ^2.0.5
+  flare_flutter: ^3.0.2
   cached_network_image: ^3.0.0
-  permission_handler: ^9.0.0
+  permission_handler: 10.0.0
   shared_preferences: ^2.0.9
-  nuts_activity_indicator: ^0.1.1
-  firebase_messaging: 11.1.0
-  firebase_core: 1.10.0
-  firebase_database: ^7.0.0-dev.0
-  firebase_auth: ^3.0.0
-  firebase_storage: ^10.2.8
-  cloud_firestore: ^3.0.0
-  package_info: ^0.4.0+13
-  store_redirect: ^1.0.2
+  nuts_activity_indicator: ^1.0.0
+  firebase_messaging: 14.0.1
+  firebase_core: 2.1.0
+  firebase_database: ^10.0.1
+  firebase_auth: 4.0.1
+  firebase_storage: 11.0.1
+  cloud_firestore: ^4.0.1
+  package_info_plus: ^1.0.0
+  store_redirect: ^2.0.0
   flutter_local_notifications: ^8.0.0
-  vibration: 1.7.3
-  country_pickers: ^1.1.4
+  vibration: 1.7.4
+  country_pickers: ^2.0.0
   country_picker: ^2.0.12
   flutter_phoenix: ^1.0.0
   flutter_svg: ^0.20.0-nullsafety.3
-  dropdown_button2: ^1.4.0
+  dropdown_button2: ^1.9.3
   url_launcher: ^6.0.0
   intl: ^0.17.0
   flutter_share: ^2.0.0

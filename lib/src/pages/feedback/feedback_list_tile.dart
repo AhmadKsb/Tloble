@@ -9,14 +9,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'feedback_details_screen.dart';
 
 class FeedbackListTile extends StatefulWidget {
-  final Feedback.Feedback feedback;
-  final HomeScreenController controller;
+  final Feedback.Feedback? feedback;
+  final HomeScreenController? controller;
   final bool isLastRow;
-  final ValueChanged<bool> shouldRefresh;
-  final SharedPreferences prefs;
+  final ValueChanged<bool>? shouldRefresh;
+  final SharedPreferences? prefs;
 
   const FeedbackListTile({
-    Key key,
+    Key? key,
     this.feedback,
     this.controller,
     this.isLastRow = false,
@@ -29,7 +29,7 @@ class FeedbackListTile extends StatefulWidget {
 }
 
 class _FeedbackListTileState extends State<FeedbackListTile> {
-  int day, month, year, hour, minute, second;
+  int? day, month, year, hour, minute, second;
 
   @override
   initState() {
@@ -75,35 +75,37 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
                               Expanded(
                                 child: Text(
                                   replaceVariable(
-                                    replaceVariable(
-                                      Localization.of(
-                                        context,
-                                        'feedback_on',
-                                      ),
-                                      'valueone',
-                                      isNotEmpty(getDateTime(
-                                              widget.feedback.dateTime))
-                                          ? DateFormat(
-                                              widget.prefs.getString(
-                                                          "swiftShop_language") ==
-                                                      'ar'
-                                                  ? 'EEEE d MMMM yyyy'
-                                                  : 'EEEE MMMM d, yyyy',
-                                              widget.prefs.getString(
-                                                  "swiftShop_language"),
-                                            ).format(
-                                              getFormattedDate(
-                                                  widget.feedback.dateTime),
-                                            )
-                                          : "",
-                                    ),
-                                    'valuetwo',
-                                    getHourMinute(),
-                                  ),
+                                        replaceVariable(
+                                          Localization.of(
+                                            context,
+                                            'feedback_on',
+                                          ),
+                                          'valueone',
+                                          isNotEmpty(getDateTime(
+                                                  widget.feedback?.dateTime))
+                                              ? DateFormat(
+                                                  widget.prefs?.getString(
+                                                              "swiftShop_language") ==
+                                                          'ar'
+                                                      ? 'EEEE d MMMM yyyy'
+                                                      : 'EEEE MMMM d, yyyy',
+                                                  widget.prefs?.getString(
+                                                      "swiftShop_language"),
+                                                ).format(
+                                                  getFormattedDate(widget
+                                                          .feedback?.dateTime ??
+                                                      ""),
+                                                )
+                                              : "",
+                                        ),
+                                        'valuetwo',
+                                        getHourMinute() ?? "",
+                                      ) ??
+                                      "",
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodyText2
-                                      .copyWith(
+                                      ?.copyWith(
                                         fontSize: 15,
                                         color: Color.fromARGB(255, 34, 34, 34),
                                         fontWeight: FontWeight.normal,
@@ -118,11 +120,11 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
                           Container(
                             height: 35,
                             child: Text(
-                              "${widget.feedback.feedback}",
+                              "${widget.feedback?.feedback}",
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyText2
-                                  .copyWith(
+                                  ?.copyWith(
                                       fontSize: 14,
                                       color: Color.fromARGB(255, 34, 34, 34)),
                               overflow: TextOverflow.ellipsis,
@@ -144,53 +146,53 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
 
   DateTime getFormattedDate(String date) {
     String splitted = date.split(" ")[0];
-    int year = int.tryParse(splitted.substring(0, 4));
-    int month = int.tryParse(splitted.substring(5, 7));
-    int day = int.tryParse(splitted.substring(7, 9));
+    int? year = int.tryParse(splitted.substring(0, 4));
+    int? month = int.tryParse(splitted.substring(5, 7));
+    int? day = int.tryParse(splitted.substring(7, 9));
     return DateTime(
-      year,
-      month,
-      day,
+      year ?? 0,
+      month ?? 0,
+      day ?? 0,
     );
   }
 
-  String getHourMinute() {
-    if (widget.feedback.dateTime == null) return null;
+  String? getHourMinute() {
+    if (widget.feedback?.dateTime == null) return null;
     String fullDate =
-        getDateTime(widget.feedback.dateTime).toString().split(" ")[1];
+        getDateTime(widget.feedback?.dateTime ?? "").toString().split(" ")[1];
     String hour = fullDate.split(":")[0];
     String hourWithoutZero =
         hour.substring(0, 1) == "0" ? hour.substring(1) : hour;
     String minute = fullDate.split(":")[1];
     var amOrPm = (Localizations.localeOf(context).languageCode == 'ar')
         ? ""
-        : int.tryParse(hour) <= 12
+        : int.tryParse(hour)! <= 12
             ? "AM"
             : "PM";
     return hourWithoutZero + ":" + minute + " " + amOrPm;
   }
 
-  String getDateTime(String time) {
+  String? getDateTime(String? time) {
     if (time == null) return "";
-    int day = int.tryParse(time.substring(7, 9).substring(0, 1) == "0"
+    int? day = int.tryParse(time.substring(7, 9).substring(0, 1) == "0"
         ? time.substring(8, 9)
         : time.substring(7, 9));
-    int month = int.tryParse(time.substring(5, 7).substring(0, 1) == "0"
+    int? month = int.tryParse(time.substring(5, 7).substring(0, 1) == "0"
         ? time.substring(6, 7)
         : time.substring(5, 7));
-    int year = int.tryParse(time.substring(0, 4));
-    int hour = int.tryParse(time.split("at ")[1].split(":")[0]);
-    int minute = int.tryParse(time.split("at ")[1].split(":")[1]);
-    int second = int.tryParse(time.split("at ")[1].split(":")[2]);
+    int? year = int.tryParse(time.substring(0, 4));
+    int? hour = int.tryParse(time.split("at ")[1].split(":")[0]);
+    int? minute = int.tryParse(time.split("at ")[1].split(":")[1]);
+    int? second = int.tryParse(time.split("at ")[1].split(":")[2]);
 
     return DateFormat("yyyy-MM-dd HH:mm:ss").format(
       DateTime(
-        year,
-        month,
-        day,
-        hour,
-        minute,
-        second,
+        year ?? 0,
+        month ?? 0,
+        day ?? 0,
+        hour ?? 0,
+        minute ?? 0,
+        second ?? 0,
       ),
     );
   }
@@ -205,9 +207,10 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
       context,
       MaterialPageRoute(
         builder: (context) => FeedbackDetailsScreen(
-            feedback: widget.feedback,
+            feedback: widget.feedback ?? Feedback.Feedback(),
             shouldRefresh: (shouldRfrsh) {
-              widget.shouldRefresh(shouldRfrsh);
+              if (widget.shouldRefresh != null)
+                widget.shouldRefresh!(shouldRfrsh);
             }),
       ),
     );

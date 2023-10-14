@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'country_list_view.dart';
 
 void showCountryListBottomSheet({
-  BuildContext context,
-  ValueChanged<Country> onSelect,
-  VoidCallback onClosed,
-  List<String> exclude,
-  List<String> countryFilter,
+  BuildContext? context,
+  ValueChanged<Country>? onSelect,
+  VoidCallback? onClosed,
+  List<String>? exclude,
+  List<String>? countryFilter,
   bool showPhoneCode = false,
-  CountryListThemeData countryListTheme,
+  CountryListThemeData? countryListTheme,
   bool searchAutofocus = false,
   bool showWorldWide = false,
 }) {
   showModalBottomSheet(
-    context: context,
+    context: context!,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (_) => FractionallySizedBox(
@@ -24,11 +24,11 @@ void showCountryListBottomSheet({
         padding: MediaQuery.of(context).viewInsets,
         child: _builder(
           context,
-          onSelect,
-          exclude,
-          countryFilter,
+          onSelect!,
+          exclude ?? [],
+          countryFilter ?? [],
           showPhoneCode,
-          countryListTheme,
+          countryListTheme ?? CountryListThemeData(),
           searchAutofocus,
           showWorldWide,
         ),
@@ -53,7 +53,7 @@ Widget _builder(
   final statusBarHeight = MediaQuery.of(context).padding.top;
   final height = device - (statusBarHeight + (kToolbarHeight / 1.5));
 
-  Color _backgroundColor = countryListTheme?.backgroundColor ??
+  Color? _backgroundColor = countryListTheme.backgroundColor ??
       Theme.of(context).bottomSheetTheme.backgroundColor;
   if (_backgroundColor == null) {
     if (Theme.of(context).brightness == Brightness.light) {
@@ -63,7 +63,7 @@ Widget _builder(
     }
   }
 
-  final BorderRadius _borderRadius = countryListTheme?.borderRadius ??
+  final BorderRadius _borderRadius = countryListTheme.borderRadius ??
       const BorderRadius.only(
         topLeft: Radius.circular(40.0),
         topRight: Radius.circular(40.0),

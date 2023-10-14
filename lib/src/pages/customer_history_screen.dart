@@ -6,20 +6,18 @@ import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/models/order.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
-import 'package:flutter_ecommerce_app/src/utils/UBScaffold/loader.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CustomerHistoryScreen extends StatefulWidget {
-  final HomeScreenController homeScreenController;
+  final HomeScreenController? homeScreenController;
 
   const CustomerHistoryScreen({
-    Key key,
+    Key? key,
     this.homeScreenController,
   }) : super(key: key);
 
@@ -28,15 +26,13 @@ class CustomerHistoryScreen extends StatefulWidget {
 }
 
 class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
-  PageState _state;
+  late PageState _state;
   List<QueryDocumentSnapshot> history = [];
   List<Order> orders = [];
-  SharedPreferences prefs;
+  late SharedPreferences prefss;
   int acceptedCount = 0;
-  DateTime dateSelected;
-  String selectedDateAsString;
-  int day, month, year, hour, minute, second;
-  ScrollController _scrollController;
+  int? day, month, year, hour, minute, second;
+  late ScrollController _scrollController;
 
   bool canLoadMore = true;
   bool isLoadingMore = false;
@@ -81,14 +77,15 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
 
     try {
       var data = await FirebaseFirestore.instance
-          .collection(widget.homeScreenController.SearchInOrdersCollectionName)
+          .collection(
+              widget.homeScreenController?.SearchInOrdersCollectionName ?? "")
           .where("phoneNumber",
-              isEqualTo: FirebaseAuth.instance.currentUser.phoneNumber)
+              isEqualTo: FirebaseAuth.instance.currentUser?.phoneNumber ?? "")
           .orderBy("sentTime", descending: true)
           .limit(_limit)
           .get();
 
-      if (data != null && data.docs.isNotEmpty) {
+      if (data.docs.isNotEmpty) {
         var newOrders = data.docs;
         orders = [];
         newOrders.forEach((element) {
@@ -118,18 +115,18 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
 
     try {
       var data = await FirebaseFirestore.instance
-          .collection(widget.homeScreenController.SearchInOrdersCollectionName)
+          .collection(
+              widget.homeScreenController?.SearchInOrdersCollectionName ?? "")
           .where("phoneNumber",
-              isEqualTo: FirebaseAuth.instance.currentUser.phoneNumber)
+              isEqualTo: FirebaseAuth.instance.currentUser?.phoneNumber ?? "")
           .orderBy("sentTime", descending: true)
           .limit(_offset)
           .get();
 
-      var newOrders = (data as QuerySnapshot).docs;
+      var newOrders = data.docs;
 
-      if (newOrders.isNotEmpty ?? false) {
-        if ((orders?.length ?? 0) == (newOrders?.length ?? 0))
-          canLoadMore = false;
+      if (newOrders.isNotEmpty) {
+        if ((orders.length) == (newOrders.length)) canLoadMore = false;
         orders = [];
         newOrders.forEach((element) {
           orders.add(Order.fromJson(element.data()));
@@ -159,7 +156,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
     for (int i = 0; i < orders.length; i++) {
       index = -1;
       items.add(Column(
-          children: orders[i].productsTitles.map((y) {
+          children: orders[i].productsTitles!.map((y) {
         index += 1;
 
         return _item(index, order: orders[i]);
@@ -178,39 +175,42 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
     // }).toList());
   }
 
-  Widget _item(var index, {Order order}) {
+  Widget _item(
+    var index, {
+    required Order order,
+  }) {
     String dateTimeTruncated;
-    year = int.tryParse(order.sentTime.split("-")[0]);
-    month = int.tryParse(order.sentTime.split("-")[1]);
-    day = int.tryParse(order.sentTime.split("-")[2].split(" ")[0]);
-    hour = int.tryParse(order.sentTime.split("at ")[1].split(":")[0]);
-    minute = int.tryParse(order.sentTime.split("at ")[1].split(":")[1]);
-    second = int.tryParse(order.sentTime.split("at ")[1].split(":")[2]);
+    year = int.tryParse(order.sentTime?.split("-")[0] ?? "0");
+    month = int.tryParse(order.sentTime?.split("-")[1] ?? "0");
+    day = int.tryParse(order.sentTime?.split("-")[2].split(" ")[0] ?? "0");
+    hour = int.tryParse(order.sentTime?.split("at ")[1].split(":")[0] ?? "0");
+    minute = int.tryParse(order.sentTime?.split("at ")[1].split(":")[1] ?? "0");
+    second = int.tryParse(order.sentTime?.split("at ")[1].split(":")[2] ?? "0");
 
     String fullDateTime = DateTime(
-      year,
-      month,
-      day,
-      hour,
-      minute,
-      second,
+      year!,
+      month!,
+      day!,
+      hour!,
+      minute!,
+      second!,
     ).toString().split(".")[0].split(" ")[1];
     dateTimeTruncated = DateTime(
-          year,
-          month,
-          day,
-          hour,
-          minute,
-          second,
+          year!,
+          month!,
+          day!,
+          hour!,
+          minute!,
+          second!,
         ).toString().split(".")[0].split(" ")[1].split(":")[0] +
         ":" +
         DateTime(
-          year,
-          month,
-          day,
-          hour,
-          minute,
-          second,
+          year!,
+          month!,
+          day!,
+          hour!,
+          minute!,
+          second!,
         ).toString().split(".")[0].split(" ")[1].split(":")[1];
 
     return Container(
@@ -219,7 +219,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
       child: Row(
         children: <Widget>[
           WKNetworkImage(
-            order.productsImages[index],
+            order.productsImages?[index],
             fit: BoxFit.contain,
             width: 60,
             height: 60,
@@ -239,33 +239,35 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TitleText(
-                    text: int.tryParse(dateTimeTruncated.split(":")[0]) < 12
+                    text: int.tryParse(dateTimeTruncated.split(":")[0])! < 12
                         ? "$day/$month/$year " +
-                            replaceVariable(
-                              Localization.of(
-                                context,
-                                "sent_at_am",
-                              ),
-                              'value',
-                              dateTimeTruncated,
-                            )
+                            (replaceVariable(
+                                  Localization.of(
+                                    context,
+                                    "sent_at_am",
+                                  ),
+                                  'value',
+                                  dateTimeTruncated,
+                                ) ??
+                                "")
                         : "$day/$month/$year " +
-                            replaceVariable(
-                              Localization.of(
-                                context,
-                                "sent_at_pm",
-                              ),
-                              'value',
-                              dateTimeTruncated,
-                            ),
-                    style: Theme.of(context).textTheme.subtitle1.copyWith(
+                            (replaceVariable(
+                                  Localization.of(
+                                    context,
+                                    "sent_at_pm",
+                                  ),
+                                  'value',
+                                  dateTimeTruncated,
+                                ) ??
+                                ""),
+                    style: Theme.of(context).textTheme.subtitle1?.copyWith(
                           fontSize: 12,
                           color: Color.fromARGB(255, 173, 173, 173),
                         ),
                   ),
                   SizedBox(height: 4),
                   TitleText(
-                    text: order.productsTitles[index],
+                    text: order.productsTitles?[index],
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
                   ),
@@ -275,32 +277,32 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Container(
-                      width: 150,
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      child: Text(
-                        "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors[index]) ? order.productsColors[index] : Localization.of(context, 'not_specified')}",
-                        maxLines: 1,
-                        style: TextStyle(
-                          // fontSize: 15,
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.w500,
-                        ),
+                  Container(
+                    width: 150,
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    child: Text(
+                      "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
+                      maxLines: 1,
+                      style: TextStyle(
+                        // fontSize: 15,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
-                    Container(
-                      width: 150,
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      child: Text(
-                        "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes[index]) ? order.productsSizes[index] : Localization.of(context, 'not_specified')}",
-                        maxLines: 1,
-                        style: TextStyle(
-                          // fontSize: 15,
-                          overflow: TextOverflow.ellipsis,
-                          fontWeight: FontWeight.w500,
-                        ),
+                  ),
+                  Container(
+                    width: 150,
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    child: Text(
+                      "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",
+                      maxLines: 1,
+                      style: TextStyle(
+                        // fontSize: 15,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
+                  ),
                 ],
               ),
               trailing: Container(
@@ -308,11 +310,11 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                 height: 40,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    color: getShipmentStatusColor(order.shipmentStatus[0]),
+                    color: getShipmentStatusColor(order.shipmentStatus![0]),
                     borderRadius: BorderRadius.circular(10)),
                 child: TitleText(
-                  text:
-                      getShipmentStatusString(context, order.shipmentStatus[0]),
+                  text: getShipmentStatusString(
+                      context, order.shipmentStatus![0]),
                   fontSize: 12,
                   textAlign: TextAlign.center,
                 ),
@@ -409,7 +411,8 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverPadding(
-                padding: EdgeInsetsDirectional.only(top: 16.0, start: 12), // Adjust the padding as needed
+                padding: EdgeInsetsDirectional.only(
+                    top: 16.0, start: 12), // Adjust the padding as needed
                 sliver: SliverAppBar(
                   pinned: true,
                   toolbarHeight: _isScrolled ? 30.0 : 0.0,
@@ -442,7 +445,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                   _title(),
                   Container(
                     padding: AppTheme.padding,
-                    child: (orders?.isEmpty ?? true)
+                    child: (orders.isEmpty)
                         ? Padding(
                             padding: const EdgeInsets.only(bottom: 75.0),
                             child: Center(

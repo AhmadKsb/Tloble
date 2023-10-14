@@ -10,95 +10,95 @@ import 'package:url_launcher/url_launcher.dart';
 class ContactUs extends StatelessWidget {
   ///Logo of the Company/individual
   final BuildContext buildContext;
-  final ImageProvider logo;
+  final ImageProvider? logo;
 
   ///Ability to add an image
-  final Image image;
+  final Image? image;
 
   ///Phone Number of the company/individual
-  final String salesNumber;
-  final String supportNumber;
+  final String? salesNumber;
+  final String? supportNumber;
 
   ///Text for Phonenumber
-  final String phoneNumberText;
+  final String? phoneNumberText;
 
   ///Website of company/individual
-  final String website;
-  final String tiktok;
+  final String? website;
+  final String? tiktok;
 
   ///Text for Website
-  final String websiteText;
+  final String? websiteText;
 
   ///Email ID of company/individual
-  final String salesEmail;
-  final String supportEmail;
+  final String? salesEmail;
+  final String? supportEmail;
 
   ///Text for Email
-  final String emailText;
+  final String? emailText;
 
   ///Twitter Handle of Company/Individual
-  final String twitterHandle;
+  final String? twitterHandle;
 
   ///Facebook Handle of Company/Individual
-  final String facebookHandle;
+  final String? facebookHandle;
 
   ///Linkedin URL of company/individual
-  final String linkedinURL;
+  final String? linkedinURL;
 
   ///Github User Name of the company/individual
-  final String githubUserName;
+  final String? githubUserName;
 
   ///Name of the Company/individual
-  final String companyName;
+  final String? companyName;
 
   ///Font size of Company name
-  final double companyFontSize;
+  final double? companyFontSize;
 
   ///TagLine of the Company or Position of the individual
-  final String tagLine;
+  final String? tagLine;
 
   ///Instagram User Name of the company/individual
-  final String instagram;
-  final String telegram;
+  final String? instagram;
+  final String? telegram;
 
   ///TextColor of the text which will be displayed on the card.
-  final Color textColor;
+  final Color? textColor;
 
   ///Color of the Card.
-  final Color cardColor;
+  final Color? cardColor;
 
   ///Color of the company/individual name displayed.
-  final Color companyColor;
+  final Color? companyColor;
 
   ///Color of the tagLine of the Company/Individual to be displayed.
-  final Color taglineColor;
+  final Color? taglineColor;
 
   /// font of text
-  final String textFont;
+  final String? textFont;
 
   /// font of the company/individul to be displayed
-  final String companyFont;
+  final String? companyFont;
 
   /// font of the tagline to be displayed
-  final String taglineFont;
+  final String? taglineFont;
 
   /// divider color which is placed between the tagline & contact informations
-  final Color dividerColor;
+  final Color? dividerColor;
 
   /// divider thickness which is placed between the tagline & contact informations
 
-  final double dividerThickness;
+  final double? dividerThickness;
 
   ///font weight for tagline and company name
-  final FontWeight companyFontWeight;
-  final FontWeight taglineFontWeight;
+  final FontWeight? companyFontWeight;
+  final FontWeight? taglineFontWeight;
 
   /// avatar radius will place the circularavatar according to developer/UI need
-  final double avatarRadius;
+  final double? avatarRadius;
 
   ///Constructor which sets all the values.
   ContactUs({
-    this.buildContext,
+    required this.buildContext,
     this.companyName,
     this.textColor,
     this.cardColor,
@@ -150,7 +150,7 @@ class ContactUs extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     try {
-                      launch('tel:' + salesNumber);
+                      launch('tel:' + (salesNumber ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -165,7 +165,7 @@ class ContactUs extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     try {
-                      launch('sms:' + salesNumber);
+                      launch('sms:' + (salesNumber ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -180,7 +180,7 @@ class ContactUs extends StatelessWidget {
                 InkWell(
                   onTap: () {
                     try {
-                      launch('https://wa.me/' + salesNumber);
+                      launch('https://wa.me/' + (salesNumber ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -217,7 +217,7 @@ class ContactUs extends StatelessWidget {
                 visible: image != null, child: image ?? SizedBox.shrink()),
             if (isNotEmpty(companyName))
               Text(
-                companyName,
+                companyName ?? "",
                 style: TextStyle(
                   fontFamily: companyFont ?? 'Pacifico',
                   fontSize: companyFontSize ?? 40.0,
@@ -268,7 +268,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch(website);
+                      launch(website ?? "");
                     } catch (e) {
                       print(e.toString());
                     }
@@ -314,7 +314,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch('https://wa.me/' + salesNumber);
+                      launch('https://wa.me/' + (salesNumber ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -325,7 +325,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -360,7 +360,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch(tiktok);
+                      launch((tiktok ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -371,7 +371,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -406,7 +406,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch('https://instagram.com/' + instagram);
+                      launch('https://instagram.com/' + (instagram ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -452,7 +452,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch(telegram);
+                      launch((telegram ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -463,7 +463,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -498,7 +498,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch('tel:' + salesNumber);
+                      launch('tel:' + (salesNumber ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -509,7 +509,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -546,7 +546,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch('mailto:' + supportEmail);
+                      launch('mailto:' + (supportEmail ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -557,7 +557,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -591,7 +591,7 @@ class ContactUs extends StatelessWidget {
               child: TextButton(
                 onPressed: () {
                   try {
-                    launch('mailto:' + salesEmail);
+                    launch('mailto:' + (salesEmail ?? ""));
                   } catch (e) {
                     print(e.toString());
                   }
@@ -602,7 +602,7 @@ class ContactUs extends StatelessWidget {
                         borderRadius: BorderRadius.circular(15)),
                   ),
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(LightColor.orange),
+                      MaterialStateProperty.all<Color>(LightColor.orange),
                 ),
                 child: ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -664,7 +664,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch('https://twitter.com/' + twitterHandle);
+                      launch('https://twitter.com/' + (twitterHandle ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -675,7 +675,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -710,7 +710,8 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch('https://www.facebook.com/' + facebookHandle);
+                      launch(
+                          'https://www.facebook.com/' + (facebookHandle ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -721,7 +722,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -756,7 +757,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch('https://github.com/' + githubUserName);
+                      launch('https://github.com/' + (githubUserName ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -767,7 +768,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -802,7 +803,7 @@ class ContactUs extends StatelessWidget {
                 child: TextButton(
                   onPressed: () {
                     try {
-                      launch(linkedinURL);
+                      launch((linkedinURL ?? ""));
                     } catch (e) {
                       print(e.toString());
                     }
@@ -813,7 +814,7 @@ class ContactUs extends StatelessWidget {
                           borderRadius: BorderRadius.circular(15)),
                     ),
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(LightColor.orange),
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 24),
@@ -844,22 +845,22 @@ class ContactUs extends StatelessWidget {
 ///Class for adding contact details of the developer in your bottomNavigationBar in your flutter app.
 class ContactUsBottomAppBar extends StatelessWidget {
   ///Color of the text which will be displayed in the bottomNavigationBar
-  final Color textColor;
+  final Color? textColor;
 
   ///Color of the background of the bottomNavigationBar
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   ///Email ID Of the company/developer on which, when clicked by the user, the respective mail app will be opened.
-  final String email;
+  final String? email;
 
   ///Name of the company or the developer
-  final String companyName;
+  final String? companyName;
 
   ///Size of the font in bottomNavigationBar
-  final double fontSize;
+  final double? fontSize;
 
   /// font of text
-  final String textFont;
+  final String? textFont;
 
   ContactUsBottomAppBar({
     this.textColor,
@@ -881,7 +882,10 @@ class ContactUsBottomAppBar extends StatelessWidget {
         'Designed and Developed by $companyName 💙\nWant to contact?',
         textAlign: TextAlign.center,
         style: TextStyle(
-            color: textColor, fontSize: fontSize, fontFamily: textFont),
+          color: textColor,
+          fontSize: fontSize,
+          fontFamily: textFont,
+        ),
       ),
       onPressed: () {
         try {

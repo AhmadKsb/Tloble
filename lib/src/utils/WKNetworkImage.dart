@@ -2,28 +2,28 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class WKNetworkImage extends StatelessWidget {
-  final String url;
-  final double width;
-  final double height;
-  final BoxFit fit;
+  final String? url;
+  final double? width;
+  final double? height;
+  final BoxFit? fit;
   final bool isCircular;
   final bool isCircularUsingPrivateToken;
-  final VoidCallback onImageEvicted;
+  final VoidCallback? onImageEvicted;
   final bool isEvict;
-  final Color alphaColor;
-  final Color color;
-  final Color backColor;
+  final Color? alphaColor;
+  final Color? color;
+  final Color? backColor;
   final double opacity;
   final isOverlay;
-  final Widget defaultWidget;
-  final AssetImage placeHolder;
+  final Widget? defaultWidget;
+  final AssetImage? placeHolder;
   final Alignment alignment;
   final bool showBorder;
-  final bool usePublicToken;
+  final bool? usePublicToken;
 
   const WKNetworkImage(
     this.url, {
-    Key key,
+    Key? key,
     this.width,
     this.height,
     this.fit,
@@ -47,7 +47,7 @@ class WKNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     if (url == null) {
       return placeHolder == null
-          ? AssetImage(
+          ? Image.asset(
               'assets/images/placeholder.png',
             )
           : Container(
@@ -55,20 +55,21 @@ class WKNetworkImage extends StatelessWidget {
               height: height,
               decoration: BoxDecoration(
                   shape: isCircular ? BoxShape.circle : BoxShape.rectangle,
-                  image: DecorationImage(image: placeHolder, fit: fit)),
+                  image: DecorationImage(
+                      image: placeHolder ?? AssetImage(""), fit: fit)),
             );
     }
 //    NetworkImage provider =
 //        NetworkImage(url, headers: HttpRequest.defaultHeaders);
     Map<String, String> requestHeaders = Map<String, String>();
 
-    NetworkImage provider = NetworkImage(url, headers: requestHeaders);
+    NetworkImage provider = NetworkImage(url ?? "", headers: requestHeaders);
 
     CachedNetworkImage networkImage = CachedNetworkImage(
-      imageUrl: url,
+      imageUrl: url ?? "",
       httpHeaders: Map<String, String>(),
       fit: fit,
-      errorWidget: (context, url, error) => defaultWidget,
+      errorWidget: (context, url, error) => defaultWidget ?? SizedBox(),
       alignment: alignment,
     );
     if (isEvict) evictImage(provider);
@@ -127,12 +128,12 @@ class WKNetworkImage extends StatelessWidget {
             ),
             child: url != null
                 ? FadeInImage(
-                    placeholder: placeHolder,
+                    placeholder: placeHolder ?? AssetImage(""),
                     imageErrorBuilder: defaultWidget != null
-                        ? (_, __, ___) => defaultWidget
+                        ? (_, __, ___) => (defaultWidget ?? SizedBox())
                         : null,
                     image: NetworkImage(
-                      url,
+                      url ?? "",
                       headers: requestHeaders,
                     ),
                     width: width,
@@ -151,7 +152,7 @@ class WKNetworkImage extends StatelessWidget {
       if (alphaColor == null)
         colorOverlay = Colors.black;
       else
-        colorOverlay = alphaColor;
+        colorOverlay = alphaColor!;
       return new Container(
         width: width,
         height: height,
@@ -167,15 +168,15 @@ class WKNetworkImage extends StatelessWidget {
     }
 
     networkImage = CachedNetworkImage(
-      imageUrl: url,
+      imageUrl: url ?? "",
       httpHeaders: Map<String, String>(),
       fit: fit,
       placeholder: placeHolder != null
           ? (context, string) {
-              return Image(image: placeHolder);
+              return Image(image: placeHolder ?? AssetImage(""));
             }
           : null,
-      errorWidget: (context, url, error) => defaultWidget,
+      errorWidget: (context, url, error) => defaultWidget ?? SizedBox(),
       alignment: alignment,
     );
 
@@ -184,7 +185,7 @@ class WKNetworkImage extends StatelessWidget {
             child: Image(
               image: FadeInImage(
                 image: NetworkImage(
-                  url,
+                  url ?? "",
                   headers: requestHeaders,
                 ),
                 placeholder: AssetImage(
@@ -199,11 +200,12 @@ class WKNetworkImage extends StatelessWidget {
             ),
           )
         : FadeInImage(
-            placeholder: placeHolder,
-            imageErrorBuilder:
-                defaultWidget != null ? (_, __, ___) => defaultWidget : null,
+            placeholder: placeHolder ?? AssetImage(""),
+            imageErrorBuilder: defaultWidget != null
+                ? (_, __, ___) => (defaultWidget ?? SizedBox())
+                : null,
             image: NetworkImage(
-              url,
+              url ?? "",
               headers: requestHeaders,
             ),
             width: width,
@@ -216,7 +218,7 @@ class WKNetworkImage extends StatelessWidget {
   void evictImage(NetworkImage provider) {
     provider.evict().then<void>((bool success) {
       if (success && onImageEvicted != null) {
-        onImageEvicted();
+        onImageEvicted!();
       }
     });
   }

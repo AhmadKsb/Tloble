@@ -1,8 +1,8 @@
 class Customer {
-  String name;
-  String phoneNumber;
-  String notificationToken;
-  num coins;
+  String? name;
+  String? phoneNumber;
+  String? notificationToken;
+  num? coins;
 
   Customer({
     this.name,
@@ -12,8 +12,6 @@ class Customer {
   });
 
   factory Customer.fromJson(Map<dynamic, dynamic> json) {
-    if (json == null) return null;
-
     return Customer(
       name: json['name'],
       phoneNumber: json['phoneNumber'],
@@ -23,8 +21,8 @@ class Customer {
   }
 
   static List<Customer> fromJsonList(List json) {
-    List<Customer> customers =
-        json?.map((customer) => Customer.fromJson(customer))?.toList();
+    List<Customer>? customers =
+        json.map((customer) => Customer.fromJson(customer)).toList();
     return customers;
   }
 

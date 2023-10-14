@@ -29,9 +29,9 @@ var _credentials = r'''
 ''';
 
 class FirstPaymentBottomsheet extends StatefulWidget {
-  final HomeScreenController homeScreenController;
-  final Order order;
-  final ValueChanged<bool> isBottomSheetLoading;
+  final HomeScreenController? homeScreenController;
+  final Order? order;
+  final ValueChanged<bool>? isBottomSheetLoading;
 
   FirstPaymentBottomsheet({
     this.homeScreenController,
@@ -45,7 +45,7 @@ class FirstPaymentBottomsheet extends StatefulWidget {
 
 class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
   bool _isLoading = false;
-  String firstPayment;
+  String? firstPayment;
 
   FocusNode firstPaymentNode = new FocusNode();
 
@@ -93,7 +93,8 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
 
   void _onSubmit() async {
     setState(() {
-      widget.isBottomSheetLoading(true);
+      if (widget.isBottomSheetLoading != null)
+        widget.isBottomSheetLoading!(true);
     });
 
     try {
@@ -101,21 +102,24 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
 
       showSuccessBottomsheet();
       setState(() {
-        widget.isBottomSheetLoading(false);
+        if (widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(false);
       });
     } catch (e) {
       showErrorBottomsheet(
         replaceVariable(
-          Localization.of(
-            context,
-            'an_error_has_occurred_value',
-          ),
-          'value',
-          "${e.toString()}",
-        ),
+              Localization.of(
+                context,
+                'an_error_has_occurred_value',
+              ),
+              'value',
+              "${e.toString()}",
+            ) ??
+            "",
       );
       setState(() {
-        widget.isBottomSheetLoading(false);
+        if (widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(false);
       });
     }
   }
@@ -127,50 +131,52 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
       });
 
       final gsheets = GSheets(_credentials);
-      final ss =
-          await gsheets.spreadsheet(widget.homeScreenController.spreadSheetID);
-      final sheet =
-          ss.worksheetByTitle(widget.homeScreenController.worksheetTitle);
+      final ss = await gsheets
+          .spreadsheet(widget.homeScreenController?.spreadSheetID ?? "");
+      final sheet = ss
+          .worksheetByTitle(widget.homeScreenController?.worksheetTitle ?? "");
 
       await Future.wait(
         [
-          sheet.values.insertValueByKeys(
-            firstPayment,
+          sheet!.values.insertValueByKeys(
+            firstPayment!,
             columnKey: 'First Payment',
-            rowKey: "# ${widget.order.referenceID}",
+            rowKey: "# ${widget.order?.referenceID}",
             eager: false,
           ),
           sheet.values.insertValueByKeys(
             getShipmentStatusForEmployeeString(
-              context,
-              ShipmentStatus.paid,
-            ),
+                  context,
+                  ShipmentStatus.paid,
+                ) ??
+                "",
             columnKey: 'Shipment Status',
-            rowKey: "# ${widget.order.referenceID}",
+            rowKey: "# ${widget.order?.referenceID}",
             eager: false,
           ),
           FirebaseFirestore.instance
               .collection('Orders')
               .doc('Orders')
-              .collection(widget.order.sentTime.split(" at")[0])
-              .doc(widget.order.sentTime)
+              .collection(widget.order?.sentTime?.split(" at")[0] ?? "")
+              .doc(widget.order?.sentTime)
               .update({
             'firstPayment': firstPayment,
             'shipmentStatus': [ShipmentStatus.paid.value],
           }),
           FirebaseFirestore.instance
               .collection('Customers')
-              .doc(widget.order.phoneNumber)
+              .doc(widget.order?.orderSenderPhoneNumber)
               .collection("History")
-              .doc(widget.order.sentTime)
+              .doc(widget.order?.sentTime)
               .update({
             'firstPayment': firstPayment,
             'shipmentStatus': [ShipmentStatus.paid.value],
           }),
           FirebaseFirestore.instance
               .collection(
-                  widget.homeScreenController.SearchInOrdersCollectionName)
-              .doc("${widget.order.phoneNumber} ${widget.order.sentTime}")
+                  widget.homeScreenController?.SearchInOrdersCollectionName ??
+                      "")
+              .doc("${widget.order?.orderSenderPhoneNumber} ${widget.order?.sentTime}")
               .update({
             'firstPayment': firstPayment,
             'shipmentStatus': [ShipmentStatus.paid.value],
@@ -184,10 +190,11 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
       print(e);
       showErrorBottomsheet(
         replaceVariable(
-          Localization.of(context, 'an_error_has_occurred_value'),
-          'value',
-          e.toString(),
-        ),
+              Localization.of(context, 'an_error_has_occurred_value'),
+              'value',
+              e.toString(),
+            ) ??
+            "",
       );
       setState(() {
         _isLoading = false;
@@ -234,7 +241,7 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
                     'first_payment_updated',
                   ),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),

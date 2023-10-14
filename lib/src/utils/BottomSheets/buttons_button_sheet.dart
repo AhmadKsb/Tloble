@@ -4,16 +4,16 @@ import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import '../string_util.dart';
 
 class ButtonsButtonSheet extends StatelessWidget {
-  final String confirmMessage;
+  final String? confirmMessage;
   final bool confirmIsLoading;
-  final String cancelMessage;
-  final Function confirmAction;
-  final Function cancelAction;
+  final String? cancelMessage;
+  final Function? confirmAction;
+  final Function? cancelAction;
   final bool isCancelDisabled;
   final bool isSubmitDisabled;
 
   const ButtonsButtonSheet({
-    Key key,
+    Key? key,
     this.confirmMessage,
     this.confirmIsLoading = false,
     this.cancelMessage,

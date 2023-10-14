@@ -1,10 +1,10 @@
 class BinanceTransactions {
-  String amount;
-  String coin;
-  String network;
-  int status;
-  String address;
-  String txId;
+  String? amount;
+  String? coin;
+  String? network;
+  int? status;
+  String? address;
+  String? txId;
 
   BinanceTransactions({
     this.amount,
@@ -16,7 +16,6 @@ class BinanceTransactions {
   });
 
   factory BinanceTransactions.fromJson(Map<dynamic, dynamic> json) {
-    if (json == null) return null;
 
     return BinanceTransactions(
       amount: json.containsKey('amount') ? json['amount'] : null,
@@ -29,9 +28,9 @@ class BinanceTransactions {
   }
 
   static List<BinanceTransactions> fromJsonList(List json) {
-    List<BinanceTransactions> transactions = json
-        ?.map((transaction) => BinanceTransactions.fromJson(transaction))
-        ?.toList();
+    List<BinanceTransactions>? transactions = json
+        .map((transaction) => BinanceTransactions.fromJson(transaction))
+        .toList();
     return transactions;
   }
 }

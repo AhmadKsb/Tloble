@@ -21,10 +21,10 @@ import '../../controllers/home_screen_controller.dart';
 import 'orders_list_tile.dart';
 
 class AllOrdersScreen extends StatefulWidget {
-  final HomeScreenController controller;
+  final HomeScreenController? controller;
 
   AllOrdersScreen({
-    Key key,
+    Key? key,
     this.controller,
   }) : super(key: key);
 
@@ -34,17 +34,17 @@ class AllOrdersScreen extends StatefulWidget {
 
 class _AllOrdersScreenState extends State<AllOrdersScreen>
     with HomeScreenControllerMixin {
-  PageState _state;
-  DateTime dateSelected;
-  String selectedDateAsString;
+  late PageState _state;
+  late DateTime dateSelected;
+  late String selectedDateAsString;
   List<QueryDocumentSnapshot> orders = [];
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  SharedPreferences prefs;
+  late SharedPreferences prefss;
 
-  HomeScreenController _controller;
+  HomeScreenController? _controller;
   bool _isRefreshing = false;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
-  var balance = 0;
+  num balance = 0;
   @override
   void initState() {
     super.initState();
@@ -66,9 +66,9 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
   }
 
   void _load({
-    HomeScreenController newController,
-    String selectedDate,
-    DateTime selectedDateFormatted,
+    HomeScreenController? newController,
+    String? selectedDate,
+    DateTime? selectedDateFormatted,
   }) async {
     if (_controller == null || widget.controller == null) {
       await loadHomeScreenController();
@@ -82,7 +82,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
     });
 
     try {
-      prefs = await SharedPreferences.getInstance();
+      prefss = await SharedPreferences.getInstance();
       selectedDateAsString = selectedDate ??
           "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)}";
       print(selectedDateAsString);
@@ -131,30 +131,30 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
   }
 
   DateTime getDateTime(String acceptedTime) {
-    int day = int.tryParse(acceptedTime.split("-")[0]);
-    int month = int.tryParse(acceptedTime.split("-")[1]);
-    int year = int.tryParse(acceptedTime.split("-")[2].split(" ")[0]);
-    int hour = int.tryParse(acceptedTime.split("at ")[1].split(":")[0]);
-    int minute = int.tryParse(acceptedTime.split("at ")[1].split(":")[1]);
-    int second = int.tryParse(acceptedTime.split("at ")[1].split(":")[2]);
+    int? day = int.tryParse(acceptedTime.split("-")[0]);
+    int? month = int.tryParse(acceptedTime.split("-")[1]);
+    int? year = int.tryParse(acceptedTime.split("-")[2].split(" ")[0]);
+    int? hour = int.tryParse(acceptedTime.split("at ")[1].split(":")[0]);
+    int? minute = int.tryParse(acceptedTime.split("at ")[1].split(":")[1]);
+    int? second = int.tryParse(acceptedTime.split("at ")[1].split(":")[2]);
 
     return DateTime(
-      year,
-      month,
-      day,
-      hour,
-      minute,
-      second,
+      year ?? 0,
+      month ?? 0,
+      day ?? 0,
+      hour ?? 0,
+      minute ?? 0,
+      second ?? 0,
     );
   }
 
   void _selectDate() async {
-    final DateTime chosen = await showDatePicker(
+    final DateTime? chosen = await showDatePicker(
       context: context,
-      initialDate: dateSelected ?? DateTime.now(),
+      initialDate: dateSelected,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
-      builder: (BuildContext context, Widget child) {
+      builder: (BuildContext context, Widget? child) {
         return Theme(
           data: ThemeData.light().copyWith(
             primaryColor: LightColor.orange,
@@ -164,7 +164,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
             ),
             buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.primary),
           ),
-          child: child,
+          child: child ?? SizedBox(),
         );
       },
     );
@@ -304,19 +304,20 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                               padding: EdgeInsets.symmetric(horizontal: 16),
                               child: NoData(
                                 replaceVariable(
-                                  Localization.of(
-                                    context,
-                                    'no_orders_on',
-                                  ),
-                                  'value',
-                                  DateFormat(
-                                    prefs.getString("swiftShop_language") ==
-                                            'ar'
-                                        ? 'EEEE d MMMM yyyy'
-                                        : 'EEEE MMMM d, yyyy',
-                                    prefs.getString("swiftShop_language"),
-                                  ).format(dateSelected),
-                                ),
+                                      Localization.of(
+                                        context,
+                                        'no_orders_on',
+                                      ),
+                                      'value',
+                                      DateFormat(
+                                        prefss.getString("swiftShop_language") ==
+                                                'ar'
+                                            ? 'EEEE d MMMM yyyy'
+                                            : 'EEEE MMMM d, yyyy',
+                                        prefss.getString("swiftShop_language"),
+                                      ).format(dateSelected),
+                                    ) ??
+                                    "",
                               ),
                             ),
                           )
@@ -326,11 +327,11 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                 padding: EdgeInsets.symmetric(vertical: 16),
                                 child: Text(
                                   DateFormat(
-                                    prefs.getString("swiftShop_language") ==
+                                    prefss.getString("swiftShop_language") ==
                                             'ar'
                                         ? 'EEEE d MMMM yyyy'
                                         : 'EEEE MMMM d, yyyy',
-                                    prefs.getString("swiftShop_language"),
+                                    prefss.getString("swiftShop_language"),
                                   ).format(dateSelected),
                                   style: TextStyle(
                                     fontSize: 16,
@@ -344,13 +345,14 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                   padding: EdgeInsets.only(bottom: 16),
                                   child: Text(
                                     replaceVariable(
-                                      Localization.of(
-                                        context,
-                                        'total_orders',
-                                      ),
-                                      'value',
-                                      "${orders.length ?? 0}",
-                                    ),
+                                          Localization.of(
+                                            context,
+                                            'total_orders',
+                                          ),
+                                          'value',
+                                          "${orders.length}",
+                                        ) ??
+                                        "",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -363,13 +365,14 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                   padding: EdgeInsets.only(bottom: 16),
                                   child: Text(
                                     replaceVariable(
-                                      Localization.of(
-                                        context,
-                                        'total_balance_today',
-                                      ),
-                                      'value',
-                                      "${getBalance()}",
-                                    ),
+                                          Localization.of(
+                                            context,
+                                            'total_balance_today',
+                                          ),
+                                          'value',
+                                          "${getBalance()}",
+                                        ) ??
+                                        "",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -386,12 +389,14 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                 itemCount: orders.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return OrdersListTile(
-                                    order: Order.fromJson(orders[index].data()),
-                                    controller: _controller,
+                                    order: Order.fromJson(orders[index].data()
+                                        as Map<dynamic, dynamic>),
+                                    controller: _controller!,
                                     isLastRow: index == orders.length - 1,
                                     selectedTime: selectedDateAsString,
-                                    selectedPhoneNumber:
-                                        _firebaseAuth.currentUser.phoneNumber,
+                                    selectedPhoneNumber: _firebaseAuth
+                                            .currentUser?.phoneNumber ??
+                                        "",
                                     shouldRefresh: (shouldRefrsh) {
                                       if (shouldRefrsh) _load();
                                     },
@@ -412,11 +417,11 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
   }
 
   String getBalance() {
-    if (balance == null || balance == 0) {
+    if (balance == 0) {
       orders.forEach((element) {
         if (balance == null) balance = 0;
-        balance += Order.fromJson(element.data()).firstPayment +
-            Order.fromJson(element.data()).secondPayment;
+        balance += Order.fromJson(element.data() as Map<dynamic, dynamic>).firstPayment! +
+            Order.fromJson(element.data() as Map<dynamic, dynamic>).secondPayment!;
       });
     }
     return balance.toString();

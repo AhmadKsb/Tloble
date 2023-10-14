@@ -11,8 +11,8 @@ import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:vibration/vibration.dart';
 
 class UnbanUserBottomsheet extends StatefulWidget {
-  final HomeScreenController controller;
-  final ValueChanged<bool> isBottomSheetLoading;
+  final HomeScreenController? controller;
+  final ValueChanged<bool>? isBottomSheetLoading;
 
   UnbanUserBottomsheet({
     this.controller,
@@ -25,7 +25,7 @@ class UnbanUserBottomsheet extends StatefulWidget {
 
 class _UnbanUserBottomsheetState extends State<UnbanUserBottomsheet> {
   bool _loading = false;
-  String userPhoneNumber;
+  String? userPhoneNumber;
 
   FocusNode userPhoneNumberNode = new FocusNode();
 
@@ -77,14 +77,15 @@ class _UnbanUserBottomsheetState extends State<UnbanUserBottomsheet> {
           Localization.of(context, 'phone_number_should_include_dial_code'));
     else {
       setState(() {
-        widget.isBottomSheetLoading(true);
+        if (widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(true);
         _loading = true;
       });
 
       try {
-        userPhoneNumber = formatPhoneNumber(userPhoneNumber);
-        List<dynamic> newBansList = widget.controller.bansList;
-        newBansList.removeWhere((element) => element == userPhoneNumber);
+        userPhoneNumber = formatPhoneNumber(userPhoneNumber ?? "");
+        List? newBansList = widget.controller?.bansList;
+        newBansList?.removeWhere((element) => element == userPhoneNumber);
 
         await FirebaseFirestore.instance
             .collection('app info')
@@ -96,22 +97,25 @@ class _UnbanUserBottomsheetState extends State<UnbanUserBottomsheet> {
         showSuccessBottomsheet();
         setState(() {
           _loading = false;
-          widget.isBottomSheetLoading(false);
+          if (widget.isBottomSheetLoading != null)
+            widget.isBottomSheetLoading!(true);
         });
       } catch (e) {
         showErrorBottomsheet(
           replaceVariable(
-            Localization.of(
-              context,
-              'an_error_has_occurred_value',
-            ),
-            'value',
-            "${e.toString()}",
-          ),
+                Localization.of(
+                  context,
+                  'an_error_has_occurred_value',
+                ),
+                'value',
+                "${e.toString()}",
+              ) ??
+              "",
         );
         setState(() {
           _loading = false;
-          widget.isBottomSheetLoading(false);
+          if (widget.isBottomSheetLoading != null)
+            widget.isBottomSheetLoading!(true);
         });
       }
     }
@@ -152,15 +156,16 @@ class _UnbanUserBottomsheetState extends State<UnbanUserBottomsheet> {
               child: Center(
                 child: Text(
                   replaceVariable(
-                    Localization.of(
-                      context,
-                      'user_with_phone_number_unbanned_successfully',
-                    ),
-                    'value',
-                    "${userPhoneNumber.toString()}",
-                  ),
+                        Localization.of(
+                          context,
+                          'user_with_phone_number_unbanned_successfully',
+                        ),
+                        'value',
+                        "${userPhoneNumber.toString()}",
+                      ) ??
+                      "",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),
@@ -179,7 +184,7 @@ class _UnbanUserBottomsheetState extends State<UnbanUserBottomsheet> {
             padding: EdgeInsets.only(bottom: 8),
             child: RaisedButtonV2(
               label: Localization.of(context, 'done'),
-              onPressed: () {
+              onPressed: () async {
                 if (!mounted) return;
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/config/route.dart';
 import 'package:flutter_ecommerce_app/src/firebase_notification.dart';
 import 'package:flutter_ecommerce_app/src/pages/mainPage.dart';
-import 'package:flutter_ecommerce_app/src/pages/product_detail.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/loader.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
@@ -35,9 +34,11 @@ void main() async {
 }
 
 class RestartWidget extends StatefulWidget {
-  RestartWidget({this.child});
+  RestartWidget({
+    this.child,
+  });
 
-  final Widget child;
+  final Widget? child;
 
   @override
   _RestartWidgetState createState() => _RestartWidgetState();
@@ -46,7 +47,7 @@ class RestartWidget extends StatefulWidget {
 class _RestartWidgetState extends State<RestartWidget> {
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return widget.child!;
   }
 }
 
@@ -54,8 +55,8 @@ class MyApp extends StatefulWidget {
   MyApp();
 
   static void setLocale(BuildContext context, Locale newLocale) async {
-    MyAppState state = context.findAncestorStateOfType<MyAppState>();
-    state.changeLanguage(newLocale);
+    MyAppState? state = context.findAncestorStateOfType<MyAppState>();
+    state?.changeLanguage(newLocale);
   }
 
   @override
@@ -63,8 +64,8 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  Locale _locale;
-  PageState _state;
+  Locale? _locale;
+  PageState? _state;
 
   changeLanguage(Locale locale) {
     setState(() {
@@ -84,8 +85,8 @@ class MyAppState extends State<MyApp> {
     });
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String language = prefs.getString("swiftShop_language");
-      _locale = isNotEmpty(language) ? Locale(language) : null;
+      String? language = prefs.getString("swiftShop_language");
+      _locale = (isNotEmpty(language) ? Locale(language!) : Locale('en'));
       setState(() {
         _state = PageState.loaded;
       });
@@ -118,14 +119,14 @@ class MyAppState extends State<MyApp> {
             ),
             routes: Routes.getRoute(),
             onGenerateRoute: (RouteSettings settings) {
-              if (settings.name.contains('detail')) {
-                return CustomRoute<bool>(
-                    builder: (BuildContext context) => ProductDetailPage());
-              } else {
-                return CustomRoute<bool>(
-                    builder: (BuildContext context) =>
-                        FirebaseNotification(child: MainPage()));
-              }
+              // if (settings.name?.contains('detail') ?? false) {
+              //   return CustomRoute<bool>(
+              //       builder: (BuildContext context) => ProductDetailPage());
+              // } else {
+              return CustomRoute<bool>(
+                  builder: (BuildContext context) =>
+                      FirebaseNotification(child: MainPage()));
+              // }
             },
             initialRoute: "MainPage",
           )

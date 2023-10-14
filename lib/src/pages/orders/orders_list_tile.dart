@@ -8,15 +8,15 @@ import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'order_screen.dart';
 
 class OrdersListTile extends StatefulWidget {
-  final Order order;
-  final HomeScreenController controller;
-  final String selectedTime;
-  final String selectedPhoneNumber;
-  final bool isLastRow;
-  final ValueChanged<bool> shouldRefresh;
+  final Order? order;
+  final HomeScreenController? controller;
+  final String? selectedTime;
+  final String? selectedPhoneNumber;
+  final bool? isLastRow;
+  final ValueChanged<bool>? shouldRefresh;
 
   const OrdersListTile({
-    Key key,
+    Key? key,
     this.order,
     this.controller,
     this.selectedTime,
@@ -30,7 +30,7 @@ class OrdersListTile extends StatefulWidget {
 }
 
 class _OrdersListTileState extends State<OrdersListTile> {
-  int day, month, year, hour, minute, second;
+  int? day, month, year, hour, minute, second;
 
   @override
   initState() {
@@ -38,17 +38,18 @@ class _OrdersListTileState extends State<OrdersListTile> {
   }
 
   Widget _buildBody() {
-    if (widget.order.acceptedTime.isNotEmpty) {
-      day = int.tryParse(widget.order.acceptedTime.split("-")[2].split(" ")[0]);
-      month = int.tryParse(widget.order.acceptedTime.split("-")[1]);
-      year =
-          int.tryParse(widget.order.acceptedTime.split("-")[0].split(" ")[0]);
-      hour =
-          int.tryParse(widget.order.acceptedTime.split("at ")[1].split(":")[0]);
-      minute =
-          int.tryParse(widget.order.acceptedTime.split("at ")[1].split(":")[1]);
-      second =
-          int.tryParse(widget.order.acceptedTime.split("at ")[1].split(":")[2]);
+    if (widget.order?.acceptedTime?.isNotEmpty ?? false) {
+      day = int.tryParse(
+          widget.order?.acceptedTime?.split("-")[2].split(" ")[0] ?? "");
+      month = int.tryParse(widget.order?.acceptedTime?.split("-")[1] ?? "");
+      year = int.tryParse(
+          widget.order?.acceptedTime?.split("-")[0].split(" ")[0] ?? "");
+      hour = int.tryParse(
+          widget.order?.acceptedTime?.split("at ")[1].split(":")[0] ?? "");
+      minute = int.tryParse(
+          widget.order?.acceptedTime?.split("at ")[1].split(":")[1] ?? "");
+      second = int.tryParse(
+          widget.order?.acceptedTime?.split("at ")[1].split(":")[2] ?? "");
     }
     // String fullDateTime = widget.order.acceptedTime.isNotEmpty
     //     ? DateTime(
@@ -60,23 +61,23 @@ class _OrdersListTileState extends State<OrdersListTile> {
     //         second,
     //       ).toString().split(".")[0].split(" ")[1]
     //     : '';
-    String dateTimeTruncated = widget.order.acceptedTime.isNotEmpty
+    String dateTimeTruncated = (widget.order?.acceptedTime?.isNotEmpty ?? false)
         ? DateTime(
-              year,
-              month,
-              day,
-              hour,
-              minute,
-              second,
+              year ?? 0,
+              month ?? 0,
+              day ?? 0,
+              hour ?? 0,
+              minute ?? 0,
+              second ?? 0,
             ).toString().split(".")[0].split(" ")[1].split(":")[0] +
             ":" +
             DateTime(
-              year,
-              month,
-              day,
-              hour,
-              minute,
-              second,
+              year ?? 0,
+              month ?? 0,
+              day ?? 0,
+              hour ?? 0,
+              minute ?? 0,
+              second ?? 0,
             ).toString().split(".")[0].split(" ")[1].split(":")[1]
         : '';
 
@@ -84,11 +85,11 @@ class _OrdersListTileState extends State<OrdersListTile> {
       padding: EdgeInsetsDirectional.only(
         start: 15,
         end: 15,
-        bottom: widget.isLastRow ? 32 : 12,
+        bottom: (widget.isLastRow ?? false) ? 32 : 12,
       ),
       child: Container(
         decoration: BoxDecoration(
-          color: widget.order.acceptedTime.isNotEmpty
+          color: (widget.order?.acceptedTime?.isNotEmpty ?? false)
               ? Colors.grey.withOpacity(0.5)
               : Colors.grey.withOpacity(0.1),
           shape: BoxShape.rectangle,
@@ -107,7 +108,6 @@ class _OrdersListTileState extends State<OrdersListTile> {
               left: 0,
               child: Container(
                 width: 5,
-
               ),
             ),
             InkWell(
@@ -131,35 +131,27 @@ class _OrdersListTileState extends State<OrdersListTile> {
                                     top: 8.0,
                                   ),
                                   child: Text(
-                                    // widget.order.acceptedTime.isNotEmpty ||
-                                    //         (widget.controller?.isAdmin ??
-                                    //             false)
-                                    //     ?
                                     replaceVariable(
-                                      Localization.of(
-                                        context,
-                                        "order_from",
-                                      ),
-                                      'value',
-                                      (Localizations.localeOf(context)
-                                                  .languageCode ==
-                                              'ar')
-                                          ? ((widget.order?.customerName
-                                                  ?.replaceAll('+', '') ??
-                                              ''))
-                                          : ((widget.order?.customerName
-                                                  ?.replaceAll('+', '') ??
-                                              "")),
-                                    )
-                                    // : Localization.of(
-                                    //     context,
-                                    //     "order",
-                                    //   )
-                                    ,
+                                          Localization.of(
+                                            context,
+                                            "order_from",
+                                          ),
+                                          'value',
+                                          (Localizations.localeOf(context)
+                                                      .languageCode ==
+                                                  'ar')
+                                              ? ((widget.order?.customerName
+                                                      ?.replaceAll('+', '') ??
+                                                  ''))
+                                              : ((widget.order?.customerName
+                                                      ?.replaceAll('+', '') ??
+                                                  "")),
+                                        ) ??
+                                        "",
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyText2
-                                        .copyWith(
+                                        ?.copyWith(
                                           fontSize: 15,
                                           color:
                                               Color.fromARGB(255, 34, 34, 34),
@@ -172,9 +164,9 @@ class _OrdersListTileState extends State<OrdersListTile> {
                             ],
                           ),
                           SizedBox(height: 8),
-                          widget.order.acceptedTime.isNotEmpty
+                          (widget.order?.acceptedTime?.isNotEmpty ?? false)
                               ? Text(
-                                  "${int.tryParse(dateTimeTruncated.split(":")[0]) < 12 ? replaceVariable(
+                                  "${int.tryParse(dateTimeTruncated.split(":")[0])! < 12 ? replaceVariable(
                                       Localization.of(
                                         context,
                                         "accepted_at_am",
@@ -188,11 +180,11 @@ class _OrdersListTileState extends State<OrdersListTile> {
                                       ),
                                       'value',
                                       dateTimeTruncated,
-                                    )} by ${widget.controller.employees.firstWhere((element) => element.phoneNumber == FirebaseAuth.instance?.currentUser?.phoneNumber).name}",
+                                    )} by ${widget.controller?.employees.firstWhere((element) => element.phoneNumber == FirebaseAuth.instance.currentUser?.phoneNumber).name}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1
-                                      .copyWith(
+                                      ?.copyWith(
                                         fontSize: 12,
                                         color: Colors.black38,
                                       ),
@@ -267,30 +259,31 @@ class _OrdersListTileState extends State<OrdersListTile> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                               color: getShipmentStatusColor(
-                                  widget.order.shipmentStatus[0]),
+                                  widget.order?.shipmentStatus?[0]),
                               borderRadius: BorderRadius.circular(10)),
                           child: Text(
                             getShipmentStatusForEmployeeString(
-                              context,
-                              widget.order.shipmentStatus[0],
-                            ),
+                                  context,
+                                  widget.order?.shipmentStatus?[0],
+                                ) ??
+                                "",
                             textAlign: TextAlign.center,
                           ),
                         ),
-                        widget.order.sentTime.isNotEmpty
+                        (widget.order?.sentTime?.isNotEmpty ?? false)
                             ? Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: Text(
                                   getTimeDifference(),
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1
-                                      .copyWith(
+                                      ?.copyWith(
                                         fontSize: 12,
                                         color: Colors.black38,
                                       ),
                                 ),
-                            )
+                              )
                             : Container(),
                       ],
                     ),
@@ -305,25 +298,27 @@ class _OrdersListTileState extends State<OrdersListTile> {
   }
 
   String getTimeDifference() {
-    var dayy = int.tryParse(widget.order.sentTime.split("-")[2].split(" ")[0]);
-    var monthh = int.tryParse(widget.order.sentTime.split("-")[1]);
-    var yearr = int.tryParse(widget.order.sentTime.split("-")[0].split(" ")[0]);
-    var hourr =
-        int.tryParse(widget.order.sentTime.split("at ")[1].split(":")[0]);
-    var minutee =
-        int.tryParse(widget.order.sentTime.split("at ")[1].split(":")[1]);
-    var secondd =
-        int.tryParse(widget.order.sentTime.split("at ")[1].split(":")[2]);
+    var dayy = int.tryParse(
+        widget.order?.sentTime?.split("-")[2].split(" ")[0] ?? "0");
+    var monthh = int.tryParse(widget.order?.sentTime?.split("-")[1] ?? "0");
+    var yearr = int.tryParse(
+        widget.order?.sentTime?.split("-")[0].split(" ")[0] ?? "0");
+    var hourr = int.tryParse(
+        widget.order?.sentTime?.split("at ")[1].split(":")[0] ?? "0");
+    var minutee = int.tryParse(
+        widget.order?.sentTime?.split("at ")[1].split(":")[1] ?? "0");
+    var secondd = int.tryParse(
+        widget.order?.sentTime?.split("at ")[1].split(":")[2] ?? "0");
 
-    Duration difference = widget.order.sentTime.isNotEmpty
+    Duration difference = (widget.order?.sentTime?.isNotEmpty ?? false)
         ? DateTime.now().difference(
             DateTime(
-              yearr,
-              monthh,
-              dayy,
-              hourr,
-              minutee,
-              secondd,
+              yearr ?? 0,
+              monthh ?? 0,
+              dayy ?? 0,
+              hourr ?? 0,
+              minutee ?? 0,
+              secondd ?? 0,
             ),
           )
         : Duration();
@@ -349,11 +344,11 @@ class _OrdersListTileState extends State<OrdersListTile> {
       context,
       MaterialPageRoute(
         builder: (context) => OrderScreen(
-          homeScreenController: widget.controller,
-          order: widget.order,
+          homeScreenController: widget.controller!,
+          order: widget.order!,
         ),
       ),
     );
-    widget.shouldRefresh(true);
+    if (widget.shouldRefresh != null) widget.shouldRefresh!(true);
   }
 }

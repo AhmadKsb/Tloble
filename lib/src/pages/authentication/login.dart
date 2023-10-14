@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
 import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/pages/country_picker/country_picker.dart';
-import 'package:flutter_ecommerce_app/src/pages/home_page.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
@@ -17,14 +16,13 @@ import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/keyboard_actions_form.dart';
-import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../../main.dart';
 import 'otp.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key}) : super(key: key);
+  LoginPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -35,14 +33,13 @@ class _LoginPageState extends State<LoginPage> {
   bool isValid = false;
   FocusNode phoneField = FocusNode();
   String _phoneNumber = '';
-  countryPickers.Country selectedCountry;
-  SharedPreferences prefs;
+  countryPickers.Country? selectedCountry;
+  SharedPreferences? prefs;
 
   TextEditingController _nameController = TextEditingController();
   FocusNode _nameNode = new FocusNode();
 
-  HomeScreenController _controller;
-  PageState _state;
+  late PageState _state;
 
   Future<Null> validate(StateSetter updateState) async {
     if (_phoneNumber.length == 7) {
@@ -66,11 +63,11 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       prefs = await SharedPreferences.getInstance();
-      prefs.setString(
+      prefs?.setString(
         'swiftShop_phoneCode',
         '961',
       );
-      prefs.setString(
+      prefs?.setString(
         'swiftShop_isoCode',
         'LB',
       );
@@ -79,14 +76,6 @@ class _LoginPageState extends State<LoginPage> {
         [
           FirebaseFirestore.instance.collection('app info').snapshots().first,
         ],
-      );
-
-      _controller = HomeScreenController(
-        {},
-        ((data[0] as QuerySnapshot)
-            .docs
-            .firstWhere((document) => document.id == 'app')).data(),
-        {},
       );
 
       setState(() {
@@ -163,8 +152,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    phoneField?.dispose();
-    _nameNode?.dispose();
+    phoneField.dispose();
+    _nameNode.dispose();
     super.dispose();
   }
 
@@ -236,8 +225,8 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: inputDecoration(
                             Localization.of(context, 'name'),
                           ),
-                          validator: (String value) {
-                            if (value.isEmpty) {
+                          validator: (String? value) {
+                            if (value?.isEmpty ?? true) {
                               return Localization.of(
                                   context, 'name_cannot_be_empty');
                             }
@@ -274,8 +263,8 @@ class _LoginPageState extends State<LoginPage> {
                                 RegExp(r"[0-9]"),
                               ),
                             ],
-                            validator: (String value) {
-                              if (value.isEmpty) {
+                            validator: (String? value) {
+                              if (value?.isEmpty ?? true) {
                                 return Localization.of(
                                     context, 'phone_number_cannot_be_empty');
                               }
@@ -311,13 +300,13 @@ class _LoginPageState extends State<LoginPage> {
                                         selectedCountry = CountryPickerUtils
                                             .getCountryByPhoneCode(
                                                 country.phoneCode);
-                                        prefs.setString(
+                                        prefs?.setString(
                                           'swiftShop_phoneCode',
-                                          selectedCountry.phoneCode,
+                                          selectedCountry?.phoneCode ?? "",
                                         );
-                                        prefs.setString(
+                                        prefs?.setString(
                                           'swiftShop_isoCode',
-                                          selectedCountry.isoCode,
+                                          selectedCountry?.isoCode ?? "",
                                         );
                                       });
                                     },
@@ -334,7 +323,7 @@ class _LoginPageState extends State<LoginPage> {
                                         child: Image.asset(
                                           CountryPickerUtils
                                               .getFlagImageAssetPath(
-                                            selectedCountry.isoCode,
+                                            selectedCountry?.isoCode ?? "",
                                           ),
                                           height: 20.0,
                                           width: 35.0,
@@ -397,12 +386,12 @@ class _LoginPageState extends State<LoginPage> {
                         child: RaisedButtonV2(
                           label: Localization.of(context, 'login_register'),
                           onPressed: () async {
-                            if (_formKey.currentState.validate()) {
+                            if (_formKey.currentState?.validate() ?? true) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => Otp(
-                                    name: _nameController?.text ?? "",
+                                    name: _nameController.text,
                                     country: selectedCountry,
                                     mobileNumber: _phoneNumber,
                                   ),
@@ -423,7 +412,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  InputDecoration inputDecoration(String hintText, {Widget prefixIcon}) {
+  InputDecoration inputDecoration(String hintText, {Widget? prefixIcon}) {
     return InputDecoration(
       labelText: hintText,
       counterText: "",
@@ -445,7 +434,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget layoutContainer({Widget child}) {
+  Widget layoutContainer({required Widget child}) {
     return Container(
       width: MediaQuery.of(context).size.width,
       margin: EdgeInsets.only(left: 25.0, right: 25.0, top: 10.0),

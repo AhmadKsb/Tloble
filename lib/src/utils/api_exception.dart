@@ -12,22 +12,25 @@ class APIException implements Exception {
     'Please check your internet connection',
   );
 
-  static String get genericError => generic.toString();
+  static String? get genericError => generic.toString();
 
   /// * A code returned from the API.
-  String code;
+  String? code;
 
-  int statusCode;
+  int? statusCode;
 
   /// A message returned from the API.
-  String message;
+  String? message;
 
   /// A detailed message returned from the API.
-  String details;
+  String? details;
 
-  APIException(this.code, this.message);
+  APIException(
+    this.code,
+    this.message,
+  );
 
-  APIException.fromJson(Map<String, dynamic> json, [int statusCode]) {
+  APIException.fromJson(Map<String, dynamic> json, [int? statusCode]) {
     Map<String, dynamic> _json = json;
     if (json.containsKey("error")) {
       /// Integration error format
@@ -52,7 +55,7 @@ class APIException implements Exception {
   }
 
   @override
-  String toString() => message;
+  String toString() => message ?? "";
 
   @override
   bool operator ==(Object o) {

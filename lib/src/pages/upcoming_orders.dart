@@ -3,26 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
 import 'package:flutter_ecommerce_app/src/localization/localization.dart';
-import 'package:flutter_ecommerce_app/src/model/data.dart';
-import 'package:flutter_ecommerce_app/src/model/product.dart';
 import 'package:flutter_ecommerce_app/src/models/order.dart';
-import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
-import 'package:flutter_ecommerce_app/src/themes/theme.dart';
-import 'package:flutter_ecommerce_app/src/utils/UBScaffold/loader.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 
-import 'order_summary.dart';
-
 class UpcomingOrdersScreen extends StatefulWidget {
   final HomeScreenController homeScreenController;
 
   const UpcomingOrdersScreen({
-    Key key,
-    this.homeScreenController,
+    Key? key,
+    required this.homeScreenController,
   }) : super(key: key);
 
   @override
@@ -30,7 +23,7 @@ class UpcomingOrdersScreen extends StatefulWidget {
 }
 
 class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
-  PageState _state;
+  late PageState _state;
   List<Order> orders = [];
 
   @override
@@ -47,7 +40,8 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
 
     try {
       var result = await FirebaseFirestore.instance
-          .collection(widget.homeScreenController.SearchInOrdersCollectionName)
+          .collection(
+              widget.homeScreenController.SearchInOrdersCollectionName ?? "")
           .where("phoneNumber",
               isEqualTo: FirebaseAuth.instance.currentUser?.phoneNumber ?? "")
           .where("shipmentStatus", arrayContainsAny: [
@@ -57,7 +51,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
         ShipmentStatus.awaitingCustomerPickup.value,
       ]).get();
 
-      if (result != null && result.docs.isNotEmpty) {
+      if (result.docs.isNotEmpty) {
         result.docs.forEach((element) {
           orders.add(Order.fromJson(element.data()));
         });
@@ -82,7 +76,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
     for (int i = 0; i < orders.length; i++) {
       index = -1;
       items.add(Column(
-          children: orders[i].productsTitles.map((y) {
+          children: orders[i].productsTitles!.map((y) {
         index += 1;
 
         return _item(index, order: orders[i]);
@@ -101,14 +95,19 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
     // }).toList());
   }
 
-  Widget _item(var index, {Order order}) {
+  Widget _item(
+    var index, {
+    required Order order,
+  }) {
     return Container(
       margin: EdgeInsets.only(bottom: 36),
       height: 80,
       child: Row(
         children: <Widget>[
           WKNetworkImage(
-            order.productsImages[index],
+            ((widget.homeScreenController.hideImage ?? true))
+                ? ""
+                : order.productsImages?[index],
             fit: BoxFit.contain,
             width: 60,
             height: 60,
@@ -124,7 +123,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
           Expanded(
             child: ListTile(
               title: TitleText(
-                text: order.productsTitles[index],
+                text: order.productsTitles?[index],
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
               ),
@@ -136,7 +135,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
                     width: 150,
                     margin: EdgeInsets.symmetric(vertical: 2),
                     child: Text(
-                      "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors[index]) ? order.productsColors[index] : Localization.of(context, 'not_specified')}",
+                      "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
                       maxLines: 1,
                       style: TextStyle(
                         // fontSize: 15,
@@ -149,7 +148,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
                     width: 150,
                     margin: EdgeInsets.symmetric(vertical: 2),
                     child: Text(
-                      "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes[index]) ? order.productsSizes[index] : Localization.of(context, 'not_specified')}",
+                      "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",
                       maxLines: 1,
                       style: TextStyle(
                         // fontSize: 15,
@@ -165,11 +164,11 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
                 height: 40,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    color: getShipmentStatusColor(order.shipmentStatus[0]),
+                    color: getShipmentStatusColor(order.shipmentStatus![0]),
                     borderRadius: BorderRadius.circular(10)),
                 child: TitleText(
-                  text:
-                      getShipmentStatusString(context, order.shipmentStatus[0]),
+                  text: getShipmentStatusString(
+                      context, order.shipmentStatus![0]),
                   fontSize: 12,
                   textAlign: TextAlign.center,
                 ),
@@ -191,13 +190,13 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
       ),
       builder: (context) => Container(
         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-        child: ((orders?.isEmpty ?? true) ||
-                widget.homeScreenController.hideContents)
+        child: (orders.isEmpty ||
+                (widget.homeScreenController.hideContents ?? false))
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 75.0),
                 child: Center(
                     child: Text(
-                  widget.homeScreenController.hideContents
+                  (widget.homeScreenController.hideContents ?? false)
                       ? Localization.of(context, 'coming_soon')
                       : Localization.of(context, 'no_upcoming_orders'),
                   style: TextStyle(

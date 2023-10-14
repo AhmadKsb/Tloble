@@ -3,10 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
 import 'package:flutter_ecommerce_app/src/models/customer.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
-import 'package:package_info/package_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_ecommerce_app/src/models/employee.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// A mixin that exposes a method to update a currency list on the Flutter Layer
@@ -20,11 +20,11 @@ mixin HomeScreenControllerMixin {
 
   List<Employee> employeesList = [];
 
-  SharedPreferences prefs;
-  String notificationToken;
-  PageState homeScreenControllerState;
+  SharedPreferences? prefs;
+  String? notificationToken;
+  late PageState homeScreenControllerState;
 
-  Customer customer;
+  Customer? customer;
 
   /// Loads the controller
   Future<void> loadHomeScreenController() async {
@@ -32,11 +32,11 @@ mixin HomeScreenControllerMixin {
     homeScreenController.refreshView();
 
     prefs = await SharedPreferences.getInstance();
-    String activateNotification = prefs.getString('swiftShop_notification');
+    String? activateNotification = prefs?.getString('swiftShop_notification');
 
     if (activateNotification == null || activateNotification != 'activate') {
       FirebaseMessaging.instance.subscribeToTopic('swiftShop_notification');
-      prefs.setString(
+      prefs?.setString(
         'swiftShop_notification',
         'activate',
       );
@@ -76,23 +76,27 @@ mixin HomeScreenControllerMixin {
               .docs
               .firstWhere((document) => document.id == 'app')).data());
 
-      prefs.setStringList(
+      prefs?.setStringList(
         'swiftShop_feedback_receivers',
         List<String>.from(homeScreenController.feedbackReceiversList
-            .where((element) => true)),
+                ?.where((element) => true) ??
+            []),
       );
 
-      prefs.setStringList(
+      prefs?.setStringList(
         'swiftShop_employees',
         List<String>.from(
-            homeScreenController.employeesList.where((element) => true)),
+            homeScreenController.employeesList?.where((element) => true) ?? []),
       );
 
       notificationToken = data[2];
 
       homeScreenController.versionNumber = data[1]?.version ?? '';
       homeScreenController.buildNumber = data[1]?.buildNumber ?? '';
-      homeScreenController.version = homeScreenController.versionNumber + '+' + homeScreenController.buildNumber;
+      homeScreenController.version =
+          (homeScreenController.versionNumber ?? "") +
+              '+' +
+              (homeScreenController.buildNumber ?? "");
       print("App version: ${homeScreenController.version}");
 
       homeScreenControllerState = PageState.loaded;

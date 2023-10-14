@@ -7,7 +7,7 @@ class Loader extends StatelessWidget {
   final Color inactiveColor;
 
   const Loader({
-    Key key,
+    Key? key,
     this.radius = 24.0,
     this.activeColor = const Color(0xFFDADADA),
     this.inactiveColor = const Color(0xFFDADADA),

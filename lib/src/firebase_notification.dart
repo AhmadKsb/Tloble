@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ecommerce_app/src/models/order.dart';
 import 'package:flutter_ecommerce_app/src/pages/feedback/feedback_details_screen.dart';
 import 'package:flutter_ecommerce_app/src/pages/orders/all_orders_screen.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -19,10 +18,9 @@ class FirebaseNotification extends StatefulWidget {
 
   /// Creates FirebaseNotification widget.
   const FirebaseNotification({
-    Key key,
-    this.child,
-  })  : assert(child != null),
-        super(key: key);
+    Key? key,
+    required this.child,
+  }) : super(key: key);
 
   @override
   _FirebaseNotificationState createState() => _FirebaseNotificationState();
@@ -30,8 +28,8 @@ class FirebaseNotification extends StatefulWidget {
 
 class _FirebaseNotificationState extends State<FirebaseNotification> {
   final _firebaseMessaging = FirebaseMessaging.instance;
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  String token;
+  FlutterLocalNotificationsPlugin? flutterLocalNotificationsPlugin;
+  String? token;
 
   @override
   void initState() {
@@ -55,8 +53,8 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       FirebaseMessaging.onMessage.listen(
         (message) => showLocalNotification(
-          title: message.notification.title,
-          message: message.notification.body,
+          title: message.notification?.title,
+          message: message.notification?.body,
           messagePayload: message.data,
         ),
       );
@@ -93,15 +91,15 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
     // getPushNotificationToken();
   }
 
-  Future<String> getPushNotificationToken() async {
+  Future<String?> getPushNotificationToken() async {
     var token = await _firebaseMessaging.getToken();
     return token;
   }
 
   void showLocalNotification({
-    @required String title,
-    @required String message,
-    @required Map<String, dynamic> messagePayload,
+    @required String? title,
+    @required String? message,
+    @required Map<String, dynamic>? messagePayload,
   }) async {
     try {
       Vibration.vibrate();
@@ -161,7 +159,7 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
       iOS: initializationSettingsIOS,
     );
 
-    flutterLocalNotificationsPlugin.initialize(
+    flutterLocalNotificationsPlugin?.initialize(
       initializationSettings,
       onSelectNotification: onSelectNotification,
     );
@@ -180,7 +178,7 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
     if ((data['feedback'] != null) &&
         (prefs
                 .getStringList('swiftShop_feedback_receivers')
-                .contains(FirebaseAuth.instance?.currentUser?.phoneNumber) ??
+                ?.contains(FirebaseAuth.instance.currentUser?.phoneNumber) ??
             false)) {
       Feedback.Feedback feedback = Feedback.Feedback.fromJson(data);
       Navigator.of(context).push(
@@ -196,9 +194,9 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
         data['customerName'] != null &&
         (prefs
                 .getStringList('swiftShop_employees')
-                .contains(FirebaseAuth.instance?.currentUser?.phoneNumber) ??
+                ?.contains(FirebaseAuth.instance.currentUser?.phoneNumber) ??
             false)) {
-      Order order = Order.fromJson(data);
+      // Order order = Order.fromJson(data);
 
       Navigator.of(context).push(
         MaterialPageRoute(
@@ -210,17 +208,17 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
     }
   }
 
-  Future<void> onSelectNotification(String payload) {
-    Map<String, dynamic> message = json.decode(payload);
+  Future<void> onSelectNotification(String? payload) {
+    Map<String, dynamic> message = json.decode(payload ?? "");
     _openAlerts(message);
     return Future.value(true);
   }
 
   Future<void> onDidReceiveLocalNotification(
-    int id,
-    String title,
-    String body,
-    String payload,
+    int? id,
+    String? title,
+    String? body,
+    String? payload,
   ) async {
     return Future.value(true);
   }

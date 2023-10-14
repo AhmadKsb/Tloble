@@ -10,9 +10,9 @@ class CustomBottomNavigationBar extends StatefulWidget {
   // final int selectedTab;
 
   CustomBottomNavigationBar({
-    Key key,
-    this.onIconPresedCallback,
-    this.homeScreenController,
+    Key? key,
+    required this.onIconPresedCallback,
+    required this.homeScreenController,
   }) : super(key: key);
 
   @override
@@ -24,8 +24,8 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
 
-  AnimationController _xController;
-  AnimationController _yController;
+  late AnimationController _xController;
+  late AnimationController _yController;
   @override
   void initState() {
     _xController = AnimationController(
@@ -94,7 +94,9 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
                     )
                   : Icon(
                       icon,
-                      key: icon == Icons.shopping_cart_outlined ? coachMarkKey : null,
+                      key: icon == Icons.shopping_cart_outlined
+                          ? coachMarkKey
+                          : null,
                       color: isEnable
                           ? LightColor.orange
                           : Theme.of(context).iconTheme.color,
@@ -103,7 +105,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
           ),
         ),
         if (icon == Icons.shopping_cart_outlined &&
-            ((widget.homeScreenController.productsLinks.length ?? 0) > 0))
+            ((widget.homeScreenController.productsLinks.length) > 0))
           Positioned.directional(
             textDirection: Localizations.localeOf(context).languageCode == 'ar'
                 ? TextDirection.rtl
@@ -116,26 +118,25 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
               fontSize: 12,
               offset: Offset(13, 0),
               notification:
-                  (widget.homeScreenController.productsLinks.length ?? 0)
-                      .toString(),
+                  (widget.homeScreenController.productsLinks.length).toString(),
             ),
           ),
       ],
     );
   }
 
-  Widget _buildBackground() {
-    final inCurve = ElasticOutCurve(0.38);
-    return CustomPaint(
-      painter: BackgroundCurvePainter(
-          _xController.value * MediaQuery.of(context).size.width,
-          Tween<double>(
-            begin: Curves.easeInExpo.transform(_yController.value),
-            end: inCurve.transform(_yController.value),
-          ).transform(_yController.velocity.sign * 0.5 + 0.5),
-          Theme.of(context).backgroundColor),
-    );
-  }
+  // Widget _buildBackground() {
+  //   final inCurve = ElasticOutCurve(0.38);
+  //   return CustomPaint(
+  //     painter: BackgroundCurvePainter(
+  //         _xController.value * MediaQuery.of(context).size.width,
+  //         Tween<double>(
+  //           begin: Curves.easeInExpo.transform(_yController.value),
+  //           end: inCurve.transform(_yController.value),
+  //         ).transform(_yController.velocity.sign * 0.5 + 0.5),
+  //         Theme.of(context).backgroundColor),
+  //   );
+  // }
 
   double _getButtonContainerWidth() {
     double width = MediaQuery.of(context).size.width;
@@ -207,16 +208,15 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
 }
 
 class NotificationBadge extends StatelessWidget {
-  final String notification;
-  final Color color;
-  final Offset offset;
+  final String? notification;
+  final Color? color;
+  final Offset? offset;
   final double width, height, fontSize;
-  final Color textColor;
-
-  final TextStyle styleOverride;
+  final Color? textColor;
+  final TextStyle? styleOverride;
 
   const NotificationBadge({
-    Key key,
+    Key? key,
     this.notification,
     this.color,
     this.offset,
@@ -230,7 +230,7 @@ class NotificationBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Transform.translate(
-      offset: offset,
+      offset: offset!,
       child: Container(
         decoration:
             new BoxDecoration(shape: BoxShape.circle, color: Colors.red),
@@ -238,7 +238,7 @@ class NotificationBadge extends StatelessWidget {
         height: height,
         child: Center(
           child: Text(
-            notification,
+            notification!,
             overflow: TextOverflow.visible,
             maxLines: 1,
             style: styleOverride ??

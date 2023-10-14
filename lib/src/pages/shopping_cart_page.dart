@@ -4,7 +4,6 @@ import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
-import 'package:flutter_ecommerce_app/src/utils/UBScaffold/loader.dart';
 import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
@@ -13,10 +12,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'order_summary.dart';
 
 class ShoppingCartPage extends StatefulWidget {
-  final HomeScreenController homeScreenController;
+  final HomeScreenController? homeScreenController;
 
   const ShoppingCartPage({
-    Key key,
+    Key? key,
     this.homeScreenController,
   }) : super(key: key);
 
@@ -31,11 +30,11 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   Widget _cartItems() {
     index = -1;
     return Column(
-        children: widget.homeScreenController.productsLinks.map((x) {
+        children: widget.homeScreenController!.productsLinks.map((x) {
       index += 1;
       return _item(index,
-          isLastIndex: index ==
-              (widget.homeScreenController.productsLinks.length ?? 0) - 1);
+          isLastIndex:
+              index == (widget.homeScreenController!.productsLinks.length) - 1);
     }).toList());
   }
 
@@ -70,16 +69,15 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
               ),
               confirmMessage: Localization.of(context, 'confirm'),
               confirmAction: () async {
-                await Navigator.of(context).pop();
-                widget.homeScreenController.productsTitles.removeAt(index);
-                widget.homeScreenController.productsLinks.removeAt(index);
-                widget.homeScreenController.productsQuantities.removeAt(index);
-                widget.homeScreenController.productsColors.removeAt(index);
-                widget.homeScreenController.productsSizes.removeAt(index);
-                widget.homeScreenController.productsPrices.removeAt(index);
-                widget.homeScreenController.productsImages.removeAt(index);
+                widget.homeScreenController!.productsTitles.removeAt(index);
+                widget.homeScreenController!.productsLinks.removeAt(index);
+                widget.homeScreenController!.productsQuantities.removeAt(index);
+                widget.homeScreenController!.productsColors.removeAt(index);
+                widget.homeScreenController!.productsSizes.removeAt(index);
+                widget.homeScreenController!.productsPrices.removeAt(index);
+                widget.homeScreenController!.productsImages.removeAt(index);
 
-                widget.homeScreenController.refreshView();
+                widget.homeScreenController!.refreshView();
 
                 setState(() {});
               },
@@ -94,7 +92,9 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
         child: Row(
           children: <Widget>[
             WKNetworkImage(
-              widget.homeScreenController.productsImages[index],
+              ((widget.homeScreenController?.hideImage ?? true))
+                  ? ""
+                  : widget.homeScreenController!.productsImages[index],
               fit: BoxFit.contain,
               width: 60,
               height: 60,
@@ -110,7 +110,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
             Expanded(
               child: ListTile(
                 title: TitleText(
-                  text: widget.homeScreenController.productsTitles[index],
+                  text: widget.homeScreenController!.productsTitles[index],
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),
@@ -123,7 +123,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                       width: 150,
                       margin: EdgeInsets.symmetric(vertical: 2),
                       child: Text(
-                        "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController.productsColors[index]) ? widget.homeScreenController.productsColors[index] : Localization.of(context, 'not_specified')}",
+                        "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController?.productsColors[index]) ? widget.homeScreenController?.productsColors[index] : Localization.of(context, 'not_specified')}",
                         maxLines: 1,
                         style: TextStyle(
                           // fontSize: 15,
@@ -137,7 +137,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                       width: 150,
                       margin: EdgeInsets.symmetric(vertical: 2),
                       child: Text(
-                        "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController.productsSizes[index]) ? widget.homeScreenController.productsSizes[index] : Localization.of(context, 'not_specified')}",
+                        "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController?.productsSizes[index]) ? widget.homeScreenController?.productsSizes[index] : Localization.of(context, 'not_specified')}",
                         maxLines: 1,
                         style: TextStyle(
                           // fontSize: 15,
@@ -146,9 +146,9 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                         ),
                       ),
                     ),
-                    if ((widget.homeScreenController.showProductPrice ??
+                    if ((widget.homeScreenController?.showProductPrice ??
                             false) &&
-                        widget.homeScreenController.productsPrices[index] !=
+                        widget.homeScreenController?.productsPrices[index] !=
                             "0")
                       Row(
                         children: <Widget>[
@@ -159,7 +159,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                           ),
                           TitleText(
                             text: widget
-                                .homeScreenController.productsPrices[index],
+                                .homeScreenController?.productsPrices[index],
                             fontSize: 14,
                           ),
                         ],
@@ -175,7 +175,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                       borderRadius: BorderRadius.circular(10)),
                   child: TitleText(
                     text:
-                        'x${widget.homeScreenController.productsQuantities[index]}',
+                        'x${widget.homeScreenController?.productsQuantities[index]}',
                     fontSize: 12,
                   ),
                 ),
@@ -193,7 +193,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
       children: <Widget>[
         TitleText(
           text:
-              '${widget.homeScreenController.productsImages.length} ${(widget.homeScreenController.productsImages.length ?? 0) > 1 ? "Items" : "Item"}',
+              '${widget.homeScreenController?.productsImages.length} ${(widget.homeScreenController?.productsImages.length ?? 0) > 1 ? "Items" : "Item"}',
           color: LightColor.grey,
           fontSize: 14,
           fontWeight: FontWeight.w500,
@@ -214,7 +214,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
           await Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => OrderSummaryScreen(
-                homeScreenController: widget.homeScreenController,
+                homeScreenController: widget.homeScreenController!,
               ),
             ),
           );
@@ -243,14 +243,14 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   double getPrice() {
     double price = 0;
     for (int i = 0;
-        i < widget.homeScreenController.productsPrices.length;
+        i < (widget.homeScreenController?.productsPrices.length ?? 0);
         i++) {
-      price += num.tryParse(widget.homeScreenController.productsPrices[i]
+      price += num.tryParse(widget.homeScreenController?.productsPrices[i]
                   .replaceAll(',', '') ??
-              "0") *
-          num.tryParse(widget.homeScreenController.productsQuantities[i]
+              "0")! *
+          num.tryParse(widget.homeScreenController?.productsQuantities[i]
                   .replaceAll(',', '') ??
-              "0");
+              "0")!;
     }
 
     return price;
@@ -260,7 +260,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   Widget build(BuildContext context) {
     return Container(
       padding: AppTheme.padding,
-      child: widget.homeScreenController.productsLinks.isEmpty
+      child: (widget.homeScreenController?.productsLinks.isEmpty ?? true)
           ? Padding(
               padding: const EdgeInsets.only(bottom: 75.0),
               child: Center(
@@ -280,7 +280,8 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                     thickness: 1,
                     height: 70,
                   ),
-                  if ((widget.homeScreenController.showProductPrice ?? false) &&
+                  if ((widget.homeScreenController?.showProductPrice ??
+                          false) &&
                       getPrice().toStringAsFixed(2) != "0.00")
                     _price(),
                   SizedBox(height: 30),

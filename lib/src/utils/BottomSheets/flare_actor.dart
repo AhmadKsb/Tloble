@@ -1,4 +1,3 @@
-import 'package:flare_dart/math/mat2d.dart';
 import 'package:flare_flutter/flare.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/flare_controller.dart';
@@ -22,12 +21,12 @@ class FlareError extends StatefulWidget {
 }
 
 class _FlareErrorState extends State<FlareError> with FlareController {
-  FlutterColorFill _fill;
+  FlutterColorFill? _fill;
 
   @override
   void initialize(FlutterActorArtboard artboard) {
-    FlutterActorShape shape = artboard.getNode("circle_bg");
-    _fill = shape?.fill as FlutterColorFill;
+    // FlutterActorShape shape = artboard.getNode("circle_bg");
+    // _fill = shape.fill as FlutterColorFill;
   }
 
   @override
@@ -35,7 +34,7 @@ class _FlareErrorState extends State<FlareError> with FlareController {
     // advance is called whenever the flare artboard is about to update (before it draws).
     Color nextColor = Colors.white;
     if (_fill != null) {
-      _fill.uiColor = nextColor;
+      _fill?.uiColor = nextColor;
     }
     // Return false as we don't need to be called again. You'd return true if you wanted to manually animate some property.
     return false;

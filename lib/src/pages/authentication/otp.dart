@@ -20,15 +20,15 @@ import 'package:flutter_svg/svg.dart';
 import '../../firebase_notification.dart';
 
 class Otp extends StatefulWidget {
-  final String name;
-  final String email;
+  final String? name;
+  final String? email;
   final String newEmail;
-  final bool isGuestCheckOut;
-  final String mobileNumber;
-  final countryPickers.Country country;
+  final bool? isGuestCheckOut;
+  final String? mobileNumber;
+  final countryPickers.Country? country;
 
   const Otp({
-    Key key,
+    Key? key,
     this.name,
     this.email,
     this.newEmail = "",
@@ -48,32 +48,32 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
   /// Control the input text field.
   TextEditingController _pinEditingController = TextEditingController();
 
-  PageState _state;
-  PageState _registerCustomerState;
+  late PageState _state;
+  late PageState _registerCustomerState;
 
   bool isCodeSent = false;
   bool _rootAccess = false;
   bool canMockLocation = false;
   bool isRealDevice = true;
-  String _verificationId;
+  String? _verificationId;
 
   // Constants
   final int time = 30;
-  AnimationController _controller;
+  late AnimationController _controller;
 
   // Variables
-  Size _screenSize;
-  int _currentDigit;
-  int _firstDigit;
-  int _secondDigit;
-  int _thirdDigit;
-  int _fourthDigit;
-  int _fifthDigit;
-  int _sixthDigit;
+  Size? _screenSize;
+  int? _currentDigit;
+  int? _firstDigit;
+  int? _secondDigit;
+  int? _thirdDigit;
+  int? _fourthDigit;
+  int? _fifthDigit;
+  int? _sixthDigit;
 
-  Timer timer;
-  int totalTimeInSeconds;
-  bool _hideResendButton;
+  Timer? timer;
+  int? totalTimeInSeconds;
+  bool? _hideResendButton;
 
   String userName = "";
   bool didReadNotifications = false;
@@ -115,31 +115,32 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 12),
       child: Text(
-        (Localizations.localeOf(context).languageCode == 'ar')
-            ? replaceVariable(
-                replaceVariable(
-                  Localization.of(
-                    context,
-                    'please_enter_otp_ar',
-                  ),
-                  'valueone',
-                  widget.mobileNumber ?? "",
-                ),
-                'valuetwo',
-                widget.country?.phoneCode ?? "",
-              )
-            : replaceVariable(
-                replaceVariable(
-                  Localization.of(
-                    context,
-                    'please_enter_otp',
-                  ),
-                  'valueone',
-                  widget.country?.phoneCode ?? "",
-                ),
-                'valuetwo',
-                widget.mobileNumber ?? "",
-              ),
+        ((Localizations.localeOf(context).languageCode == 'ar')
+                ? replaceVariable(
+                    replaceVariable(
+                      Localization.of(
+                        context,
+                        'please_enter_otp_ar',
+                      ),
+                      'valueone',
+                      widget.mobileNumber ?? "",
+                    ),
+                    'valuetwo',
+                    widget.country?.phoneCode ?? "",
+                  )
+                : replaceVariable(
+                    replaceVariable(
+                      Localization.of(
+                        context,
+                        'please_enter_otp',
+                      ),
+                      'valueone',
+                      widget.country?.phoneCode ?? "",
+                    ),
+                    'valuetwo',
+                    widget.mobileNumber ?? "",
+                  )) ??
+            "",
 
         ///Fix phone code
         textAlign: TextAlign.center,
@@ -248,7 +249,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
   // Returns "Otp" keyboard
   get _getOtpKeyboard {
     return new Container(
-        height: _screenSize.width - 80,
+        height: (_screenSize?.width ?? 0) - 80,
         child: new Column(
           children: <Widget>[
             new Expanded(
@@ -362,6 +363,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
   void initState() {
     setState(() {
       _state = PageState.loading;
+      _registerCustomerState = PageState.loaded;
     });
 
     totalTimeInSeconds = time;
@@ -372,7 +374,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
           ..addStatusListener((status) {
             if (status == AnimationStatus.dismissed) {
               setState(() {
-                _hideResendButton = !_hideResendButton;
+                _hideResendButton = !(_hideResendButton ?? false);
               });
             }
           });
@@ -400,7 +402,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
       appBar: _getAppbar,
       backgroundColor: Colors.white,
       builder: (context) => Container(
-        width: _screenSize.width,
+        width: _screenSize?.width,
 //        padding: new EdgeInsets.only(bottom: 16.0),
         child: _getInputPart,
       ),
@@ -408,7 +410,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
   }
 
   // Returns "Otp custom text field"
-  Widget _otpTextField(int digit) {
+  Widget _otpTextField(int? digit) {
     return new Container(
       width: 35.0,
       height: 45.0,
@@ -430,7 +432,10 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
     );
   }
 
-  Widget _otpKeyboardInputButton({String label, VoidCallback onPressed}) {
+  Widget _otpKeyboardInputButton({
+    String? label,
+    VoidCallback? onPressed,
+  }) {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 4.0),
       child: Material(
@@ -447,7 +452,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
             ),
             child: Center(
               child: Text(
-                label,
+                label ?? "",
                 style: TextStyle(
                   fontSize: 30.0,
                   color: Color.fromARGB(255, 94, 97, 103),
@@ -461,7 +466,10 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
   }
 
   // Returns "Otp keyboard action Button"
-  _otpKeyboardActionButton({Widget label, VoidCallback onPressed}) {
+  _otpKeyboardActionButton({
+    Widget? label,
+    VoidCallback? onPressed,
+  }) {
     return new InkWell(
       onTap: onPressed,
       borderRadius: new BorderRadius.circular(40.0),
@@ -549,17 +557,17 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
             if (result.data() == null) {
               await FirebaseFirestore.instance
                   .collection('Customers')
-                  .doc(value.user.phoneNumber)
+                  .doc(value.user?.phoneNumber)
                   .set(
                     Customer(
                       name: widget.name,
-                      phoneNumber: value.user.phoneNumber,
+                      phoneNumber: value.user?.phoneNumber,
                       notificationToken: notificationToken,
                       coins: 0,
                     ).toJson(),
                   );
             } else {
-              var customer = Customer.fromJson(result.data());
+              var customer = Customer.fromJson(result.data()!);
               await FirebaseFirestore.instance
                   .collection('Customers')
                   .doc(customer.phoneNumber)
@@ -568,7 +576,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
                       name: widget.name,
                       phoneNumber: customer.phoneNumber,
                       notificationToken: notificationToken,
-                      coins: customer?.coins ?? 0,
+                      coins: customer.coins ?? 0,
                     ).toJson(),
                   );
             }
@@ -605,7 +613,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
         );
       } else {
         showErrorBottomsheet(
-          authException.message,
+          authException.message ?? "",
           doublePop: true,
         );
       }
@@ -616,7 +624,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
     };
 
     final PhoneCodeSent codeSent =
-        (String verificationId, [int forceResendingToken]) async {
+        (String verificationId, [int? forceResendingToken]) async {
       _verificationId = verificationId;
       setState(() {
         _state = PageState.loaded;
@@ -644,7 +652,8 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
 
   void _onFormSubmitted() async {
     AuthCredential _authCredential = PhoneAuthProvider.credential(
-        verificationId: _verificationId, smsCode: _pinEditingController.text);
+        verificationId: _verificationId ?? "",
+        smsCode: _pinEditingController.text);
     setState(() {
       _state = PageState.loading;
     });
@@ -669,17 +678,17 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
           if (result.data() == null) {
             await FirebaseFirestore.instance
                 .collection('Customers')
-                .doc(value.user.phoneNumber)
+                .doc(value.user?.phoneNumber)
                 .set(
                   Customer(
                     name: widget.name,
-                    phoneNumber: value.user.phoneNumber,
+                    phoneNumber: value.user?.phoneNumber,
                     notificationToken: notificationToken,
                     coins: 0,
                   ).toJson(),
                 );
           } else {
-            var customer = Customer.fromJson(result.data());
+            var customer = Customer.fromJson(result.data()!);
             await FirebaseFirestore.instance
                 .collection('Customers')
                 .doc(customer.phoneNumber)
@@ -688,7 +697,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
                     name: widget.name,
                     phoneNumber: customer.phoneNumber,
                     notificationToken: notificationToken,
-                    coins: customer?.coins ?? 0,
+                    coins: customer.coins ?? 0,
                   ).toJson(),
                 );
           }
@@ -714,8 +723,8 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
       bool isFirebaseError =
           error?.toString()?.toLowerCase()?.contains("] ".toLowerCase()) ??
               false;
-      if (isFirebaseError ?? false) {
-        showErrorBottomsheet(error?.toString()?.split("] ")[1]);
+      if (isFirebaseError) {
+        showErrorBottomsheet(error?.toString().split("] ")[1] ?? "");
       } else {
         showErrorBottomsheet("Something went wrong!");
       }
@@ -741,15 +750,15 @@ class OtpTimer extends StatelessWidget {
   OtpTimer(this.controller, this.fontSize, this.timeColor);
 
   String get timerString {
-    Duration duration = controller.duration * controller.value;
+    Duration duration = controller.duration! * controller.value;
     if (duration.inHours > 0) {
       return '${duration.inHours}:${duration.inMinutes % 60}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
     }
     return '${duration.inMinutes % 60}:${(duration.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 
-  Duration get duration {
-    Duration duration = controller.duration;
+  Duration? get duration {
+    Duration? duration = controller.duration;
     return duration;
   }
 
@@ -757,8 +766,8 @@ class OtpTimer extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
         animation: controller,
-        builder: (BuildContext context, Widget child) {
-          return new Text(
+        builder: (BuildContext context, Widget? child) {
+          return Text(
             timerString,
             style: new TextStyle(
                 fontSize: fontSize,

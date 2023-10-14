@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -12,27 +9,22 @@ import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dar
 import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/models/customer.dart';
 import 'package:flutter_ecommerce_app/src/models/order.dart';
-import 'package:flutter_ecommerce_app/src/pages/authentication/login.dart';
 import 'package:flutter_ecommerce_app/src/pages/orders/first_payment_bottomsheet.dart';
 import 'package:flutter_ecommerce_app/src/pages/orders/second_payment_bottomsheet.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
-import 'package:flutter_ecommerce_app/src/utils/UBScaffold/loader.dart';
 import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/utils/util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:gsheets/gsheets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
-import 'package:flutter_ecommerce_app/src/utils/string_helper_extension.dart';
 
-import '../../firebase_notification.dart';
-import '../mainPage.dart';
+import '../../models/employee.dart';
 
 // GoogleAuth credentials
 var _credentials = r'''
@@ -55,14 +47,14 @@ class OrderScreen extends StatefulWidget {
   final Order order;
 
   OrderScreen({
-    Key key,
-    this.homeScreenController,
-    this.order,
+    Key? key,
+    required this.homeScreenController,
+    required this.order,
   }) : super(key: key);
   static const String route = '/home';
 
   static void restartApp(BuildContext context) {
-    context.findAncestorStateOfType<_OrderScreenState>().restartApp();
+    context.findAncestorStateOfType<_OrderScreenState>()?.restartApp();
   }
 
   @override
@@ -74,30 +66,21 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
   bool requestTimerRunning = false;
   bool _isLoading = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  Order _order;
+  late Order _order;
 
   num rate = 1;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  String amount,
+  String? amount,
       versionNumber,
       buildNumber,
       version,
       errorMessage,
       notificationToken,
       newsText = "";
-  int amountWithFee, amountWithoutFee;
-  List<String> adminPanelNames = [];
-  List<String> managementNames = [];
-  List<String> towns;
-  String selectedCity;
+  int? amountWithFee, amountWithoutFee;
 
-  final _formKey = GlobalKey<FormState>();
-
-  String selectedCountryPhoneCode;
-  String selectedCountryIsoCode;
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  Customer customer;
+  Customer? customer;
   Key key = UniqueKey();
 
   void restartApp() {
@@ -122,10 +105,11 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
 
   double getPrice() {
     double price = 0;
-    for (int i = 0; i < _order.productsPrices.length; i++) {
-      price += num.tryParse(
-              _order.productsPrices[i].replaceAll(',', '') ?? "0") *
-          num.tryParse(_order.productsQuantities[i].replaceAll(',', '') ?? "0");
+    for (int i = 0; i < (_order.productsPrices?.length ?? 0); i++) {
+      price +=
+          num.tryParse(_order.productsPrices?[i]?.replaceAll(',', '') ?? "0")! *
+              num.tryParse(
+                  _order.productsQuantities?[i].replaceAll(',', '') ?? "0")!;
     }
 
     return price;
@@ -178,12 +162,10 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                             ),
                             Text(
                               widget.homeScreenController.employees
-                                      .firstWhere(
-                                          (emp) =>
-                                              emp.phoneNumber ==
-                                              FirebaseAuth.instance.currentUser
-                                                  .phoneNumber,
-                                          orElse: () => null)
+                                      .firstWhere((emp) =>
+                                          emp.phoneNumber ==
+                                          FirebaseAuth.instance.currentUser
+                                              ?.phoneNumber)
                                       .name ??
                                   "",
                               style: TextStyle(
@@ -206,7 +188,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                       letterSpacing: 1),
                                 ),
                                 Text(
-                                  "\$" + _order.firstPayment.toString(),
+                                  "\$" + (_order.firstPayment ?? "").toString(),
                                   style: TextStyle(
                                     fontSize: 16,
                                     letterSpacing: 1,
@@ -228,7 +210,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                       letterSpacing: 1),
                                 ),
                                 Text(
-                                  "\$" + _order.secondPayment.toString(),
+                                  "\$" +
+                                      (_order.secondPayment ?? "").toString(),
                                   style: TextStyle(
                                     fontSize: 16,
                                     letterSpacing: 1,
@@ -266,7 +249,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               confirmAction: () async {
                                 bool wasAbleToGetUpdatedOrder =
                                     await _getUpdatedOrder(popFirst: true);
-                                if (wasAbleToGetUpdatedOrder ?? false) {
+                                if (wasAbleToGetUpdatedOrder) {
                                   await _updateAcceptedTime();
                                   try {
                                     openWhatsapp();
@@ -275,11 +258,12 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                     print(e);
                                     showErrorBottomsheet(
                                       replaceVariable(
-                                        Localization.of(context,
-                                            'an_error_has_occurred_value'),
-                                        'value',
-                                        e.toString(),
-                                      ),
+                                            Localization.of(context,
+                                                'an_error_has_occurred_value'),
+                                            'value',
+                                            e.toString(),
+                                          ) ??
+                                          "",
                                     );
                                   }
                                 }
@@ -292,7 +276,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               : Localization.of(context, 'contacted'),
                         ),
                       ),
-                      if (_order.shipmentStatus[0] ==
+                      if (_order.shipmentStatus![0] ==
                           ShipmentStatus.awaitingCustomer)
                         Padding(
                           padding: EdgeInsets.symmetric(
@@ -313,10 +297,10 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                 confirmMessage:
                                     Localization.of(context, 'confirm'),
                                 confirmAction: () async {
-                                  await Navigator.of(context).pop();
+                                  // await Navigator.of(context).pop;
                                   bool wasAbleToGetUpdatedOrder =
                                       await _getUpdatedOrder();
-                                  if (wasAbleToGetUpdatedOrder ?? false) {
+                                  if (wasAbleToGetUpdatedOrder) {
                                     try {
                                       await _updateOrder(
                                         ShipmentStatus.customerRejected,
@@ -332,11 +316,12 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                       print(e);
                                       showErrorBottomsheet(
                                         replaceVariable(
-                                          Localization.of(context,
-                                              'an_error_has_occurred_value'),
-                                          'value',
-                                          e.toString(),
-                                        ),
+                                              Localization.of(context,
+                                                  'an_error_has_occurred_value'),
+                                              'value',
+                                              e.toString(),
+                                            ) ??
+                                            "",
                                       );
                                     }
                                   }
@@ -357,15 +342,15 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                           disabled: _isLoading ||
                               isEmpty(_order.acceptedTime) ||
                               (_order.firstPayment != 0) ||
-                              (_order.shipmentStatus[0] ==
+                              (_order.shipmentStatus![0] ==
                                       ShipmentStatus.completed ||
-                                  _order.shipmentStatus[0] ==
+                                  _order.shipmentStatus![0] ==
                                       ShipmentStatus.customerRejected),
                           isLoading: _isLoading,
                           onPressed: () async {
                             bool wasAbleToGetUpdatedOrder =
                                 await _getUpdatedOrder();
-                            if (wasAbleToGetUpdatedOrder ?? false) {
+                            if (wasAbleToGetUpdatedOrder) {
                               if (isNotEmpty(_order.acceptedTime)) {
                                 try {
                                   await showBottomsheet(
@@ -416,11 +401,12 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                   print(e);
                                   showErrorBottomsheet(
                                     replaceVariable(
-                                      Localization.of(context,
-                                          'an_error_has_occurred_value'),
-                                      'value',
-                                      e.toString(),
-                                    ),
+                                          Localization.of(context,
+                                              'an_error_has_occurred_value'),
+                                          'value',
+                                          e.toString(),
+                                        ) ??
+                                        "",
                                   );
                                 }
                               } else {
@@ -443,11 +429,11 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                           disabled: _isLoading ||
                               isEmpty(_order.acceptedTime) ||
                               _order.firstPayment == 0 ||
-                              (_order.shipmentStatus[0] ==
+                              (_order.shipmentStatus![0] ==
                                       ShipmentStatus.completed ||
-                                  _order.shipmentStatus[0] ==
+                                  _order.shipmentStatus![0] ==
                                       ShipmentStatus.customerRejected) ||
-                              _order.shipmentStatus[0] ==
+                              _order.shipmentStatus![0] ==
                                   ShipmentStatus.awaitingCustomerPickup,
                           isLoading: _isLoading,
                           onPressed: () async {
@@ -456,39 +442,40 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               title:
                                   Localization.of(context, 'select_a_status'),
                               items: [
-                                if (_order.shipmentStatus[0] !=
+                                if (_order.shipmentStatus![0] !=
                                         ShipmentStatus.paid &&
                                     num.tryParse(
-                                            _order.shipmentStatus[0].value) <
-                                        num.tryParse(ShipmentStatus.paid.value))
+                                            _order.shipmentStatus![0].value)! <
+                                        num.tryParse(
+                                            ShipmentStatus.paid.value)!)
                                   Localization.of(context, 'paid'),
-                                if (_order.shipmentStatus[0] !=
+                                if (_order.shipmentStatus![0] !=
                                         ShipmentStatus.awaitingShipment &&
                                     num.tryParse(
-                                            _order.shipmentStatus[0].value) <
+                                            _order.shipmentStatus![0].value)! <
                                         num.tryParse(ShipmentStatus
-                                            .awaitingShipment.value))
+                                            .awaitingShipment.value)!)
                                   Localization.of(context,
                                       'in_our_warehouse_outside_lebanon'),
-                                if (_order.shipmentStatus[0] !=
+                                if (_order.shipmentStatus![0] !=
                                         ShipmentStatus.orderOnTheWay &&
                                     num.tryParse(
-                                            _order.shipmentStatus[0].value) <
-                                        num.tryParse(
-                                            ShipmentStatus.orderOnTheWay.value))
+                                            _order.shipmentStatus![0].value)! <
+                                        num.tryParse(ShipmentStatus
+                                            .orderOnTheWay.value)!)
                                   Localization.of(context, 'orderOnTheWay'),
-                                if (_order.shipmentStatus[0] !=
+                                if (_order.shipmentStatus![0] !=
                                         ShipmentStatus.awaitingCustomerPickup &&
                                     num.tryParse(
-                                            _order.shipmentStatus[0].value) <
+                                            _order.shipmentStatus![0].value)! <
                                         num.tryParse(ShipmentStatus
-                                            .awaitingCustomerPickup.value))
+                                            .awaitingCustomerPickup.value)!)
                                   Localization.of(
                                       context, 'awaitingCustomerPickup'),
-                                // if (_order.shipmentStatus[0] !=
+                                // if (_order?.shipmentStatus![0] !=
                                 //         ShipmentStatus.customerRejected &&
                                 //     num.tryParse(
-                                //             _order.shipmentStatus[0].value) <
+                                //             _order?.shipmentStatus![0].value) <
                                 //         num.tryParse(ShipmentStatus
                                 //             .customerRejected.value))
                                 //   Localization.of(context, 'customerRejected'),
@@ -496,7 +483,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               itemBuilder: (listTileName) {
                                 return ListTile(
                                   title: Text(
-                                    "${listTileName ?? ''}",
+                                    "${listTileName}",
                                   ),
                                 );
                               },
@@ -504,7 +491,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               onItemSelected: (listTileName) async {
                                 bool wasAbleToGetUpdatedOrder =
                                     await _getUpdatedOrder();
-                                if (wasAbleToGetUpdatedOrder ?? false) {
+                                if (wasAbleToGetUpdatedOrder) {
                                   if (isNotEmpty(_order.acceptedTime) &&
                                       _order.firstPayment != 0) {
                                     try {
@@ -549,11 +536,12 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                       print(e);
                                       showErrorBottomsheet(
                                         replaceVariable(
-                                          Localization.of(context,
-                                              'an_error_has_occurred_value'),
-                                          'value',
-                                          e.toString(),
-                                        ),
+                                              Localization.of(context,
+                                                  'an_error_has_occurred_value'),
+                                              'value',
+                                              e.toString(),
+                                            ) ??
+                                            "",
                                       );
                                     }
                                   } else {
@@ -581,15 +569,15 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                           disabled: _isLoading ||
                               isEmpty(_order.acceptedTime) ||
                               (_order.firstPayment == 0) ||
-                              (_order.shipmentStatus[0] ==
+                              (_order.shipmentStatus![0] ==
                                       ShipmentStatus.completed ||
-                                  _order.shipmentStatus[0] ==
+                                  _order.shipmentStatus![0] ==
                                       ShipmentStatus.customerRejected),
                           isLoading: _isLoading,
                           onPressed: () async {
                             bool wasAbleToGetUpdatedOrder =
                                 await _getUpdatedOrder();
-                            if (wasAbleToGetUpdatedOrder ?? false) {
+                            if (wasAbleToGetUpdatedOrder) {
                               if (isNotEmpty(_order.acceptedTime)) {
                                 try {
                                   await showBottomsheet(
@@ -640,11 +628,12 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                   print(e);
                                   showErrorBottomsheet(
                                     replaceVariable(
-                                      Localization.of(context,
-                                          'an_error_has_occurred_value'),
-                                      'value',
-                                      e.toString(),
-                                    ),
+                                          Localization.of(context,
+                                              'an_error_has_occurred_value'),
+                                          'value',
+                                          e.toString(),
+                                        ) ??
+                                        "",
                                   );
                                 }
                               } else {
@@ -677,18 +666,19 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
       });
 
       final gsheets = GSheets(_credentials);
-      final ss =
-          await gsheets.spreadsheet(widget.homeScreenController.spreadSheetID);
+      final ss = await gsheets
+          .spreadsheet(widget.homeScreenController.spreadSheetID ?? "");
       final sheet =
-          ss.worksheetByTitle(widget.homeScreenController.worksheetTitle);
+          ss.worksheetByTitle(widget.homeScreenController.worksheetTitle ?? "");
 
       await Future.wait(
         [
-          sheet.values.insertValueByKeys(
+          sheet!.values.insertValueByKeys(
             getShipmentStatusForEmployeeString(
-              context,
-              status,
-            ),
+                  context,
+                  status,
+                ) ??
+                "",
             columnKey: 'Shipment Status',
             rowKey: "# ${_order.referenceID}",
             eager: false,
@@ -696,14 +686,14 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
           FirebaseFirestore.instance
               .collection('Orders')
               .doc('Orders')
-              .collection(_order.sentTime.split(" at")[0])
+              .collection(_order.sentTime?.split(" at")[0] ?? "")
               .doc(_order.sentTime)
               .update({
             'shipmentStatus': [status.value],
           }),
           FirebaseFirestore.instance
               .collection('Customers')
-              .doc(_order.phoneNumber)
+              .doc(_order.orderSenderPhoneNumber)
               .collection("History")
               .doc(_order.sentTime)
               .update({
@@ -711,8 +701,9 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
           }),
           FirebaseFirestore.instance
               .collection(
-                  widget.homeScreenController.SearchInOrdersCollectionName)
-              .doc("${_order.phoneNumber} ${_order.sentTime}")
+                  widget.homeScreenController.SearchInOrdersCollectionName ??
+                      "")
+              .doc("${_order.orderSenderPhoneNumber} ${_order.sentTime}")
               .update({
             'shipmentStatus': [status.value],
           }),
@@ -725,10 +716,11 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
       print(e);
       showErrorBottomsheet(
         replaceVariable(
-          Localization.of(context, 'an_error_has_occurred_value'),
-          'value',
-          e.toString(),
-        ),
+              Localization.of(context, 'an_error_has_occurred_value'),
+              'value',
+              e.toString(),
+            ) ??
+            "",
       );
       setState(() {
         _isLoading = false;
@@ -743,22 +735,22 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
       });
 
       final gsheets = GSheets(_credentials);
-      final ss =
-          await gsheets.spreadsheet(widget.homeScreenController.spreadSheetID);
+      final ss = await gsheets
+          .spreadsheet(widget.homeScreenController.spreadSheetID ?? "");
       final sheet =
-          ss.worksheetByTitle(widget.homeScreenController.worksheetTitle);
+          ss.worksheetByTitle(widget.homeScreenController.worksheetTitle ?? "");
 
       await Future.wait(
         [
-          sheet.values.insertValueByKeys(
-            widget.homeScreenController.employees
+          sheet!.values.insertValueByKeys(
+            (widget.homeScreenController.employees
                     .firstWhere(
-                        (emp) =>
-                            emp.phoneNumber ==
-                            FirebaseAuth.instance.currentUser.phoneNumber,
-                        orElse: () => null)
+                        (element) =>
+                            element.phoneNumber ==
+                            FirebaseAuth.instance.currentUser?.phoneNumber,
+                        orElse: () => Employee(name: null))
                     .name ??
-                "",
+                ""),
             columnKey: 'Accepted By',
             rowKey: "# ${_order.referenceID}",
             eager: false,
@@ -766,50 +758,51 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
           FirebaseFirestore.instance
               .collection('Orders')
               .doc('Orders')
-              .collection(_order.sentTime.split(" at")[0])
+              .collection(_order.sentTime?.split(" at")[0] ?? "")
               .doc(_order.sentTime)
               .update({
-            'acceptedBy': widget.homeScreenController.employees
+            'acceptedBy': (widget.homeScreenController.employees
                     .firstWhere(
-                        (emp) =>
-                            emp.phoneNumber ==
-                            FirebaseAuth.instance.currentUser.phoneNumber,
-                        orElse: () => null)
+                        (element) =>
+                            element.phoneNumber ==
+                            FirebaseAuth.instance.currentUser?.phoneNumber,
+                        orElse: () => Employee(name: null))
                     .name ??
-                "",
+                ""),
             'acceptedTime':
                 "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}",
           }),
           FirebaseFirestore.instance
               .collection('Customers')
-              .doc(_order.phoneNumber)
+              .doc(_order.orderSenderPhoneNumber)
               .collection("History")
               .doc(_order.sentTime)
               .update({
-            'acceptedBy': widget.homeScreenController.employees
+            'acceptedBy': (widget.homeScreenController.employees
                     .firstWhere(
-                        (emp) =>
-                            emp.phoneNumber ==
-                            FirebaseAuth.instance.currentUser.phoneNumber,
-                        orElse: () => null)
+                        (element) =>
+                            element.phoneNumber ==
+                            FirebaseAuth.instance.currentUser?.phoneNumber,
+                        orElse: () => Employee(name: null))
                     .name ??
-                "",
+                ""),
             'acceptedTime':
                 "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}",
           }),
           FirebaseFirestore.instance
               .collection(
-                  widget.homeScreenController.SearchInOrdersCollectionName)
-              .doc("${_order.phoneNumber} ${_order.sentTime}")
+                  widget.homeScreenController.SearchInOrdersCollectionName ??
+                      "")
+              .doc("${_order.orderSenderPhoneNumber} ${_order.sentTime}")
               .update({
-            'acceptedBy': widget.homeScreenController.employees
+            'acceptedBy': (widget.homeScreenController.employees
                     .firstWhere(
-                        (emp) =>
-                            emp.phoneNumber ==
-                            FirebaseAuth.instance.currentUser.phoneNumber,
-                        orElse: () => null)
+                        (element) =>
+                            element.phoneNumber ==
+                            FirebaseAuth.instance.currentUser?.phoneNumber,
+                        orElse: () => Employee(name: null))
                     .name ??
-                "",
+                ""),
             'acceptedTime':
                 "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}",
           }),
@@ -822,10 +815,11 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
       print(e);
       showErrorBottomsheet(
         replaceVariable(
-          Localization.of(context, 'an_error_has_occurred_value'),
-          'value',
-          e.toString(),
-        ),
+              Localization.of(context, 'an_error_has_occurred_value'),
+              'value',
+              e.toString(),
+            ) ??
+            "",
       );
       setState(() {
         _isLoading = false;
@@ -836,7 +830,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
   void openWhatsappNoPrefill() async {
     try {
       launch(
-          'https://wa.me/${_order.phoneNumber}?text=Hello%2C%20we%20received%20your%20feedback.');
+          'https://wa.me/${_order.orderSenderPhoneNumber}?text=Hello%2C%20we%20received%20your%20feedback.');
     } catch (e) {
       print("Open Whatsapp Error: ${e.toString()}");
     }
@@ -844,19 +838,21 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
 
   void openWhatsapp() async {
     try {
-      bool isEnglish = _order.customerName.contains(RegExp(r'[a-zA-Z]'));
+      bool? isEnglish = _order.customerName?.contains(RegExp(r'[a-zA-Z]'));
       if (isEnglish ?? false) {
         String text =
             "Welcome%20to%20Tloble%21%20We%27re%20thrilled%20to%20have%20you%20as%20our%20valued%20customer.%20Our%20goal%20is%20to%20provide%20you%20with%20a%20seamless%20and%20enjoyable%20experience.%0ALet%20us%20first%20confirm%20your%20order.%0A";
         text +=
             "%0AOrder%20Summary%20for%20Order%20%20%2A%23${_order.referenceID}%2A%0A";
-        for (int index = 0; index < _order.productsTitles.length; index++) {
+        for (int index = 0;
+            index < (_order.productsTitles?.length ?? 0);
+            index++) {
           text +=
-              "%0A%2A%20%2A${isEmpty(_order.productsTitles[index]) || (_order.productsTitles[index].toString().toLowerCase() == "product") ? "${_order.productsTitles[index]}%20${index + 1}" : Uri.encodeComponent(_order.productsTitles[index])}%3A%2A%0A-%20Quantity%3A%20${_order.productsQuantities[index]}${isNotEmpty(_order.productsColors[index]) ? "%0A-%20Color%3A%20${_order.productsColors[index]}" : "%0A-%20Color%3A%20Not%20specified"}${isNotEmpty(_order.productsSizes[index]) ? "%0A-%20Size%3A%20${_order.productsSizes[index]}" : "%0A-%20Size%3A%20Not%20specified"}${isNotEmpty(_order.productsLinks[index]) ? "%0A-%20Link%3A%20${Uri.encodeComponent(_order.productsLinks[index])}" : ""}%0A";
+              "%0A%2A%20%2A${isEmpty(_order.productsTitles?[index]) || (_order.productsTitles![index].toString().toLowerCase() == "product") ? "${_order.productsTitles?[index]}%20${index + 1}" : Uri.encodeComponent(_order.productsTitles?[index])}%3A%2A%0A-%20Quantity%3A%20${_order.productsQuantities?[index]}${isNotEmpty(_order.productsColors?[index]) ? "%0A-%20Color%3A%20${_order.productsColors?[index]}" : "%0A-%20Color%3A%20Not%20specified"}${isNotEmpty(_order.productsSizes?[index]) ? "%0A-%20Size%3A%20${_order.productsSizes?[index]}" : "%0A-%20Size%3A%20Not%20specified"}${isNotEmpty(_order.productsLinks?[index]) ? "%0A-%20Link%3A%20${Uri.encodeComponent(_order.productsLinks?[index])}" : ""}%0A";
         }
         text +=
             "%0AWe%20will%20begin%20processing%20your%20order%20after%20receiving%20the%20payment.%20You%20may%20pay%20through%20%2AOMT%2A%2C%20%2AWhish%2A%2C%20%2AUSDT%2A%20or%20%2Acash%2A%20at%20our%20office.";
-        launch('https://wa.me/${_order.phoneNumber}?text=$text');
+        launch('https://wa.me/${_order.orderSenderPhoneNumber}?text=$text');
       } else {
         String text =
             "مرحبا%20بكم%20في%20Tloble%21%20نحن%20سعداء%20أن%20يكون%20لك%20كما%20عملائنا%20الكرام.%20هدفنا%20هو%20أن%20نقدم%20لك%20تجربة%20سلسة%20وممتعة.%0Aدعونا%20أولا%20تأكيد%20طلبك.";
@@ -876,7 +872,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
 
         launch(
           // 'https://wa.me/${widget.order?.phoneNumber}?text=مرحبًا، لقد تلقينا طلبك ${(widget.order.action.toLowerCase() == 'buy') ? Localization.of(context, 'for_buy_ar').toLowerCase() : Localization.of(context, 'for_sell_ar').toLowerCase()} بقيمة \$ ${widget.order.amount}.'),
-          'https://wa.me/${_order?.phoneNumber}?text=$text',
+          'https://wa.me/${_order.orderSenderPhoneNumber}?text=$text',
         );
       }
     } catch (e) {
@@ -886,18 +882,18 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
 
   Future<bool> _getUpdatedOrder({bool popFirst = false}) async {
     try {
-      if (popFirst ?? false) await Navigator.of(context).pop();
+      if (popFirst) await Navigator.of(context).pop;
       setState(() {
         _isLoading = true;
       });
       var data = await FirebaseFirestore.instance
           .collection('Orders')
           .doc('Orders')
-          .collection(_order.sentTime.split(" at")[0])
+          .collection(_order.sentTime?.split(" at")[0] ?? "")
           .where("referenceID", isEqualTo: _order.referenceID)
           .get();
 
-      if (data != null && data.docs.isNotEmpty) {
+      if (data.docs.isNotEmpty) {
         _order = Order.fromJson(data.docs[0].data());
         setState(() {
           _isLoading = false;
@@ -918,13 +914,14 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
     } catch (e) {
       showErrorBottomsheet(
         replaceVariable(
-          Localization.of(
-            context,
-            'an_error_has_occurred_value',
-          ),
-          'value',
-          "${e.toString()}",
-        ),
+              Localization.of(
+                context,
+                'an_error_has_occurred_value',
+              ),
+              'value',
+              "${e.toString()}",
+            ) ??
+            "",
       );
       setState(() {
         _isLoading = false;
@@ -948,11 +945,11 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
         padding: EdgeInsets.symmetric(vertical: 12),
         // color: Colors.grey.withOpacity(0.1),
         child: Column(
-            children: _order.productsLinks.map((x) {
+            children: _order.productsLinks!.map((x) {
           index += 1;
           return _item(
             index,
-            isLastIndex: index == (_order.productsLinks.length ?? 0) - 1,
+            isLastIndex: index == (_order.productsLinks?.length ?? 0) - 1,
             buildContext: buildContext,
           );
         }).toList()));
@@ -961,7 +958,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
   Column _item(
     var index, {
     bool isLastIndex = false,
-    BuildContext buildContext,
+    required BuildContext buildContext,
   }) {
     return Column(
       children: [
@@ -979,11 +976,11 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               (widget.homeScreenController.employees
                                       .firstWhere((element) =>
                                           element.phoneNumber ==
-                                          FirebaseAuth
-                                              .instance.currentUser.phoneNumber)
+                                          FirebaseAuth.instance.currentUser
+                                              ?.phoneNumber)
                                       .name
-                                      .toLowerCase() ==
-                                  _order.acceptedBy.toLowerCase())) {
+                                      ?.toLowerCase() ==
+                                  _order.acceptedBy?.toLowerCase())) {
                             Clipboard.setData(
                               new ClipboardData(
                                   text: widget.order.referenceID.toString()),
@@ -1019,7 +1016,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                       );
                     }),
                     Text(
-                      " (${_order.productsQuantities.length ?? 0} ${(_order.productsImages.length ?? 0) > 1 ? "Items" : "Item"})",
+                      " (${_order.productsQuantities?.length ?? 0} ${(_order.productsImages?.length ?? 0) > 1 ? "Items" : "Item"})",
                       style: TextStyle(
                         fontSize: 16,
                         letterSpacing: 1,
@@ -1032,12 +1029,12 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           color:
-                              getShipmentStatusColor(_order.shipmentStatus[0]),
+                              getShipmentStatusColor(_order.shipmentStatus![0]),
                           borderRadius: BorderRadius.circular(10)),
                       child: TitleText(
                         text: getShipmentStatusForEmployeeString(
                           context,
-                          _order.shipmentStatus[0],
+                          _order.shipmentStatus![0],
                         ),
                         fontSize: 12,
                         textAlign: TextAlign.center,
@@ -1053,9 +1050,9 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                       Builder(builder: (BuildContext buildContext) {
                         return InkWell(
                           onLongPress: () {
-                            if (_order.shipmentStatus[0] ==
+                            if (_order.shipmentStatus![0] ==
                                     ShipmentStatus.awaitingCustomerPickup ||
-                                (widget.homeScreenController?.isAdmin ??
+                                (widget.homeScreenController.isAdmin ??
                                     false)) {
                               try {
                                 openWhatsappNoPrefill();
@@ -1070,10 +1067,10 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                         .firstWhere((element) =>
                                             element.phoneNumber ==
                                             FirebaseAuth.instance.currentUser
-                                                .phoneNumber)
+                                                ?.phoneNumber)
                                         .name
-                                        .toLowerCase() ==
-                                    _order.acceptedBy.toLowerCase())) {
+                                        ?.toLowerCase() ==
+                                    _order.acceptedBy?.toLowerCase())) {
                               Clipboard.setData(new ClipboardData(
                                       text: widget.order.phoneNumber))
                                   .then((result) {
@@ -1110,7 +1107,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                     letterSpacing: 1),
                               ),
                               Text(
-                                _order?.phoneNumber ?? "",
+                                _order.phoneNumber ?? "",
                                 style: TextStyle(
                                   fontSize: 16,
                                   letterSpacing: 1,
@@ -1130,10 +1127,10 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                           .firstWhere((element) =>
                                               element.phoneNumber ==
                                               FirebaseAuth.instance.currentUser
-                                                  .phoneNumber)
+                                                  ?.phoneNumber)
                                           .name
-                                          .toLowerCase() ==
-                                      _order.acceptedBy.toLowerCase())) {
+                                          ?.toLowerCase() ==
+                                      _order.acceptedBy?.toLowerCase())) {
                                 Clipboard.setData(new ClipboardData(
                                         text: widget.order.customerName))
                                     .then((result) {
@@ -1171,7 +1168,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                       letterSpacing: 1),
                                 ),
                                 Text(
-                                  _order.customerName,
+                                  _order.customerName ?? "",
                                   style: TextStyle(
                                     fontSize: 16,
                                     letterSpacing: 1,
@@ -1201,7 +1198,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                       child: WKNetworkImage(
-                        _order.productsImages[index],
+                        _order.productsImages?[index],
                         fit: BoxFit.contain,
                         width: 60,
                         height: 60,
@@ -1232,10 +1229,10 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                               .firstWhere((element) =>
                                                   element.phoneNumber ==
                                                   FirebaseAuth.instance
-                                                      .currentUser.phoneNumber)
+                                                      .currentUser?.phoneNumber)
                                               .name
-                                              .toLowerCase() ==
-                                          _order.acceptedBy.toLowerCase())) {
+                                              ?.toLowerCase() ==
+                                          _order.acceptedBy?.toLowerCase())) {
                                     Clipboard.setData(new ClipboardData(
                                             text: widget.order.customerName))
                                         .then((result) {
@@ -1272,13 +1269,13 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                                     FirebaseAuth
                                                         .instance
                                                         .currentUser
-                                                        .phoneNumber)
+                                                        ?.phoneNumber)
                                                 .name
-                                                .toLowerCase() ==
-                                            _order.acceptedBy.toLowerCase())) {
+                                                ?.toLowerCase() ==
+                                            _order.acceptedBy?.toLowerCase())) {
                                       bool isIOS = Theme.of(context).platform ==
                                           TargetPlatform.iOS;
-                                      var url = _order.productsLinks[index];
+                                      var url = _order.productsLinks?[index];
                                       if (isIOS) {
                                         if (await canLaunch(url)) {
                                           await launch(url);
@@ -1323,25 +1320,25 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               );
                             }),
                           ),
-                            Container(
-                              width: (widget.homeScreenController
-                                          .showProductPrice ??
-                                      false)
-                                  ? 100
-                                  : 150,
-                              child: Text(
-                                _order.productsTitles[index],
-                                maxLines: 2,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w900,
-                                ),
+                          Container(
+                            width:
+                                (widget.homeScreenController.showProductPrice ??
+                                        false)
+                                    ? 100
+                                    : 150,
+                            child: Text(
+                              _order.productsTitles?[index],
+                              maxLines: 2,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
+                          ),
                           Container(
                             width: 150,
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
-                              "${Localization.of(context, 'color:')} ${isNotEmpty(_order.productsColors[index]) ? _order.productsColors[index] : Localization.of(context, 'not_specified')}",
+                              "${Localization.of(context, 'color:')} ${isNotEmpty(_order.productsColors?[index]) ? _order.productsColors![index] : Localization.of(context, 'not_specified')}",
                               maxLines: 1,
                               style: TextStyle(
                                 // fontSize: 15,
@@ -1354,7 +1351,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                             width: 150,
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
-                              "${Localization.of(context, 'size:')} ${isNotEmpty(_order.productsSizes[index]) ? _order.productsSizes[index] : Localization.of(context, 'not_specified')}",
+                              "${Localization.of(context, 'size:')} ${isNotEmpty(_order.productsSizes?[index]) ? _order.productsSizes![index] : Localization.of(context, 'not_specified')}",
                               maxLines: 1,
                               style: TextStyle(
                                 // fontSize: 15,
@@ -1375,7 +1372,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                     fontSize: 12,
                                   ),
                                   TitleText(
-                                    text: _order.productsPrices[index],
+                                    text: _order.productsPrices?[index],
                                     fontSize: 14,
                                   ),
                                 ],
@@ -1393,26 +1390,27 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                       width: 60,
                       decoration: BoxDecoration(
                         color: Colors.white,
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.black.withOpacity(0.3),
+                        ),
                         borderRadius: BorderRadius.all(
                           Radius.circular(13),
                         ),
                       ),
-                      child: DropdownButtonFormField2<String>(
-                        isExpanded: true,
-                        iconSize: 22,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 12,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        hint: Center(
-                          child: Text(
-                            "    " + _order.productsQuantities[index],
-                            style: TextStyle(fontSize: 14),
-                          ),
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.only(
+                            start: 12,
+                            end: 12,
+                            top: num.tryParse(
+                                        _order.productsQuantities![index])! >
+                                    1000
+                                ? 0
+                                : 10),
+                        child: Text(
+                          " ${(num.tryParse(_order.productsQuantities![index])! < 100) && (num.tryParse(_order.productsQuantities![index])! > 10) ? " " : ""}${num.tryParse(_order.productsQuantities![index])! < 10 ? "  " : ""}${num.tryParse(_order.productsQuantities![index])! > 100 && num.tryParse(_order.productsQuantities![index])! < 1000 ? "" : ""}" +
+                              _order.productsQuantities![index],
+                          style: TextStyle(fontSize: 14),
                         ),
                       ),
                     ),
@@ -1432,7 +1430,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               ),
                               TitleText(
                                 text:
-                                    "${(num.tryParse(_order.productsQuantities[index].replaceAll(',', '')) * num.tryParse(_order.productsPrices[index].replaceAll(',', ''))).toStringAsFixed(2)}",
+                                    "${(num.tryParse(_order.productsQuantities?[index].replaceAll(',', ''))! * num.tryParse(_order.productsPrices?[index].replaceAll(',', ''))!).toStringAsFixed(2)}",
                                 fontSize: 14,
                               ),
                             ],
@@ -1614,170 +1612,6 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
     );
   }
 
-  void _getOrderInfo() async {
-    String text =
-        'Welcome%20to%20Tloble%21%20We%27re%20thrilled%20to%20have%20you%20as%20our%20valued%20customer.%20Our%20goal%20is%20to%20provide%20you%20with%20a%20seamless%20and%20enjoyable%20experience.%20Let%20us%20first%20confirm%20your%20order.%0A%0AOrder%20Summary%20for%20Order%20%2A%23%2A%0A%2A%20Item%201%3A%20Quantity%20-%205%2C%20Link%3A%20%0A%2A%20Item%202%3A%20Quantity%20-%202%2C%20Link%3A%20%0A%0AWe%20will%20begin%20processing%20your%20order%20after%20receiving%20the%20payment.%20You%20may%20pay%20through%20OMT%2C%20Which%2C%20USDT%20or%20cash%20at%20our%20office.';
-  }
-
-  Future<void> confirmAction() async {
-    await submitOrder();
-  }
-
-  Future<void> submitOrder() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      notificationToken = await FirebaseMessaging.instance.getToken();
-      DocumentReference orders =
-          FirebaseFirestore.instance.collection('Orders').doc("Orders");
-      // if (customer == null)
-      //   FirebaseFirestore.instance
-      //       .collection('Customers')
-      //       .doc(widget.user.phoneNumber)
-      //       .set(Customer(
-      //     phoneNumber: widget.user.phoneNumber,
-      //     notificationToken: notificationToken,
-      //     coins: customer?.coins ?? 0,
-      //     totalMoneyIn: customer?.totalMoneyIn ?? 0,
-      //     totalMoneyOut: customer?.totalMoneyOut ?? 0,
-      //   ).toJson()),
-      await FirebaseFirestore.instance
-          .collection('Customers')
-          .doc(FirebaseAuth.instance.currentUser.phoneNumber)
-          .collection("History")
-          .doc(
-              "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
-          .set(
-            Order(
-              amount: 1234,
-              acceptedBy: "",
-              productsTitles: _order.productsTitles,
-              productsQuantities: _order.productsQuantities,
-              productsLinks: _order.productsLinks,
-              productsColors: _order.productsColors,
-              productsSizes: _order.productsSizes,
-              productsPrices: _order.productsPrices,
-              productsImages: _order.productsImages,
-              customerName: widget.homeScreenController.customer?.name,
-              employeeWhoSentTheOrder: widget.homeScreenController.employees
-                      .firstWhere(
-                          (emp) =>
-                              emp.phoneNumber ==
-                              FirebaseAuth.instance.currentUser.phoneNumber,
-                          orElse: () => null)
-                      .name ??
-                  "",
-              notificationToken: notificationToken,
-              acceptedTime: '',
-              referenceID: _order.referenceID,
-              coins: 0,
-              shipmentStatus: [ShipmentStatus.awaitingCustomer],
-              orderStatus: [OrderStatus.pending],
-              sentTime:
-                  "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}",
-            ).toJson(),
-          );
-      await orders
-          .collection(
-            "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)}",
-          )
-          .doc(
-              "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
-          // .doc(FirebaseAuth.instance.currentUser.phoneNumber)
-          .set(
-            Order(
-              amount: 1234,
-              acceptedBy: "",
-              productsTitles: _order.productsTitles,
-              productsQuantities: _order.productsQuantities,
-              productsLinks: _order.productsLinks,
-              productsColors: _order.productsColors,
-              productsSizes: _order.productsSizes,
-              productsPrices: _order.productsPrices,
-              productsImages: _order.productsImages,
-              customerName: widget.homeScreenController.customer?.name,
-              employeeWhoSentTheOrder: widget.homeScreenController.employees
-                      .firstWhere(
-                          (emp) =>
-                              emp.phoneNumber ==
-                              FirebaseAuth.instance.currentUser.phoneNumber,
-                          orElse: () => null)
-                      .name ??
-                  "",
-              notificationToken: notificationToken,
-              acceptedTime: '',
-              referenceID: _order.referenceID,
-              coins: 0,
-              shipmentStatus: [ShipmentStatus.awaitingCustomer],
-              orderStatus: [OrderStatus.pending],
-              sentTime:
-                  "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}",
-            ).toJson(),
-          );
-      await FirebaseFirestore.instance
-          .collection(widget.homeScreenController.SearchInOrdersCollectionName)
-          .doc(
-              "${FirebaseAuth.instance.currentUser.phoneNumber} ${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
-          .set(
-            Order(
-              amount: 1234,
-              acceptedBy: "",
-              productsTitles: _order.productsTitles,
-              productsQuantities: _order.productsQuantities,
-              productsLinks: _order.productsLinks,
-              productsColors: _order.productsColors,
-              productsSizes: _order.productsSizes,
-              productsPrices: _order.productsPrices,
-              productsImages: _order.productsImages,
-              customerName: widget.homeScreenController.customer?.name,
-              phoneNumber: FirebaseAuth.instance.currentUser.phoneNumber,
-              employeeWhoSentTheOrder: widget.homeScreenController.employees
-                      .firstWhere(
-                          (emp) =>
-                              emp.phoneNumber ==
-                              FirebaseAuth.instance.currentUser.phoneNumber,
-                          orElse: () => null)
-                      .name ??
-                  "",
-              notificationToken: notificationToken,
-              acceptedTime: '',
-              referenceID: _order.referenceID,
-              coins: 0,
-              shipmentStatus: [ShipmentStatus.awaitingCustomer],
-              orderStatus: [OrderStatus.pending],
-              sentTime:
-                  "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}",
-            ).toJson(),
-          );
-      widget.homeScreenController.productsTitles = [];
-      widget.homeScreenController.productsLinks = [];
-      widget.homeScreenController.productsQuantities = [];
-      widget.homeScreenController.productsColors = [];
-      widget.homeScreenController.productsSizes = [];
-      widget.homeScreenController.productsPrices = [];
-      widget.homeScreenController.productsImages = [];
-
-      widget.homeScreenController.refreshView();
-
-      showSuccessBottomsheet(
-        Localization.of(context, "order_submitted_successfully"),
-        closeOnTapOutside: false,
-        onTap: () async {
-          await Navigator.of(context).pop();
-        },
-      );
-      // setState(() {
-      //   _isSubmittingOrder = false;
-      // });
-    } catch (e) {
-      showErrorBottomsheet("Error submitting your order, please try again");
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
   Widget _appBar() {
     return Container(
       padding: AppTheme.padding,
@@ -1840,7 +1674,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
   void showSuccessBottomsheet(
     String message, {
     bool closeOnTapOutside = true,
-    Function onTap,
+    Function? onTap,
     bool shouldSetState = true,
   }) async {
     if (!mounted) return;
@@ -1853,7 +1687,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
     await showBottomsheet(
       context: context,
       isScrollControlled: true,
-      dismissOnTouchOutside: closeOnTapOutside ?? true,
+      dismissOnTouchOutside: closeOnTapOutside,
       height: MediaQuery.of(context).size.height * 0.25,
       upperWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1862,13 +1696,11 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
             child: Container(
               width: 100,
               height: 80,
-              child: animResource != null
-                  ? FlareActor(
-                      animResource,
-                      animation: 'animate',
-                      fit: BoxFit.fitWidth,
-                    )
-                  : Container(),
+              child: FlareActor(
+                animResource,
+                animation: 'animate',
+                fit: BoxFit.fitWidth,
+              ),
             ),
           ),
           Center(
@@ -1876,9 +1708,9 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
               width: MediaQuery.of(context).size.width / 1.5,
               child: Center(
                 child: Text(
-                  message ?? "",
+                  message,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),
@@ -1899,9 +1731,9 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
               label: Localization.of(context, 'done'),
               // disabled: isLoading ?? false,
               onPressed: () async {
-                await Navigator.of(context).pop();
+                 Navigator.of(context).pop();
                 if (onTap != null) onTap();
-                if (shouldSetState ?? true) setState(() {});
+                if (shouldSetState) setState(() {});
               },
             ),
           ),

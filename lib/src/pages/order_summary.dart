@@ -16,17 +16,16 @@ import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
-import 'package:flutter_ecommerce_app/src/utils/UBScaffold/loader.dart';
 import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/utils/util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_helper_extension.dart';
 
 import '../firebase_notification.dart';
+import '../models/employee.dart';
 import 'authentication/login.dart';
 import 'mainPage.dart';
 import 'package:http/http.dart' as http;
@@ -35,13 +34,13 @@ class OrderSummaryScreen extends StatefulWidget {
   final HomeScreenController homeScreenController;
 
   OrderSummaryScreen({
-    Key key,
-    this.homeScreenController,
+    Key? key,
+    required this.homeScreenController,
   }) : super(key: key);
   static const String route = '/home';
 
   static void restartApp(BuildContext context) {
-    context.findAncestorStateOfType<_OrderSummaryScreenState>().restartApp();
+    context.findAncestorStateOfType<_OrderSummaryScreenState>()?.restartApp();
   }
 
   @override
@@ -65,25 +64,16 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
   num rate = 1;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
 
-  String amount,
+  String? amount,
       versionNumber,
       buildNumber,
       version,
       errorMessage,
       notificationToken,
       newsText = "";
-  int amountWithFee, amountWithoutFee;
-  List<String> adminPanelNames = [];
-  List<String> managementNames = [];
-  List<String> towns;
-  String selectedCity;
 
-  final _formKey = GlobalKey<FormState>();
-
-  String selectedCountryPhoneCode;
-  String selectedCountryIsoCode;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  Customer customer;
+  late Customer customer;
   Key key = UniqueKey();
 
   void restartApp() {
@@ -97,7 +87,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
     super.initState();
     if (!mounted) return;
     WidgetsBinding.instance.addObserver(this);
-    _customerNumberController.text = _firebaseAuth.currentUser?.phoneNumber;
+    _customerNumberController.text =
+        _firebaseAuth.currentUser?.phoneNumber ?? "";
   }
 
   @override
@@ -113,10 +104,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
         i++) {
       price += num.tryParse(widget.homeScreenController.productsPrices[i]
                   .replaceAll(',', '') ??
-              "0") *
+              "0")! *
           num.tryParse(widget.homeScreenController.productsQuantities[i]
                   .replaceAll(',', '') ??
-              "0");
+              "0")!;
     }
 
     return price;
@@ -149,21 +140,22 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   _appBar(),
                   _title(),
                   _buildProducts(),
-                  // if ((widget.homeScreenController?.employees?.firstWhere(
-                  //           (element) =>
-                  //               element.phoneNumber ==
-                  //               FirebaseAuth.instance.currentUser?.phoneNumber,
-                  //           orElse: () => null,
-                  //         ) !=
-                  //         null) ??
-                  //     false)
-                  //   Padding(
-                  //     padding: EdgeInsets.symmetric(
-                  //       horizontal: 12,
-                  //       vertical: 16,
-                  //     ),
-                  //     child: _buildUserPhoneNumber(),
-                  //   ),
+                  if ((widget.homeScreenController.employees
+                          .firstWhere(
+                              (element) =>
+                                  element.phoneNumber ==
+                                  FirebaseAuth
+                                      .instance.currentUser?.phoneNumber,
+                              orElse: () => Employee(name: null))
+                          .name !=
+                      null))
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
+                      child: _buildUserPhoneNumber(),
+                    ),
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 62,
@@ -173,9 +165,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                       disabled: _isSubmittingOrder || _isLoadingLogin,
                       isLoading: _isSubmittingOrder || _isLoadingLogin,
                       onPressed: () async {
-                        if (!widget.homeScreenController.isBanned) {
+                        if (!(widget.homeScreenController.isBanned ?? true)) {
                           bool isRoot = await checkIfSuperUser();
-                          if ((widget.homeScreenController?.checkForRoot ??
+                          if ((widget.homeScreenController.checkForRoot ??
                                   true) &&
                               isRoot) {
                             await showActionBottomSheet(
@@ -187,7 +179,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                   'jailbreak_info',
                                 ),
                                 'value',
-                                widget.homeScreenController.contactUsNumber,
+                                widget.homeScreenController.contactUsNumber ??
+                                    "",
                               ),
                               popOnPress: true,
                               dismissOnTouchOutside: false,
@@ -212,7 +205,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                           .homeScreenController.submissionTextAR
                                       : widget
                                           .homeScreenController.submissionText)
-                                  .replaceAll(r'\n', '\n')
+                                  ?.replaceAll(r'\n', '\n')
                                   .replaceAll(r"\'", "\'"),
                               confirmMessage:
                                   Localization.of(context, 'confirm'),
@@ -232,7 +225,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                 'banned_disclaimer',
                               ),
                               'value',
-                              widget.homeScreenController.contactUsNumber,
+                              widget.homeScreenController.contactUsNumber ?? "",
                             ),
                             popOnPress: true,
                             dismissOnTouchOutside: false,
@@ -256,11 +249,12 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                       padding: const EdgeInsets.only(
                           left: 16.0, right: 16.0, top: 16, bottom: 48),
                       child: Text(
-                        (Localizations.localeOf(context).languageCode == 'ar')
-                            ? widget
-                                .homeScreenController.orderSummaryDisclaimerAR
-                            : widget
-                                .homeScreenController.orderSummaryDisclaimer,
+                        ((Localizations.localeOf(context).languageCode == 'ar')
+                                ? widget.homeScreenController
+                                    .orderSummaryDisclaimerAR
+                                : widget.homeScreenController
+                                    .orderSummaryDisclaimer) ??
+                            "",
                         style: TextStyle(
                             fontSize: 12, color: Colors.black.withOpacity(0.6)),
                       ),
@@ -332,7 +326,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
           index += 1;
           return _item(index,
               isLastIndex: index ==
-                  (widget.homeScreenController.productsLinks.length ?? 0) - 1);
+                  (widget.homeScreenController.productsLinks.length) - 1);
         }).toList()));
   }
 
@@ -354,7 +348,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                           letterSpacing: 1),
                     ),
                     Text(
-                      " (${widget.homeScreenController.productsQuantities.length ?? 0} ${(widget.homeScreenController.productsImages.length ?? 0) > 1 ? Localization.of(context, "items") : Localization.of(context, "item")})",
+                      " (${widget.homeScreenController.productsQuantities.length} ${(widget.homeScreenController.productsImages.length) > 1 ? Localization.of(context, "items") : Localization.of(context, "item")})",
                       style: TextStyle(
                         fontSize: 16,
                         letterSpacing: 1,
@@ -378,7 +372,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                       child: WKNetworkImage(
-                        widget.homeScreenController.productsImages[index],
+                        ((widget.homeScreenController.hideImage ?? true))
+                            ? ""
+                            : widget.homeScreenController.productsImages[index],
                         fit: BoxFit.contain,
                         width: 60,
                         height: 60,
@@ -472,28 +468,28 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                       width: 60,
                       decoration: BoxDecoration(
                         color: Colors.white,
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.black.withOpacity(0.3),
+                        ),
                         borderRadius: BorderRadius.all(
                           Radius.circular(13),
                         ),
                       ),
-                      child: DropdownButtonFormField2<String>(
-                        isExpanded: true,
-                        iconSize: 22,
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 12,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        hint: Center(
-                          child: Text(
-                            " ${num.tryParse(widget.homeScreenController.productsQuantities[index]) < 100 ? "   " : ""}${num.tryParse(widget.homeScreenController.productsQuantities[index]) > 100 && num.tryParse(widget.homeScreenController.productsQuantities[index]) < 1000 ? "  " : ""}" +
-                                widget.homeScreenController
-                                    .productsQuantities[index],
-                            style: TextStyle(fontSize: 14),
-                          ),
+                      child: Padding(
+                        padding: EdgeInsetsDirectional.only(
+                            start: 12,
+                            end: 12,
+                            top: num.tryParse(widget.homeScreenController
+                                        .productsQuantities[index])! >
+                                    1000
+                                ? 0
+                                : 10),
+                        child: Text(
+                          " ${(num.tryParse(widget.homeScreenController.productsQuantities[index])! < 100) && (num.tryParse(widget.homeScreenController.productsQuantities[index])! > 10) ? " " : ""}${num.tryParse(widget.homeScreenController.productsQuantities[index])! < 10 ? "  " : ""}${num.tryParse(widget.homeScreenController.productsQuantities[index])! > 100 && num.tryParse(widget.homeScreenController.productsQuantities[index])! < 1000 ? "" : ""}" +
+                              widget.homeScreenController
+                                  .productsQuantities[index],
+                          style: TextStyle(fontSize: 14),
                         ),
                       ),
                     ),
@@ -503,7 +499,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                         (num.tryParse(widget
                                     .homeScreenController.productsPrices[index]
                                     .replaceAll(',', ''))
-                                .toStringAsFixed(2) !=
+                                ?.toStringAsFixed(2) !=
                             "0.00"))
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -519,7 +515,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                               ),
                               TitleText(
                                 text:
-                                    "${(num.tryParse(widget.homeScreenController.productsQuantities[index].replaceAll(',', '')) * num.tryParse(widget.homeScreenController.productsPrices[index].replaceAll(',', ''))).toStringAsFixed(2)}",
+                                    "${(num.tryParse(widget.homeScreenController.productsQuantities[index].replaceAll(',', ''))! * num.tryParse(widget.homeScreenController.productsPrices[index].replaceAll(',', ''))!).toStringAsFixed(2)}",
                                 fontSize: 14,
                               ),
                             ],
@@ -708,7 +704,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
     if (_firebaseAuth.currentUser?.phoneNumber == null) {
       await userNotRegistered();
     } else {
-      await Navigator.of(context).pop();
+      await Navigator.of(context).pop;
       await submitOrder();
     }
   }
@@ -735,8 +731,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
           });
 
           if (isNotEmpty(customerNamee)) {
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
+            await Navigator.of(context).pop;
+            await Navigator.of(context).pop;
 
             notificationToken = await FirebaseMessaging.instance.getToken();
             var result = await FirebaseFirestore.instance
@@ -760,19 +756,20 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   .doc(_firebaseAuth.currentUser?.phoneNumber ?? '')
                   .set(newCustomer.toJson());
             } else {
-              customer = Customer.fromJson(result.data());
+              customer =
+                  Customer.fromJson(result.data() as Map<dynamic, dynamic>);
               customer = Customer(
                 name: customerNamee.toString().capitalize,
                 phoneNumber: customer.phoneNumber,
                 notificationToken: notificationToken,
-                coins: customer?.coins ?? 0,
+                coins: customer.coins ?? 0,
               );
 
               widget.homeScreenController.customer = Customer(
                 name: customerNamee.toString().capitalize,
                 phoneNumber: customer.phoneNumber,
                 notificationToken: notificationToken,
-                coins: customer?.coins ?? 0,
+                coins: customer.coins ?? 0,
               );
 
               await FirebaseFirestore.instance
@@ -782,7 +779,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                     name: customerNamee.toString().capitalize,
                     phoneNumber: customer.phoneNumber,
                     notificationToken: notificationToken,
-                    coins: customer?.coins ?? 0,
+                    coins: customer.coins ?? 0,
                   ).toJson());
             }
 
@@ -821,7 +818,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
               closeOnTapOutside: false,
               shouldSetState: false,
               onTap: () async {
-                Navigator.pushAndRemoveUntil(
+                await Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
@@ -867,7 +864,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
         [
           FirebaseFirestore.instance
               .collection('Customers')
-              .doc(FirebaseAuth.instance.currentUser.phoneNumber)
+              .doc(FirebaseAuth.instance.currentUser?.phoneNumber)
               .collection("History")
               .doc(
                   "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
@@ -886,27 +883,30 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   productsPrices: widget.homeScreenController.productsPrices,
                   productsImages: widget.homeScreenController.productsImages,
                   customerName: widget.homeScreenController.customer?.name,
+                  orderSenderPhoneNumber:
+                      FirebaseAuth.instance.currentUser?.phoneNumber,
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
-                      : customer?.phoneNumber,
-                  employeeWhoSentTheOrder: widget.homeScreenController.employees
+                      : customer.phoneNumber,
+                  employeeWhoSentTheOrder: (widget
+                          .homeScreenController.employees
                           .firstWhere(
-                              (emp) =>
-                                  emp.phoneNumber ==
-                                  FirebaseAuth.instance.currentUser.phoneNumber,
-                              orElse: () => null)
-                          ?.name ??
-                      "",
-                  sentByEmployee:
-                      (widget.homeScreenController?.employees?.firstWhere(
-                                (element) =>
-                                    element.phoneNumber ==
-                                    FirebaseAuth
-                                        .instance.currentUser?.phoneNumber,
-                                orElse: () => null,
-                              ) !=
-                              null) ??
-                          false,
+                              (element) =>
+                                  element.phoneNumber ==
+                                  FirebaseAuth
+                                      .instance.currentUser?.phoneNumber,
+                              orElse: () => Employee(name: null))
+                          .name ??
+                      ""),
+                  sentByEmployee: (widget.homeScreenController.employees
+                          .firstWhere(
+                              (element) =>
+                                  element.phoneNumber ==
+                                  FirebaseAuth
+                                      .instance.currentUser?.phoneNumber,
+                              orElse: () => Employee(name: "unknownnnn"))
+                          .name !=
+                      "unknownnnn"),
                   notificationToken: notificationToken,
                   acceptedTime: '',
                   referenceID: referenceID,
@@ -939,27 +939,30 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   productsPrices: widget.homeScreenController.productsPrices,
                   productsImages: widget.homeScreenController.productsImages,
                   customerName: widget.homeScreenController.customer?.name,
+                  orderSenderPhoneNumber:
+                      FirebaseAuth.instance.currentUser?.phoneNumber,
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
-                      : customer?.phoneNumber,
-                  employeeWhoSentTheOrder: widget.homeScreenController.employees
+                      : customer.phoneNumber,
+                  employeeWhoSentTheOrder: (widget
+                          .homeScreenController.employees
                           .firstWhere(
-                              (emp) =>
-                                  emp.phoneNumber ==
-                                  FirebaseAuth.instance.currentUser.phoneNumber,
-                              orElse: () => null)
-                          ?.name ??
-                      "",
-                  sentByEmployee:
-                      (widget.homeScreenController?.employees?.firstWhere(
-                                (element) =>
-                                    element.phoneNumber ==
-                                    FirebaseAuth
-                                        .instance.currentUser?.phoneNumber,
-                                orElse: () => null,
-                              ) !=
-                              null) ??
-                          false,
+                              (element) =>
+                                  element.phoneNumber ==
+                                  FirebaseAuth
+                                      .instance.currentUser?.phoneNumber,
+                              orElse: () => Employee(name: null))
+                          .name ??
+                      ""),
+                  sentByEmployee: (widget.homeScreenController.employees
+                          .firstWhere(
+                              (element) =>
+                                  element.phoneNumber ==
+                                  FirebaseAuth
+                                      .instance.currentUser?.phoneNumber,
+                              orElse: () => Employee(name: "unknownnnn"))
+                          .name !=
+                      "unknownnnn"),
                   notificationToken: notificationToken,
                   acceptedTime: '',
                   referenceID: referenceID,
@@ -972,9 +975,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
               ),
           FirebaseFirestore.instance
               .collection(
-                  widget.homeScreenController.SearchInOrdersCollectionName)
+                  widget.homeScreenController.SearchInOrdersCollectionName ??
+                      "")
               .doc(
-                  "${FirebaseAuth.instance.currentUser.phoneNumber} ${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
+                  "${FirebaseAuth.instance.currentUser?.phoneNumber} ${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
               .set(
                 Order(
                   amount: 1234,
@@ -990,27 +994,30 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   productsPrices: widget.homeScreenController.productsPrices,
                   productsImages: widget.homeScreenController.productsImages,
                   customerName: widget.homeScreenController.customer?.name,
+                  orderSenderPhoneNumber:
+                      FirebaseAuth.instance.currentUser?.phoneNumber,
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
-                      : customer?.phoneNumber,
-                  employeeWhoSentTheOrder: widget.homeScreenController.employees
+                      : customer.phoneNumber,
+                  employeeWhoSentTheOrder: (widget
+                          .homeScreenController.employees
                           .firstWhere(
-                              (emp) =>
-                                  emp.phoneNumber ==
-                                  FirebaseAuth.instance.currentUser.phoneNumber,
-                              orElse: () => null)
-                          ?.name ??
-                      "",
-                  sentByEmployee:
-                      (widget.homeScreenController?.employees?.firstWhere(
-                                (element) =>
-                                    element.phoneNumber ==
-                                    FirebaseAuth
-                                        .instance.currentUser?.phoneNumber,
-                                orElse: () => null,
-                              ) !=
-                              null) ??
-                          false,
+                              (element) =>
+                                  element.phoneNumber ==
+                                  FirebaseAuth
+                                      .instance.currentUser?.phoneNumber,
+                              orElse: () => Employee(name: null))
+                          .name ??
+                      ""),
+                  sentByEmployee: (widget.homeScreenController.employees
+                          .firstWhere(
+                              (element) =>
+                                  element.phoneNumber ==
+                                  FirebaseAuth
+                                      .instance.currentUser?.phoneNumber,
+                              orElse: () => Employee(name: "unknownnnn"))
+                          .name !=
+                      "unknownnnn"),
                   notificationToken: notificationToken,
                   acceptedTime: '',
                   referenceID: referenceID,
@@ -1033,18 +1040,13 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
           //         "&secondPayment=200")),
           http.get(
             Uri.parse(
-              widget.homeScreenController.spreadSheetScriptURL +
+              widget.homeScreenController.spreadSheetScriptURL! +
                   "?requestID=%23 ${referenceID.toString()}" +
                   "&customerName=${widget.homeScreenController.customer?.name}" +
-                  "&phoneNumber=%2B${(isNotEmpty(_customerNumberController.text) ? _customerNumberController.text : customer?.phoneNumber)?.replaceAll("+", "")}" +
+                  "&phoneNumber=%2B${(isNotEmpty(_customerNumberController.text) ? _customerNumberController.text : customer.phoneNumber)?.replaceAll("+", "")}" +
                   "&acceptedBy=" +
-                  "&sentByEmployee=${(widget.homeScreenController?.employees?.firstWhere(
-                        (element) =>
-                            element.phoneNumber ==
-                            FirebaseAuth.instance.currentUser?.phoneNumber,
-                        orElse: () => null,
-                      ) != null) ?? false}" +
-                  "&employeeWhoSentTheOrder=${widget.homeScreenController.employees.firstWhere((emp) => emp.phoneNumber == FirebaseAuth.instance.currentUser.phoneNumber, orElse: () => null)?.name ?? ""}" +
+                  "&sentByEmployee=${(widget.homeScreenController.employees.firstWhere((element) => element.phoneNumber == FirebaseAuth.instance.currentUser?.phoneNumber, orElse: () => Employee(name: null)).name != null)}" +
+                  "&employeeWhoSentTheOrder=${(widget.homeScreenController.employees.firstWhere((element) => element.phoneNumber == FirebaseAuth.instance.currentUser?.phoneNumber, orElse: () => Employee(name: null)).name ?? "")}" +
                   "&shipmentStatus=${getShipmentStatusForEmployeeString(context, ShipmentStatus.awaitingCustomer)}" +
                   "&firstPayment=0" +
                   "&secondPayment=0",
@@ -1066,7 +1068,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
         Localization.of(context, "order_submitted_successfully"),
         closeOnTapOutside: false,
         onTap: () async {
-          await Navigator.of(context).pop();
+          Navigator.of(context).pop();
         },
       );
       // setState(() {
@@ -1149,7 +1151,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
   void showSuccessBottomsheet(
     String message, {
     bool closeOnTapOutside = true,
-    Function onTap,
+    Function? onTap,
     bool shouldSetState = true,
     bool shouldPop = true,
   }) async {
@@ -1163,7 +1165,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
     await showBottomsheet(
       context: context,
       isScrollControlled: true,
-      dismissOnTouchOutside: closeOnTapOutside ?? true,
+      dismissOnTouchOutside: closeOnTapOutside,
       height: MediaQuery.of(context).size.height *
           (Theme.of(context).platform == TargetPlatform.iOS ? 0.27 : 0.3),
       upperWidget: Column(
@@ -1173,13 +1175,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
             child: Container(
               width: 100,
               height: 80,
-              child: animResource != null
-                  ? FlareActor(
-                      animResource,
-                      animation: 'animate',
-                      fit: BoxFit.fitWidth,
-                    )
-                  : Container(),
+              child: FlareActor(
+                animResource,
+                animation: 'animate',
+                fit: BoxFit.fitWidth,
+              ),
             ),
           ),
           Center(
@@ -1187,9 +1187,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
               width: MediaQuery.of(context).size.width / 1.5,
               child: Center(
                 child: Text(
-                  message ?? "",
+                  message,
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),
@@ -1210,9 +1210,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
               label: Localization.of(context, 'done'),
               // disabled: isLoading ?? false,
               onPressed: () async {
-                if (shouldPop ?? true) await Navigator.of(context).pop();
+                if (shouldPop) Navigator.of(context).pop();
                 if (onTap != null) onTap();
-                if (shouldSetState ?? true) setState(() {});
+                if (shouldSetState) setState(() {});
               },
             ),
           ),

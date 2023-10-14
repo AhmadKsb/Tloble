@@ -6,13 +6,13 @@ import '../api_exception.dart';
 
 class ErrorSwitcher extends StatelessWidget {
   final VoidCallback onRetry;
-  final String message, subMessage;
+  final String? message, subMessage;
   final dynamic error;
 
   const ErrorSwitcher({
-    this.onRetry,
+    required this.onRetry,
     this.error,
-    @required this.message,
+    this.message,
     this.subMessage,
   });
 
@@ -23,7 +23,7 @@ class ErrorSwitcher extends StatelessWidget {
 
   Widget _buildBody() {
     return _GRErrorWidget(
-      message: message,
+      message: message ?? "",
       onRetry: onRetry,
       error: error,
     );
@@ -35,12 +35,12 @@ class ErrorSwitcher extends StatelessWidget {
 }
 
 class _GRErrorWidget extends StatelessWidget {
-  final VoidCallback onRetry;
-  final String message;
+  final VoidCallback? onRetry;
+  final String? message;
   final dynamic error;
 
   const _GRErrorWidget({
-    Key key,
+    Key? key,
     this.onRetry,
     this.message,
     this.error,
@@ -67,7 +67,7 @@ class _GRErrorWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              messageToShow ?? '',
+              messageToShow,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyText2,
             ),
@@ -76,36 +76,9 @@ class _GRErrorWidget extends StatelessWidget {
           SizedBox(
             width: MediaQuery.of(context).size.width * .5,
             child: RaisedButtonV2(
-              onPressed: onRetry,
+              onPressed: onRetry ?? () => null,
               label: Localization.of(context, 'retry'),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _UBQErrorWidget extends StatelessWidget {
-  _UBQErrorWidget({
-    Key key,
-    this.onRetry,
-    @required this.message,
-  }) : super(key: key);
-
-  final VoidCallback onRetry;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(message),
-          RaisedButtonV2(
-            onPressed: onRetry,
-            label: 'Retry',
           ),
         ],
       ),

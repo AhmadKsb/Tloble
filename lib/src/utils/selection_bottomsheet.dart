@@ -8,26 +8,26 @@ import 'UBScaffold/ub_page_state_widget.dart';
 typedef SegregationFunction<T> = bool Function(T value);
 
 class SelectionListBottomSheet<T> extends StatefulWidget {
-  final List<T> items;
-  final Widget Function(T) itemBuilder;
-  final ValueChanged<T> onItemSelected;
-  final String title;
+  final List<T>? items;
+  final Widget Function(T)? itemBuilder;
+  final ValueChanged<T>? onItemSelected;
+  final String? title;
   final bool hasSearch;
-  final bool Function(T, String) searchMatcher;
-  final double itemHeight;
-  final Future<List<T>> itemsFuture;
+  final bool Function(T, String)? searchMatcher;
+  final double? itemHeight;
+  final Future<List<T>>? itemsFuture;
   final bool shouldPop;
-  final Map<String, SegregationFunction> segregationMap;
-  final String searchHint;
-  final String noDataMessage;
-  final TextStyle defaultSegregationTitleStyle;
-  final EdgeInsets itemsListPadding;
-  final EdgeInsets segregationTitlePadding;
-  final EdgeInsets itemsDividerPadding;
-  final Map<String, TextStyle> segregationTitlesStylesMap;
+  final Map<String, SegregationFunction>? segregationMap;
+  final String? searchHint;
+  final String? noDataMessage;
+  final TextStyle? defaultSegregationTitleStyle;
+  final EdgeInsets? itemsListPadding;
+  final EdgeInsets? segregationTitlePadding;
+  final EdgeInsets? itemsDividerPadding;
+  final Map<String, TextStyle>? segregationTitlesStylesMap;
 
   const SelectionListBottomSheet({
-    Key key,
+    Key? key,
     this.items,
     this.itemsFuture,
     this.itemBuilder,
@@ -62,10 +62,10 @@ class SelectionListBottomSheet<T> extends StatefulWidget {
 
 class _SelectionListBottomSheetState<T>
     extends State<SelectionListBottomSheet<T>> {
-  String _searchQuery;
+  String? _searchQuery;
   bool _keyboardOpened = false;
 
-  List<T> _items;
+  List<T>? _items;
 
   @override
   void initState() {
@@ -73,23 +73,23 @@ class _SelectionListBottomSheetState<T>
     _items = widget.items ?? [];
   }
 
-  TextStyle _getSegregationTitleStyle(String segregationTitle) {
+  TextStyle? _getSegregationTitleStyle(String segregationTitle) {
     if (widget.segregationTitlesStylesMap == null) return null;
-    return widget.segregationTitlesStylesMap[segregationTitle];
+    return widget.segregationTitlesStylesMap?[segregationTitle];
   }
 
   List<dynamic> get _segregatedItems {
     if (widget.segregationMap == null ||
-        widget.segregationMap.isEmpty ||
-        _filteredItems.isEmpty) {
-      return _filteredItems;
+        (widget.segregationMap?.isEmpty ?? false) ||
+        (_filteredItems?.isEmpty ?? false)) {
+      return _filteredItems!;
     }
     List<dynamic> data = [];
-    widget.segregationMap.forEach((title, segregationFunction) {
-      List<T> itemsForKey = _filteredItems
-          .where((element) => segregationFunction(element))
+    widget.segregationMap?.forEach((title, segregationFunction) {
+      List<T>? itemsForKey = _filteredItems
+          ?.where((element) => segregationFunction(element))
           .toList();
-      if (itemsForKey != null && itemsForKey.isNotEmpty) {
+      if (itemsForKey?.isNotEmpty ?? false) {
         data.add(Padding(
           padding: widget.segregationTitlePadding ?? EdgeInsets.zero,
           child: Text(
@@ -99,24 +99,23 @@ class _SelectionListBottomSheetState<T>
                 TextStyle(fontSize: 12),
           ),
         ));
-        data.addAll(itemsForKey);
+        data.addAll(itemsForKey!);
       }
     });
 
-    List remaining = _filteredItems
-        .where((item) =>
-            widget.segregationMap.values.firstWhere(
-                (segregationFunction) => segregationFunction(item),
-                orElse: () => null) ==
+    List? remaining = _filteredItems
+        ?.where((item) =>
+            widget.segregationMap?.values.firstWhere(
+                (segregationFunction) => segregationFunction(item)) ==
             null)
         .toList();
-    if (remaining != null && remaining.isNotEmpty) data.addAll(remaining);
+    if (remaining?.isNotEmpty ?? false) data.addAll(remaining!);
     return data;
   }
 
-  List<T> get _filteredItems => (widget.hasSearch && isNotEmpty(_searchQuery))
+  List<T>? get _filteredItems => (widget.hasSearch && isNotEmpty(_searchQuery))
       ? _items
-          .where((item) => widget.searchMatcher(item, _searchQuery))
+          ?.where((item) => (widget.searchMatcher!(item, _searchQuery ?? "")))
           .toList()
       : _items;
 
@@ -148,11 +147,11 @@ class _SelectionListBottomSheetState<T>
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Text(
-            widget.title,
+            widget.title ?? "",
             style: Theme.of(context)
                 .textTheme
                 .bodyText2
-                .copyWith(fontSize: 14, fontWeight: FontWeight.bold),
+                ?.copyWith(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -219,13 +218,14 @@ class _SelectionListBottomSheetState<T>
         itemBuilder: (context, index) => InkWell(
             onTap: items[index] is T
                 ? () {
-                    widget.onItemSelected(items[index]);
-                    if (widget.shouldPop ?? true) Navigator.of(context).pop();
+                    if (widget.onItemSelected != null)
+                      widget.onItemSelected!(items[index]);
+                    if (widget.shouldPop) Navigator.of(context).pop();
                   }
                 : null,
             child: items[index] is Widget
                 ? items[index]
-                : widget.itemBuilder(items[index])),
+                : widget.itemBuilder!(items[index])),
         separatorBuilder: (context, index) => (items[index] is Widget ||
                 ((index >= 0 || index < items.length - 1) &&
                     items[index + 1] is Widget))
@@ -252,7 +252,7 @@ class _SelectionListBottomSheetState<T>
     double maxRatio = 0.85;
     double minRatio = 0.1;
     double paddingRatio = 0.08;
-    double bottomSheetHeight = widget.itemHeight * widget.items.length;
+    double bottomSheetHeight = widget.itemHeight! * (widget.items?.length ?? 0);
     bottomSheetHeight = bottomSheetHeight + (widget.hasSearch ? 100.0 : 50.0);
     double ratio = bottomSheetHeight / screenHeight;
     ratio += paddingRatio;
@@ -277,7 +277,7 @@ class _SelectionListBottomSheetState<T>
             ),
           );
         } else if (snapshot.hasData) {
-          if (snapshot.data == null || snapshot.data.isEmpty) {
+          if (snapshot.data == null || (snapshot.data?.isEmpty ?? false)) {
             return Container(
               height: height,
               child: Center(

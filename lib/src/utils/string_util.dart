@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 /// Returns [true] if [s] is either null or empty.
-bool isEmpty(String s) => s == null || s.isEmpty || s == 'null';
+bool isEmpty(String? s) => s == null || s.isEmpty || s == 'null';
 
 /// Returns [true] if [s] is a not null or empty string.
-bool isNotEmpty(String s) => s != null && s.isNotEmpty && s != 'null';
+bool isNotEmpty(String? s) => s != null && s.isNotEmpty && s != 'null';
 
 String formatBytesAsHexString(Uint8List bytes) {
   var result = StringBuffer();
@@ -15,7 +15,7 @@ String formatBytesAsHexString(Uint8List bytes) {
   return result.toString();
 }
 
-String formatPhoneNumber(String phoneNumber) =>
+String? formatPhoneNumber(String? phoneNumber) =>
     phoneNumber?.replaceAll(" ", "");
 
 Uint8List createUint8ListFromHexString(String hex) {
@@ -44,7 +44,7 @@ bool isEmail(String em) {
   return regExp.hasMatch(em);
 }
 
-String replaceVariable(String message, String variable, String value) {
+String? replaceVariable(String? message, String variable, String value) {
   if (message == null) return null;
   return (message.replaceFirst('{$variable}', value)).replaceAll("\\n", "\n");
 }
@@ -110,10 +110,10 @@ String capitalize(String string) {
 }
 
 extension StringsExt on String {
-  String maskedPhone([int quantity]) {
+  String maskedPhone([int? quantity]) {
     quantity ??= 3;
     String maskedPhone = '**********';
-    if (this != null && this.length > quantity) {
+    if (this.length > quantity) {
       maskedPhone = List.generate(this.length - quantity, (index) => '*')
               .reduce((value, element) => value + element) +
           this.substring(this.length - 3);

@@ -6,7 +6,7 @@ import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 
 class RaisedButtonV2 extends StatelessWidget {
   const RaisedButtonV2({
-    @required this.onPressed,
+    required this.onPressed,
     this.labelStyle,
     this.isLoading = false,
     this.label,
@@ -17,21 +17,24 @@ class RaisedButtonV2 extends StatelessWidget {
 
   @required
   final Function onPressed;
-  final String label;
+  final String? label;
   final bool disabled;
-  final Color disabledColor;
+  final Color? disabledColor;
   final bool isLoading;
   final bool green;
-  final TextStyle labelStyle;
+  final TextStyle? labelStyle;
 
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: (disabled ?? false)
+      onPressed: (disabled)
           ? null
           : isLoading
-              ? () {}
-              : onPressed,
+              ? () {} // Provide an empty function for the case where isLoading is true.
+              : () {
+                  // Call onPressed function here.
+                  onPressed();
+                },
       style: ButtonStyle(
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),

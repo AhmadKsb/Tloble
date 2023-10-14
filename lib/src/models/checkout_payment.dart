@@ -1,7 +1,6 @@
 // import 'dart:convert';
 //
 // import 'package:http/http.dart' as http;
-// import 'package:wkbeast/models/payment_card.dart';
 //
 // class CheckoutPayment {
 //   static const _tokenURL = "https://api.sandbox.checkout.com/tokens";

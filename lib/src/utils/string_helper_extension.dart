@@ -20,7 +20,7 @@ extension StringHelperExtension on String {
   /// Replaces all non numeric chars with the provided mask character
   ///
   /// Uses '∙' if no maskCharacter is provided
-  String maskDigits({String maskCharacter}) => replaceAll(
+  String maskDigits({String? maskCharacter}) => replaceAll(
         RegExp(r'[^0-9]'),
         maskCharacter ?? '∙',
       );
@@ -45,6 +45,6 @@ extension StringListHelperExtension on List<String> {
   /// Joins all non nullable Strings of a list with the supplied separator
   ///
   /// Uses ' ∙ ' if no separator is provided
-  String joinWithDots({String separator}) =>
+  String joinWithDots({String? separator}) =>
       where((e) => e != null).join(separator ?? ' ∙ ');
 }

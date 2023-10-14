@@ -11,10 +11,9 @@ import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:vibration/vibration.dart';
 
-
 class CheckCustomersOrderBottomsheet extends StatefulWidget {
-  final HomeScreenController controller;
-  final ValueChanged<bool> isBottomSheetLoading;
+  final HomeScreenController? controller;
+  final ValueChanged<bool>? isBottomSheetLoading;
 
   CheckCustomersOrderBottomsheet({
     this.controller,
@@ -28,7 +27,7 @@ class CheckCustomersOrderBottomsheet extends StatefulWidget {
 class _CheckCustomersOrderBottomsheetState
     extends State<CheckCustomersOrderBottomsheet> {
   bool _loading = false;
-  String order;
+  String? order;
 
   FocusNode orderNode = new FocusNode();
 
@@ -71,21 +70,22 @@ class _CheckCustomersOrderBottomsheetState
 
   void _onSubmit() async {
     setState(() {
-      widget.isBottomSheetLoading(true);
+      if (widget.isBottomSheetLoading != null)
+        widget.isBottomSheetLoading!(true);
       _loading = true;
     });
 
     try {
       var data = await FirebaseFirestore.instance
-          .collection(widget.controller.SearchInOrdersCollectionName)
-          .where("referenceID", isEqualTo: num.tryParse(order))
+          .collection(widget.controller?.SearchInOrdersCollectionName ?? "")
+          .where("referenceID", isEqualTo: num.tryParse(order ?? "0"))
           .get();
 
-      if (data != null && data.docs.isNotEmpty) {
+      if (data.docs.isNotEmpty) {
         await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => OrderScreen(
-              homeScreenController: widget.controller,
+              homeScreenController: widget.controller!,
               order: Order.fromJson(data.docs[0].data()),
             ),
           ),
@@ -100,22 +100,25 @@ class _CheckCustomersOrderBottomsheetState
       }
       setState(() {
         _loading = false;
-        widget.isBottomSheetLoading(false);
+        if (widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(false);
       });
     } catch (e) {
       showErrorBottomsheet(
         replaceVariable(
-          Localization.of(
-            context,
-            'an_error_has_occurred_value',
-          ),
-          'value',
-          "${e.toString()}",
-        ),
+              Localization.of(
+                context,
+                'an_error_has_occurred_value',
+              ),
+              'value',
+              "${e.toString()}",
+            ) ??
+            "",
       );
       setState(() {
         _loading = false;
-        widget.isBottomSheetLoading(false);
+        if (widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(false);
       });
     }
   }
@@ -156,7 +159,7 @@ class _CheckCustomersOrderBottomsheetState
                 child: Text(
                   Localization.of(context, 'amount_added_successfully'),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),

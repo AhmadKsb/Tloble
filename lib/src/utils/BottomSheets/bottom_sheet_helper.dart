@@ -5,22 +5,21 @@ import 'bottom_sheet_status.dart';
 import 'confirmation_bottom_sheet.dart';
 import 'operation_status.dart';
 
-Future<T> showBottomsheet<T>({
-  BuildContext context,
-  Widget body,
-  Widget bottomWidget,
-  Widget upperWidget,
+Future<T?> showBottomsheet<T>({
+  required BuildContext context,
+  Widget? body,
+  Widget? bottomWidget,
+  Widget? upperWidget,
   bool dismissOnTouchOutside = true,
   bool isScrollControlled = false,
   bool includeUpperPart = false,
   bool includeCloseButton = false,
-  double height,
+  double? height,
 }) {
-  assert(context != null, "context cannot be null");
   return showModalBottomSheet<T>(
     context: context,
-    isScrollControlled: isScrollControlled ?? false,
-    isDismissible: dismissOnTouchOutside ?? true,
+    isScrollControlled: isScrollControlled,
+    isDismissible: dismissOnTouchOutside,
     backgroundColor: Colors.white,
     builder: (context) => Padding(
       padding: MediaQuery.of(context).viewInsets,
@@ -90,7 +89,7 @@ Future<T> showBottomsheet<T>({
                       child: SingleChildScrollView(
                         child: Column(
                           children: <Widget>[
-                            body ?? Container(),
+                            body,
                           ],
                         ),
                       ),
@@ -113,25 +112,25 @@ Future<T> showBottomsheet<T>({
 }
 
 void showBottomSheetList<T>({
-  Key key,
-  @required BuildContext context,
-  List<T> items,
-  Future<List<T>> itemsFuture,
-  @required Widget Function(T) itemBuilder,
-  @required ValueChanged<T> onItemSelected,
-  @required String title,
-  double itemHeight,
+  Key? key,
+  required BuildContext context,
+  List<T>? items,
+  Future<List<T>>? itemsFuture,
+  required Widget Function(T) itemBuilder,
+  required ValueChanged<T> onItemSelected,
+  required String title,
+  double? itemHeight,
   bool hasSearch = false,
-  bool Function(T, String) searchMatcher,
-  bool shouldPop,
-  Map<String, SegregationFunction> segregationMap,
-  String searchHint,
-  String noDataMessage,
-  TextStyle defaultSegregationTitleStyle,
-  Map<String, TextStyle> segregationTitlesStylesMap,
-  EdgeInsets itemsListPadding,
-  EdgeInsets segregationTitlePadding,
-  EdgeInsets itemsDividerPadding,
+  bool Function(T, String)? searchMatcher,
+  bool? shouldPop,
+  Map<String, SegregationFunction>? segregationMap,
+  String? searchHint,
+  String? noDataMessage,
+  TextStyle? defaultSegregationTitleStyle,
+  Map<String, TextStyle>? segregationTitlesStylesMap,
+  EdgeInsets? itemsListPadding,
+  EdgeInsets? segregationTitlePadding,
+  EdgeInsets? itemsDividerPadding,
 }) {
   showModalBottomSheet(
     isDismissible: true,
@@ -147,7 +146,7 @@ void showBottomSheetList<T>({
       itemHeight: itemHeight,
       hasSearch: hasSearch,
       searchMatcher: searchMatcher,
-      shouldPop: shouldPop,
+      shouldPop: shouldPop ?? true,
       segregationMap: segregationMap,
       searchHint: searchHint,
       noDataMessage: noDataMessage,
@@ -167,21 +166,21 @@ void showBottomSheetList<T>({
 }
 
 Future<void> showBottomSheetStatus({
-  Key key,
-  BuildContext context,
-  OperationStatus status,
-  String message,
-  String buttonMessage,
-  VoidCallback onPressed,
+  Key? key,
+  required BuildContext context,
+  OperationStatus? status,
+  String? message,
+  String? buttonMessage,
+  VoidCallback? onPressed,
   bool popOnPress = false,
   bool showCancelButton = false,
   bool dismissOnTouchOutside = true,
   bool showDoneButton = true,
-  Widget extraButton,
-  String title,
+  Widget? extraButton,
+  String? title,
 
   ///Use when you want to override the default widgets under the divider
-  Widget bottomWidget,
+  Widget? bottomWidget,
 }) {
   assert(context != null, "context cannot be null");
   assert(status != null, "status cannot be null");
@@ -195,7 +194,7 @@ Future<void> showBottomSheetStatus({
       ),
     ),
     backgroundColor: Colors.white,
-    isDismissible: dismissOnTouchOutside ?? true,
+    isDismissible: dismissOnTouchOutside,
     isScrollControlled: true,
     context: context,
     builder: (ctx) => GestureDetector(
@@ -214,8 +213,8 @@ Future<void> showBottomSheetStatus({
         status: status,
         message: message,
         buttonMessage: buttonMessage,
-        dismissOnTouchOutside: dismissOnTouchOutside ?? true,
-        showDoneButton: showDoneButton ?? true,
+        dismissOnTouchOutside: dismissOnTouchOutside,
+        showDoneButton: showDoneButton,
         showCancelButton: showCancelButton,
         extraButton: extraButton,
         title: title,
@@ -230,23 +229,22 @@ Future<void> showBottomSheetStatus({
 }
 
 Future<void> showActionBottomSheet({
-  Key key,
-  BuildContext context,
-  OperationStatus status,
-  String message,
-  String buttonMessage,
-  VoidCallback onPressed,
+  Key? key,
+  required BuildContext context,
+  OperationStatus? status,
+  String? message,
+  String? buttonMessage,
+  VoidCallback? onPressed,
   bool popOnPress = false,
   bool showCancelButton = false,
   bool dismissOnTouchOutside = true,
   bool showDoneButton = true,
-  Widget extraButton,
-  String title,
+  Widget? extraButton,
+  String? title,
 
   ///Use when you want to override the default widgets under the divider
-  Widget bottomWidget,
+  Widget? bottomWidget,
 }) {
-  assert(context != null, "context cannot be null");
   assert(status != null, "status cannot be null");
   assert(message != null, "message cannot be null");
 
@@ -258,7 +256,7 @@ Future<void> showActionBottomSheet({
       ),
     ),
     backgroundColor: Colors.white,
-    isDismissible: dismissOnTouchOutside ?? true,
+    isDismissible: dismissOnTouchOutside,
     isScrollControlled: true,
     context: context,
     builder: (ctx) => GestureDetector(
@@ -277,8 +275,8 @@ Future<void> showActionBottomSheet({
         status: status,
         message: message,
         buttonMessage: buttonMessage,
-        dismissOnTouchOutside: dismissOnTouchOutside ?? true,
-        showDoneButton: showDoneButton ?? true,
+        dismissOnTouchOutside: dismissOnTouchOutside,
+        showDoneButton: showDoneButton,
         showCancelButton: showCancelButton,
         extraButton: extraButton,
         title: title,
@@ -309,20 +307,19 @@ void showErrorBottomsheet(
   );
 }
 
-Future<bool> showConfirmationBottomSheet({
-  @required BuildContext context,
-  String title,
-  String message,
-  String confirmMessage,
-  String cancelMessage,
-  Function confirmAction,
-  Function cancelAction,
+Future<bool?> showConfirmationBottomSheet({
+  required BuildContext context,
+  String? title,
+  String? message,
+  String? confirmMessage,
+  String? cancelMessage,
+  Function? confirmAction,
+  Function? cancelAction,
   bool dismissOnTouchOutside = true,
-  Stream isLoadingStream,
-  String icon,
-  String flare,
+  Stream<bool>? isLoadingStream,
+  String? icon,
+  String? flare,
 }) {
-  assert(context != null, "context, cannot be null");
   return showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,

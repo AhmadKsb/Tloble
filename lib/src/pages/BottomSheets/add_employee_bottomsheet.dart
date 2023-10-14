@@ -12,9 +12,9 @@ import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:vibration/vibration.dart';
 
 class AddEmployeeBottomsheet extends StatefulWidget {
-  final HomeScreenController controller;
-  final ValueChanged<bool> changed;
-  final ValueChanged<bool> isBottomSheetLoading;
+  final HomeScreenController? controller;
+  final ValueChanged<bool>? changed;
+  final ValueChanged<bool>? isBottomSheetLoading;
 
   AddEmployeeBottomsheet({
     this.controller,
@@ -28,7 +28,7 @@ class AddEmployeeBottomsheet extends StatefulWidget {
 
 class _AddEmployeeBottomsheetState extends State<AddEmployeeBottomsheet> {
   bool _loading = false;
-  String employeePhoneNumber, employeeName;
+  String? employeePhoneNumber, employeeName;
 
   FocusNode employeePhoneNumberNode = new FocusNode(),
       employeeNameNode = new FocusNode();
@@ -87,24 +87,25 @@ class _AddEmployeeBottomsheetState extends State<AddEmployeeBottomsheet> {
           Localization.of(context, 'phone_number_should_include_dial_code'));
     else {
       setState(() {
-        widget.isBottomSheetLoading(true);
+        if (widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(true);
         _loading = true;
       });
       try {
-        employeePhoneNumber = formatPhoneNumber(employeePhoneNumber);
+        employeePhoneNumber = formatPhoneNumber(employeePhoneNumber ?? "");
         List<dynamic> newEmployeesList = [];
-        for (int i = 0; i < widget.controller.employees.length; i++) {
-          newEmployeesList.add(widget.controller.employees[i].phoneNumber);
+        for (int i = 0; i < (widget.controller?.employees.length ?? 0); i++) {
+          newEmployeesList.add(widget.controller?.employees[i].phoneNumber);
         }
         newEmployeesList.add(employeePhoneNumber);
 
-        var capitalizedName = employeeName.trim().contains(' ')
-            ? capitalize(employeeName.trim().split(' ')[0]) +
+        var capitalizedName = employeeName!.trim().contains(' ')
+            ? capitalize(employeeName!.trim().split(' ')[0]) +
                 ' ' +
-                capitalize(employeeName
+                capitalize(employeeName!
                     .trim()
-                    .split(' ')[employeeName.trim().split(' ').length - 1])
-            : capitalize(employeeName);
+                    .split(' ')[employeeName!.trim().split(' ').length - 1])
+            : capitalize(employeeName ?? "");
 
         await Future.wait([
           FirebaseFirestore.instance
@@ -125,23 +126,26 @@ class _AddEmployeeBottomsheetState extends State<AddEmployeeBottomsheet> {
         showSuccessBottomsheet();
         setState(() {
           _loading = false;
-          widget.changed(true);
-          widget.isBottomSheetLoading(false);
+          if (widget.changed != null) widget.changed!(true);
+          if (widget.isBottomSheetLoading != null)
+            widget.isBottomSheetLoading!(false);
         });
       } catch (e) {
         showErrorBottomsheet(
           replaceVariable(
-            Localization.of(
-              context,
-              'an_error_has_occurred_value',
-            ),
-            'value',
-            "${e.toString()}",
-          ),
+                Localization.of(
+                  context,
+                  'an_error_has_occurred_value',
+                ),
+                'value',
+                "${e.toString()}",
+              ) ??
+              "",
         );
         setState(() {
           _loading = false;
-          widget.isBottomSheetLoading(false);
+          if (widget.isBottomSheetLoading != null)
+            widget.isBottomSheetLoading!(false);
         });
       }
     }
@@ -192,9 +196,9 @@ class _AddEmployeeBottomsheetState extends State<AddEmployeeBottomsheet> {
                     ),
                     'valuetwo',
                     "${employeePhoneNumber.toString()}",
-                  ),
+                  ) ?? "",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),

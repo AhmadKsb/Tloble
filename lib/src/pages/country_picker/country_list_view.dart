@@ -9,7 +9,7 @@ class wkCountryListView extends StatefulWidget {
   /// Called when a country is select.
   ///
   /// The country picker passes the new value to the callback.
-  final ValueChanged<Country> onSelect;
+  final ValueChanged<Country>? onSelect;
 
   /// An optional [showPhoneCode] argument can be used to show phone code.
   final bool showPhoneCode;
@@ -17,16 +17,16 @@ class wkCountryListView extends StatefulWidget {
   /// An optional [exclude] argument can be used to exclude(remove) one ore more
   /// country from the countries list. It takes a list of country code(iso2).
   /// Note: Can't provide both [exclude] and [countryFilter]
-  final List<String> exclude;
+  final List<String>? exclude;
 
   /// An optional [countryFilter] argument can be used to filter the
   /// list of countries. It takes a list of country code(iso2).
   /// Note: Can't provide both [countryFilter] and [exclude]
-  final List<String> countryFilter;
+  final List<String>? countryFilter;
 
   /// An optional argument for customizing the
   /// country list bottom sheet.
-  final CountryListThemeData countryListTheme;
+  final CountryListThemeData? countryListTheme;
 
   /// An optional argument for initially expanding virtual keyboard
   final bool searchAutofocus;
@@ -35,7 +35,7 @@ class wkCountryListView extends StatefulWidget {
   final bool showWorldWide;
 
   const wkCountryListView({
-    Key key,
+    Key? key,
     this.onSelect,
     this.exclude,
     this.countryFilter,
@@ -54,10 +54,10 @@ class wkCountryListView extends StatefulWidget {
 }
 
 class _wkCountryListViewState extends State<wkCountryListView> {
-  List<Country> _countryList;
-  List<Country> _filteredList;
-  TextEditingController _searchController;
-  bool _searchAutofocus;
+  late List<Country> _countryList;
+  late List<Country> _filteredList;
+  late TextEditingController _searchController;
+  late bool _searchAutofocus;
 
   @override
   void initState() {
@@ -75,13 +75,14 @@ class _wkCountryListViewState extends State<wkCountryListView> {
 
     if (widget.exclude != null) {
       _countryList.removeWhere(
-        (element) => widget.exclude.contains(element.countryCode),
+        (element) => (widget.exclude?.contains(element.countryCode) ?? false),
       );
     }
 
     if (widget.countryFilter != null) {
       _countryList.removeWhere(
-        (element) => !widget.countryFilter.contains(element.countryCode),
+        (element) =>
+            !(widget.countryFilter?.contains(element.countryCode) ?? true),
       );
     }
 
@@ -153,7 +154,7 @@ class _wkCountryListViewState extends State<wkCountryListView> {
           country.nameLocalized = CountryLocalizations.of(context)
               ?.countryName(countryCode: country.countryCode)
               ?.replaceAll(RegExp(r"\s+"), " ");
-          widget.onSelect(country);
+          widget.onSelect!(country);
           Navigator.pop(context);
         },
         child: Padding(
@@ -229,21 +230,22 @@ class _wkCountryListViewState extends State<wkCountryListView> {
             .startsWith(_query.toLowerCase()) ||
         country.countryCode.toLowerCase().startsWith(_query.toLowerCase()) ||
         (localizations
-                ?.countryName(countryCode: country.countryCode)
+                .countryName(countryCode: country.countryCode)
                 ?.toLowerCase()
-                ?.startsWith(_query.toLowerCase()) ??
+                .startsWith(_query.toLowerCase()) ??
             false);
   }
 
   void _filterSearchResults(String query) {
     List<Country> _searchResult = <Country>[];
-    final CountryLocalizations localizations = CountryLocalizations.of(context);
+    final CountryLocalizations? localizations =
+        CountryLocalizations.of(context);
 
     if (query.isEmpty) {
       _searchResult.addAll(_countryList);
     } else {
       _searchResult = _countryList
-          .where((c) => countryStartsWith(c, query, localizations))
+          .where((c) => countryStartsWith(c, query, localizations!))
           .toList();
     }
 

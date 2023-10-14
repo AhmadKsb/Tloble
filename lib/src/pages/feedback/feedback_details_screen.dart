@@ -18,21 +18,20 @@ import 'package:vibration/vibration.dart';
 
 class FeedbackDetailsScreen extends StatefulWidget {
   final Feedback.Feedback feedback;
-  final ValueChanged<bool> shouldRefresh;
+  final ValueChanged<bool>? shouldRefresh;
 
   FeedbackDetailsScreen({
-    Key key,
-    @required this.feedback,
+    Key? key,
+    required this.feedback,
     this.shouldRefresh,
-  })  : assert(feedback != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   _FeedbackDetailsScreenState createState() => _FeedbackDetailsScreenState();
 }
 
 class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
-  NavigatorState _nav;
+  late NavigatorState _nav;
   PageState _state = PageState.loaded;
 
   @override
@@ -107,26 +106,26 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
                               },
                               onTap: () async {
                                 try {
-                                  Feedback.Feedback feedback =
+                                  Feedback.Feedback? feedback =
                                       await _getUpdatedFeedback();
 
-                                  if (!feedback.alreadyContacted) {
+                                  if (!(feedback?.alreadyContacted ?? true)) {
                                     openWhatsapp();
                                     await Future.wait(
                                       [
                                         FirebaseFirestore.instance
                                             .collection('Feedbacks')
-                                            .doc(feedback.dateTime)
+                                            .doc(feedback?.dateTime)
                                             .update({
                                           'alreadyContacted': true,
                                         }),
                                       ],
                                     );
                                     if (widget.shouldRefresh != null)
-                                      widget.shouldRefresh(true);
+                                      widget.shouldRefresh!(true);
                                   } else {
                                     if (widget.shouldRefresh != null)
-                                      widget.shouldRefresh(true);
+                                      widget.shouldRefresh!(true);
                                     if (!mounted) return;
                                     String animResource;
                                     animResource = 'assets/flare/error.flr';
@@ -173,7 +172,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
                                                   style: Theme.of(_nav.context)
                                                       .textTheme
                                                       .bodyText1
-                                                      .copyWith(
+                                                      ?.copyWith(
                                                         fontSize: 18,
                                                         color: Colors.black,
                                                       ),
@@ -260,7 +259,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
                                                   _nav.context, 'done'),
                                               onPressed: () async {
                                                 if (!mounted) return;
-                                                await _nav.pop();
+                                                _nav.pop();
                                               },
                                             ),
                                           ),
@@ -273,13 +272,14 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
                                   showErrorBottomsheet(
                                     _nav.context,
                                     replaceVariable(
-                                      Localization.of(
-                                        _nav.context,
-                                        'an_error_has_occurred_value',
-                                      ),
-                                      'value',
-                                      e.toString(),
-                                    ),
+                                          Localization.of(
+                                            _nav.context,
+                                            'an_error_has_occurred_value',
+                                          ),
+                                          'value',
+                                          e.toString(),
+                                        ) ??
+                                        "",
                                   );
                                 }
                               },
@@ -294,7 +294,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyText1
-                                          .copyWith(
+                                          ?.copyWith(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black,
@@ -309,20 +309,20 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
                                           (Localizations.localeOf(context)
                                                       .languageCode ==
                                                   'ar')
-                                              ? ((widget.feedback?.phoneNumber
+                                              ? ((widget.feedback.phoneNumber
                                                           ?.replaceAll(
                                                               '+', '') ??
                                                       '') +
                                                   '+')
                                               : ('+' +
-                                                  (widget.feedback?.phoneNumber
+                                                  (widget.feedback.phoneNumber
                                                           ?.replaceAll(
                                                               '+', '') ??
                                                       "")),
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyText1
-                                              .copyWith(
+                                              ?.copyWith(
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.normal,
                                                 color: Colors.black,
@@ -447,7 +447,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
           flex: 4,
           child: Text(
             title,
-            style: Theme.of(context).textTheme.bodyText1.copyWith(
+            style: Theme.of(context).textTheme.bodyText1?.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -458,7 +458,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
           flex: 5,
           child: Text(
             label,
-            style: Theme.of(context).textTheme.bodyText1.copyWith(
+            style: Theme.of(context).textTheme.bodyText1?.copyWith(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
                   color: Colors.black,
@@ -472,7 +472,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
     );
   }
 
-  Future<Feedback.Feedback> _getUpdatedFeedback() async {
+  Future<Feedback.Feedback?> _getUpdatedFeedback() async {
     setState(() {
       _state = PageState.loading;
     });
@@ -499,7 +499,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
 
   void openWhatsapp() async {
     try {
-      bool isEnglish = widget.feedback.feedback.contains(RegExp(r'[a-zA-Z]'));
+      bool isEnglish = widget.feedback.feedback!.contains(RegExp(r'[a-zA-Z]'));
 
       if (isEnglish) {
         launch(

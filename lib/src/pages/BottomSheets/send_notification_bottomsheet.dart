@@ -12,9 +12,9 @@ import 'package:flutter_ecommerce_app/src/utils/util.dart';
 import 'package:vibration/vibration.dart';
 
 class SendNotificationBottomsheet extends StatefulWidget {
-  final HomeScreenController controller;
-  final ValueChanged<bool> changed;
-  final ValueChanged<bool> isBottomSheetLoading;
+  final HomeScreenController? controller;
+  final ValueChanged<bool>? changed;
+  final ValueChanged<bool>? isBottomSheetLoading;
 
   SendNotificationBottomsheet({
     this.controller,
@@ -29,7 +29,7 @@ class SendNotificationBottomsheet extends StatefulWidget {
 class _SendNotificationBottomsheetState
     extends State<SendNotificationBottomsheet> {
   bool _loading = false;
-  String notification;
+  String? notification;
 
   FocusNode notificationNode = new FocusNode();
 
@@ -77,7 +77,8 @@ class _SendNotificationBottomsheetState
 
   void _onSubmit() async {
     setState(() {
-      widget.isBottomSheetLoading(true);
+      if(widget.isBottomSheetLoading != null)
+        widget.isBottomSheetLoading!(true);
       _loading = true;
     });
 
@@ -89,14 +90,16 @@ class _SendNotificationBottomsheetState
         notifications
             .doc(
                 '${getNumberWithPrefixZero(DateTime.now().year)}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}')
-            .set({'description': capitalize(notification)}),
+            .set({'description': capitalize(notification ?? "")}),
       ]);
 
       showSuccessBottomsheet();
       setState(() {
         _loading = false;
-        widget.changed(true);
-        widget.isBottomSheetLoading(false);
+        if(widget.changed != null)
+        widget.changed!(true);
+        if(widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(true);
       });
     } catch (e) {
       showErrorBottomsheet(
@@ -107,11 +110,12 @@ class _SendNotificationBottomsheetState
           ),
           'value',
           "${e.toString()}",
-        ),
+        ) ?? "",
       );
       setState(() {
         _loading = false;
-        widget.isBottomSheetLoading(false);
+        if(widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(true);
       });
     }
   }
@@ -152,7 +156,7 @@ class _SendNotificationBottomsheetState
                 child: Text(
                   Localization.of(context, 'notification_sent_successfully'),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),
@@ -171,7 +175,7 @@ class _SendNotificationBottomsheetState
             padding: EdgeInsets.only(bottom: 8),
             child: RaisedButtonV2(
               label: Localization.of(context, 'done'),
-              onPressed: () {
+              onPressed: () async {
                 if (!mounted) return;
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();

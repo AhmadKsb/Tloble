@@ -20,10 +20,10 @@ import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:vibration/vibration.dart';
 
 class FeedbackScreen extends StatefulWidget {
-  final HomeScreenController controller;
+  final HomeScreenController? controller;
 
   FeedbackScreen({
-    Key key,
+    Key? key,
     this.controller,
   }) : super(key: key);
 
@@ -34,13 +34,13 @@ class FeedbackScreen extends StatefulWidget {
 class _FeedbackScreenState extends State<FeedbackScreen> {
   TextEditingController _feedbackController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  String name;
-  String message;
+  String? name;
+  String? message;
   FocusNode _feedbackNode = new FocusNode();
   bool _isLoading = false;
-  HomeScreenController _controller;
-  Customer customer;
-  PageState _state;
+  HomeScreenController? _controller;
+  Customer? customer;
+  late PageState _state;
 
   @override
   void initState() {
@@ -60,7 +60,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           .snapshots()
           .first;
       if (result.data() != null) {
-        customer = Customer.fromJson(result.data());
+        customer = Customer.fromJson(result.data()!);
       }
       setState(() {
         _state = PageState.loaded;
@@ -107,177 +107,170 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 child: ListView.builder(
                   itemCount: 1,
                   itemBuilder: (b, i) => Form(
-                      key: _formKey,
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _appBar(),
-                            _title(),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.02,
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: TextFormField(
-                                    initialValue: customer?.name ?? "",
-                                    enabled: false,
-                                    onChanged: (val) {
-                                      if (val != null || val.length > 0)
-                                        name = val;
-                                    },
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(RegExp(
-                                          r"[abcedfghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!#.(),:;<>@[\]$%&'*+-/=?^_`{|}~ !$'()*+-./:<=>[\]_{|}«»ÇÈÊÒÓÖ×÷،؛؟ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىيًٌٍَُِّْٕٓٔ٠١٢٣٤٥٦٧٨٩٪٫٬٭ٰٱپچژڤ۰۱۲۳۴۵۶۷۸۹‌‍‐“”␡ﭐﭑﭖﭗﭘﭙﭪﭫﭬﭭﭺﭻﭼﭽﮊﮋﯾﯿﱞﱟﱠﱡﱢﴼﴽ﴾﴿ﷲﹰﹲﹴﹶﹸﹺﹼﹾﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾ]"))
-                                    ],
-                                    decoration: InputDecoration(
-                                      labelText:
-                                          Localization.of(context, 'name'),
-                                      counterText: "",
-                                      labelStyle: TextStyle(
-                                        color: Colors.black,
-                                      ),
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.black),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide:
-                                            BorderSide(color: Colors.black),
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
+                    key: _formKey,
+                    child: Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _appBar(),
+                          _title(),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.all(10.0),
+                                child: TextFormField(
+                                  initialValue: customer?.name ?? "",
+                                  enabled: false,
+                                  onChanged: (val) {
+                                    if (val != null || val.length > 0)
+                                      name = val;
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(
+                                        r"[abcedfghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!#.(),:;<>@[\]$%&'*+-/=?^_`{|}~ !$'()*+-./:<=>[\]_{|}«»ÇÈÊÒÓÖ×÷،؛؟ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىيًٌٍَُِّْٕٓٔ٠١٢٣٤٥٦٧٨٩٪٫٬٭ٰٱپچژڤ۰۱۲۳۴۵۶۷۸۹‌‍‐“”␡ﭐﭑﭖﭗﭘﭙﭪﭫﭬﭭﭺﭻﭼﭽﮊﮋﯾﯿﱞﱟﱠﱡﱢﴼﴽ﴾﴿ﷲﹰﹲﹴﹶﹸﹺﹼﹾﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾ]"))
+                                  ],
+                                  decoration: InputDecoration(
+                                    labelText: Localization.of(context, 'name'),
+                                    counterText: "",
+                                    labelStyle: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black),
+                                      borderRadius: BorderRadius.circular(10.0),
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.02,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(10),
-                                  child: TextFormField(
-                                    focusNode: _feedbackNode,
-                                    controller: _feedbackController,
-                                    maxLines: 12,
-                                    textInputAction: TextInputAction.newline,
-                                    textAlign: TextAlign.start,
-                                    textAlignVertical: TextAlignVertical.top,
-                                    keyboardType: TextInputType.multiline,
-                                    onChanged: (val) {
-                                      if (val != null || val.length > 0)
-                                        message = val;
-                                    },
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.allow(RegExp(
-                                          r"[abcedfghijklmnopqrstuvwxyz \nABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!#.(),:;<>@[\]$%&'*+-/=?^_`{|}~ !$'()*+-./:<=>[\]_{|}«»ÇÈÊÒÓÖ×÷،؛؟ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىيًٌٍَُِّْٕٓٔ٠١٢٣٤٥٦٧٨٩٪٫٬٭ٰٱپچژڤ۰۱۲۳۴۵۶۷۸۹‌‍‐“”␡ﭐﭑﭖﭗﭘﭙﭪﭫﭬﭭﭺﭻﭼﭽﮊﮋﯾﯿﱞﱟﱠﱡﱢﴼﴽ﴾﴿ﷲﹰﹲﹴﹶﹸﹺﹼﹾﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾ]"))
-                                    ],
-                                    enabled: !_isLoading,
-                                    validator: (String value) {
-                                      if (value?.trim()?.isEmpty ?? true) {
-                                        return Localization.of(context,
-                                            'this_field_cannot_be_empty');
-                                      }
-                                      return null;
-                                    },
-                                    maxLength: 255,
-                                    decoration: inputDecoration(Localization.of(
-                                        context, 'your_feedback_suggestion')),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.03,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: 12,
-                                right: 12,
-                                bottom: 36,
-                                top: 12,
                               ),
-                              child: RaisedButtonV2(
-                                label:
-                                    Localization.of(context, 'send_feedback'),
-                                disabled: _isLoading ?? false,
-                                isLoading: _isLoading ?? false,
-                                onPressed: () async {
-                                  if (_formKey.currentState.validate()) {
-                                    setState(() {
-                                      _isLoading = true;
-                                    });
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.02,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(10),
+                                child: TextFormField(
+                                  focusNode: _feedbackNode,
+                                  controller: _feedbackController,
+                                  maxLines: 12,
+                                  textInputAction: TextInputAction.newline,
+                                  textAlign: TextAlign.start,
+                                  textAlignVertical: TextAlignVertical.top,
+                                  keyboardType: TextInputType.multiline,
+                                  onChanged: (val) {
+                                    if (val != null || val.length > 0)
+                                      message = val;
+                                  },
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.allow(RegExp(
+                                        r"[abcedfghijklmnopqrstuvwxyz \nABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890!#.(),:;<>@[\]$%&'*+-/=?^_`{|}~ !$'()*+-./:<=>[\]_{|}«»ÇÈÊÒÓÖ×÷،؛؟ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىيًٌٍَُِّْٕٓٔ٠١٢٣٤٥٦٧٨٩٪٫٬٭ٰٱپچژڤ۰۱۲۳۴۵۶۷۸۹‌‍‐“”␡ﭐﭑﭖﭗﭘﭙﭪﭫﭬﭭﭺﭻﭼﭽﮊﮋﯾﯿﱞﱟﱠﱡﱢﴼﴽ﴾﴿ﷲﹰﹲﹴﹶﹸﹺﹼﹾﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾ]"))
+                                  ],
+                                  enabled: !_isLoading,
+                                  validator: (String? value) {
+                                    if (value?.trim().isEmpty ?? true) {
+                                      return Localization.of(context,
+                                          'this_field_cannot_be_empty');
+                                    }
+                                    return null;
+                                  },
+                                  maxLength: 255,
+                                  decoration: inputDecoration(Localization.of(
+                                      context, 'your_feedback_suggestion')),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.03,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              left: 12,
+                              right: 12,
+                              bottom: 36,
+                              top: 12,
+                            ),
+                            child: RaisedButtonV2(
+                              label: Localization.of(context, 'send_feedback'),
+                              disabled: _isLoading,
+                              isLoading: _isLoading,
+                              onPressed: () async {
+                                if (_formKey.currentState?.validate() ??
+                                    false) {
+                                  setState(() {
+                                    _isLoading = true;
+                                  });
 
-                                    showConfirmationBottomSheet(
-                                      context: context,
-                                      flare: 'assets/flare/pending.flr',
-                                      title: Localization.of(context,
-                                          'are_you_sure_you_want_to_submit_your_feedback'),
-                                      confirmMessage:
-                                          Localization.of(context, 'confirm'),
-                                      confirmAction: () async {
+                                  showConfirmationBottomSheet(
+                                    context: context,
+                                    flare: 'assets/flare/pending.flr',
+                                    title: Localization.of(context,
+                                        'are_you_sure_you_want_to_submit_your_feedback'),
+                                    confirmMessage:
+                                        Localization.of(context, 'confirm'),
+                                    confirmAction: () async {
+                                      setState(() {
+                                        _isLoading = true;
+                                      });
+                                      try {
+                                        await FirebaseFirestore.instance
+                                            .collection('Feedbacks')
+                                            .doc(
+                                                '${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}')
+                                            .set(
+                                              Feedback.Feedback(
+                                                name: customer?.name ?? "",
+                                                phoneNumber: widget.controller
+                                                        ?.loggedInUserPhoneNumber ??
+                                                    "",
+                                                feedback:
+                                                    _feedbackController.text,
+                                                dateTime:
+                                                    '${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}',
+                                                alreadyContacted: false,
+                                              ).toJson(),
+                                            );
+                                        showSuccessBottomsheet();
                                         setState(() {
-                                          _isLoading = true;
+                                          _feedbackController.clear();
+                                          _isLoading = false;
                                         });
-                                        try {
-                                          await Navigator.of(context).pop();
-                                          await FirebaseFirestore.instance
-                                              .collection('Feedbacks')
-                                              .doc(
-                                                  '${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}')
-                                              .set(
-                                                Feedback.Feedback(
-                                                  name: customer?.name ?? "",
-                                                  phoneNumber: widget.controller
-                                                          ?.loggedInUserPhoneNumber ??
-                                                      "",
-                                                  feedback: _feedbackController
-                                                          ?.text ??
-                                                      "",
-                                                  dateTime:
-                                                      '${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}',
-                                                  alreadyContacted: false,
-                                                ).toJson(),
-                                              );
-                                          showSuccessBottomsheet();
-                                          setState(() {
-                                            _feedbackController?.clear();
-                                            _isLoading = false;
-                                          });
-                                        } catch (e) {
-                                          showErrorBottomsheet(e.toString());
-                                          setState(() {
-                                            _isLoading = false;
-                                          });
-                                        }
-                                      },
-                                      cancelMessage:
-                                          Localization.of(context, 'cancel'),
-                                    );
+                                      } catch (e) {
+                                        showErrorBottomsheet(e.toString());
+                                        setState(() {
+                                          _isLoading = false;
+                                        });
+                                      }
+                                    },
+                                    cancelMessage:
+                                        Localization.of(context, 'cancel'),
+                                  );
 
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-                                  }
-                                },
-                              ),
+                                  setState(() {
+                                    _isLoading = false;
+                                  });
+                                }
+                              },
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-
+                  ),
                 ),
               ),
             ),
@@ -305,7 +298,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     );
   }
 
-  InputDecoration inputDecoration(String hintText, {Widget prefixIcon}) {
+  InputDecoration inputDecoration(String hintText, {Widget? prefixIcon}) {
     return InputDecoration(
       hintText: hintText,
       labelStyle: TextStyle(
@@ -438,8 +431,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     TextSpan(
                       text:
                           (Localizations.localeOf(context).languageCode == 'ar')
-                              ? _controller.feedbackSuccessMessageAR
-                              : _controller.feedbackSuccessMessage,
+                              ? _controller?.feedbackSuccessMessageAR
+                              : _controller?.feedbackSuccessMessage,
                       style: TextStyle(
                         fontWeight: FontWeight.w400,
                         fontSize: 18,
@@ -463,8 +456,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               label: Localization.of(context, 'done'),
               onPressed: () async {
                 if (!mounted) return;
-                await Navigator.of(context).pop();
-                _feedbackController?.clear();
+                _feedbackController.clear();
+                Navigator.of(context).pop();
               },
             ),
           ),

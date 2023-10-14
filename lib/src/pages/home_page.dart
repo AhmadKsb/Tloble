@@ -14,28 +14,27 @@ import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/keyboard_actions_form.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/utils/util.dart';
-import 'package:gsheets/gsheets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:http/http.dart' as http;
 import 'package:vibration/vibration.dart';
-import 'package:highlighter_coachmark/highlighter_coachmark.dart';
+// import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 
 import 'mainPage.dart';
 
 class MyHomePage extends StatefulWidget {
-  final User user;
-  final HomeScreenController homeScreenController;
+  final User? user;
+  final HomeScreenController? homeScreenController;
 
   MyHomePage({
-    Key key,
+    Key? key,
     this.user,
     this.homeScreenController,
   }) : super(key: key);
   static const String route = '/home';
 
   static void restartApp(BuildContext context) {
-    context.findAncestorStateOfType<_MyHomePageState>().restartApp();
+    context.findAncestorStateOfType<_MyHomePageState>()?.restartApp();
   }
 
   @override
@@ -46,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage>
     with WidgetsBindingObserver, HomeScreenControllerMixin {
   AppLifecycleState appState = AppLifecycleState.resumed;
   bool requestTimerRunning = false;
-  HomeScreenController _controller;
+  late HomeScreenController _controller;
 
   var image;
   var imageLink;
@@ -72,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage>
   var refreshKey = GlobalKey<RefreshIndicatorState>();
   bool _isRefreshing = false;
 
-  String amount, errorMessage, notificationToken, newsText = "";
+  String? amount, errorMessage, notificationToken, newsText = "";
   List<String> adminPanelNames = [];
 
   final _formKey = GlobalKey<FormState>();
@@ -109,120 +108,101 @@ class _MyHomePageState extends State<MyHomePage>
       await loadHomeScreenController();
       _controller = homeScreenController;
     } else {
-      _controller = widget.homeScreenController;
+      _controller = widget.homeScreenController!;
     }
-    // await http.get(Uri.parse("https://script.google.com/macros/s/AKfycbz-pNnfQNtnvT8jossI-QiK5kxTzzL5dGjDX-tZJbiSul7NKNzvDGYuajBkdbNk0tcX/exec" +
-    //     "?requestID=1234" +
-    //     "&customerName=John Doe" +
-    //     "&acceptedBy=SomeName" +
-    //     "&sentByEmployee=AnotherName" +
-    //     "&employeeWhoSentTheOrder=EmployeeName" +
-    //     "&shipmentStatus=Shipped" +
-    //     "&firstPayment=100" +
-    //     "&secondPayment=200"));
-    // print(result.body);
-    // final gsheets = GSheets(_credentials);
-    // final ss = await gsheets.spreadsheet(true
-    //     ? "1_FMmquecebW5jTZalv3Ti5Wqv3bzx7nyTxMuzQdq-H8"
-    //     : _controller.smallAmountsSpreadSheetID);
-    // final sheet = ss.worksheetByTitle('Sheet1');
-    // sheet.values.insertValueByKeys(
-    //   "Lea fayed",
-    //   columnKey: 'Driver',
-    //   rowKey: '# 1234',
-    //   eager: false,
-    // );
 
     checkForUpdate();
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    _buildCoachMarkCampaign(sharedPreferences);
+    // _buildCoachMarkCampaign(sharedPreferences);
   }
 
-  void _buildCoachMarkCampaign(SharedPreferences prefs) {
-    if (_controller.showCoachMark) {
-      String coachMark = _controller.coachMarkCampaign ?? '';
-      String showCoachMarkCampaign = prefs.getString(coachMark);
-
-      if (showCoachMarkCampaign == null ||
-          showCoachMarkCampaign != 'alreadyshown') {
-        WidgetsBinding.instance.addPostFrameCallback(
-          (_) {
-            CoachMark coachMarkTile = CoachMark();
-            RenderBox target = coachMarkKey?.currentContext?.findRenderObject();
-
-            Rect markRect = target.localToGlobal(Offset.zero) & target.size;
-            markRect = markRect.inflate(5.0);
-
-            coachMarkTile.show(
-              targetContext: coachMarkKey.currentContext,
-              markRect: markRect,
-              markShape: BoxShape.rectangle,
-              onClose: () {
-                if (_controller.showCampaignOnLaunch) {
-                  String campaignName = _controller.campaignName ?? '';
-                  String showCampaign = prefs.getString(campaignName);
-
-                  if (showCampaign == null || showCampaign != 'alreadyshown') {
-                    showCampaignDialog();
-                    prefs.setString(
-                      campaignName,
-                      'alreadyshown',
-                    );
-                  }
-                }
-              },
-              children: [
-                Center(
-                  child: Text(
-                    (Localizations.localeOf(context).languageCode == 'ar')
-                        ? _controller.coachMarkTextAR
-                        : _controller.coachMarkText,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 24.0,
-                      fontStyle: FontStyle.italic,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-              duration: null,
-            );
-          },
-        );
-        prefs.setString(
-          coachMark,
-          'alreadyshown',
-        );
-      } else {
-        if (_controller.showCampaignOnLaunch) {
-          String campaignName = _controller.campaignName ?? '';
-          String showCampaign = prefs.getString(campaignName);
-
-          if (showCampaign == null || showCampaign != 'alreadyshown') {
-            showCampaignDialog();
-            prefs.setString(
-              campaignName,
-              'alreadyshown',
-            );
-          }
-        }
-      }
-    } else {
-      if (_controller.showCampaignOnLaunch) {
-        String campaignName = _controller.campaignName ?? '';
-        String showCampaign = prefs.getString(campaignName);
-
-        if (showCampaign == null || showCampaign != 'alreadyshown') {
-          showCampaignDialog();
-          prefs.setString(
-            campaignName,
-            'alreadyshown',
-          );
-        }
-      }
-    }
-  }
+  // void _buildCoachMarkCampaign(SharedPreferences prefs) {
+  //   if (_controller.showCoachMark ?? false) {
+  //     String coachMark = _controller.coachMarkCampaign ?? '';
+  //     String? showCoachMarkCampaign = prefs.getString(coachMark);
+  //
+  //     if (showCoachMarkCampaign == null ||
+  //         showCoachMarkCampaign != 'alreadyshown') {
+  //       WidgetsBinding.instance.addPostFrameCallback(
+  //         (_) {
+  //           CoachMark coachMarkTile = CoachMark();
+  //           RenderObject? target =
+  //               coachMarkKey.currentContext?.findRenderObject();
+  //
+  //           // Rect markRect = target?.localToGlobal(Offset.zero) & target?.size;
+  //           // markRect = markRect.inflate(5.0);
+  //
+  //           coachMarkTile.show(
+  //             targetContext: coachMarkKey.currentContext,
+  //             // markRect: markRect,
+  //             markShape: BoxShape.rectangle,
+  //             onClose: () {
+  //               if (_controller.showCampaignOnLaunch ?? false) {
+  //                 String campaignName = _controller.campaignName ?? '';
+  //                 String showCampaign = prefs.getString(campaignName) ?? "";
+  //
+  //                 if (showCampaign != 'alreadyshown') {
+  //                   showCampaignDialog();
+  //                   prefs.setString(
+  //                     campaignName,
+  //                     'alreadyshown',
+  //                   );
+  //                 }
+  //               }
+  //             },
+  //             children: [
+  //               Center(
+  //                 child: Text(
+  //                   ((Localizations.localeOf(context).languageCode == 'ar')
+  //                           ? _controller.coachMarkTextAR
+  //                           : _controller.coachMarkText) ??
+  //                       "",
+  //                   textAlign: TextAlign.center,
+  //                   style: const TextStyle(
+  //                     fontSize: 24.0,
+  //                     fontStyle: FontStyle.italic,
+  //                     color: Colors.white,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //             duration: null,
+  //           );
+  //         },
+  //       );
+  //       prefs.setString(
+  //         coachMark,
+  //         'alreadyshown',
+  //       );
+  //     } else {
+  //       if (_controller.showCampaignOnLaunch ?? false) {
+  //         String campaignName = _controller.campaignName ?? '';
+  //         String showCampaign = prefs.getString(campaignName) ?? "";
+  //
+  //         if (showCampaign != 'alreadyshown') {
+  //           showCampaignDialog();
+  //           prefs.setString(
+  //             campaignName,
+  //             'alreadyshown',
+  //           );
+  //         }
+  //       }
+  //     }
+  //   } else {
+  //     if (_controller.showCampaignOnLaunch ?? false) {
+  //       String campaignName = _controller.campaignName ?? '';
+  //       String showCampaign = prefs.getString(campaignName) ?? "";
+  //
+  //       if (showCampaign != 'alreadyshown') {
+  //         showCampaignDialog();
+  //         prefs.setString(
+  //           campaignName,
+  //           'alreadyshown',
+  //         );
+  //       }
+  //     }
+  //   }
+  // }
 
   void showCampaignDialog() {
     showDialog(
@@ -260,9 +240,12 @@ class _MyHomePageState extends State<MyHomePage>
                 child: Padding(
                   padding: EdgeInsets.only(bottom: 24, left: 8, right: 8),
                   child: Text(
-                    (Localizations.localeOf(context).languageCode == 'ar')
-                        ? _controller.campaignContentsAR.replaceAll("\\n", "\n")
-                        : _controller.campaignContents.replaceAll("\\n", "\n"),
+                    ((Localizations.localeOf(context).languageCode == 'ar')
+                            ? _controller.campaignContentsAR
+                                ?.replaceAll("\\n", "\n")
+                            : _controller.campaignContents
+                                ?.replaceAll("\\n", "\n")) ??
+                        "",
                     style: TextStyle(fontSize: 18),
                   ),
                 ),
@@ -396,7 +379,7 @@ class _MyHomePageState extends State<MyHomePage>
         //     "session-id=257-9305385-2759535; ubid-acbae=260-2832369-0146907; session-token=/Kzv84vyt+U13Tu0Ng6I8IDwRoRDnlEVEWL83liTV4VTzbXi/2sHXVrAJ7rQDzLVFAibV40ZLOfeVZMUAJVtQuFiMgYDlAJUSf383PHaNfctuC0+TaR9SCV1FWEejZi1rfY2GPjpTLbbN3rzAlQiPLMQZjlkxxwtv7kUq7hm6ZafAsk1rbIuIAE/3knO3Cx1JMCIPWAKFEkA9kwOtXEnQCT7FUud43icWfMhtlbiDqX2iQfU2Z5RXbVuZFQPJixzt7Q/8Cx6QSg60hiliAXJVUsrYe2Lz6oLCejGPpRQTITEWPF8FcBPhmAsqwqZ7IxBkPDIrX9CsJLss5IJFSnU5jHEVJ3TcGl3; session-id-time=2082787201l; lc-acbae=en_AE; i18n-prefs=USD; csm-hit=tb:B74ATQ2VHYAA7PJ022A9+s-2JP7AH7XW6SWEV9BFKSB|1697025051128&t:1697025051128&adb:adblk_no",
       });
 
-      if (isEmpty(screen?.body)) return;
+      if (isEmpty(screen.body)) return;
 
       // "id":"40061304733731"
       // print(screen.body.split("\"id\":\"40061304733731\",\"image\":{\"src\":\"")[1].split("\"}")[0].replaceAll("\\", "").replaceAll("//", ""));
@@ -404,7 +387,6 @@ class _MyHomePageState extends State<MyHomePage>
 
       var itemDescriptionEN;
 
-      print("FIRST");
       itemDescriptionEN =
           screen.body.split("product-name-bold\"\>")[1].split("\<\/")[0].trim();
 
@@ -473,7 +455,7 @@ class _MyHomePageState extends State<MyHomePage>
         //     "session-id=257-9305385-2759535; ubid-acbae=260-2832369-0146907; session-token=/Kzv84vyt+U13Tu0Ng6I8IDwRoRDnlEVEWL83liTV4VTzbXi/2sHXVrAJ7rQDzLVFAibV40ZLOfeVZMUAJVtQuFiMgYDlAJUSf383PHaNfctuC0+TaR9SCV1FWEejZi1rfY2GPjpTLbbN3rzAlQiPLMQZjlkxxwtv7kUq7hm6ZafAsk1rbIuIAE/3knO3Cx1JMCIPWAKFEkA9kwOtXEnQCT7FUud43icWfMhtlbiDqX2iQfU2Z5RXbVuZFQPJixzt7Q/8Cx6QSg60hiliAXJVUsrYe2Lz6oLCejGPpRQTITEWPF8FcBPhmAsqwqZ7IxBkPDIrX9CsJLss5IJFSnU5jHEVJ3TcGl3; session-id-time=2082787201l; lc-acbae=en_AE; i18n-prefs=USD; csm-hit=tb:B74ATQ2VHYAA7PJ022A9+s-2JP7AH7XW6SWEV9BFKSB|1697025051128&t:1697025051128&adb:adblk_no",
       });
 
-      if (isEmpty(screen?.body)) return;
+      if (isEmpty(screen.body)) return;
 
       // "id":"40061304733731"
       // print(screen.body.split("\"id\":\"40061304733731\",\"image\":{\"src\":\"")[1].split("\"}")[0].replaceAll("\\", "").replaceAll("//", ""));
@@ -496,7 +478,7 @@ class _MyHomePageState extends State<MyHomePage>
       price = screen.body
           .split("class=\"a-offscreen\"\>USD")[1]
           .split("<\/")[0]
-          ?.replaceAll(',', '');
+          .replaceAll(',', '');
       print("PRICE $price");
 
       image = MemoryImage(
@@ -540,7 +522,7 @@ class _MyHomePageState extends State<MyHomePage>
         // "xman_t=uCXGeTajsChq1zocFti5q1k6fZ/ef5Z3e9MAKG6Zq3zFtXivMtdeyP6fXLnmxl3X; xman_f=Kq1gECXbfYZp2+LHF4728YjcTCJqSRSU6j15emwgj9DRrBuPg16xOMB4c6AjbacaTl5rWEzNeU1h9LcrrQWqAem2FHaBUYZPna1p79MYutfVR38CE7OxFw==; cna=N+iiHdMPJFUCAblhXHxVztzC; xlly_s=1; ali_apache_id=33.1.244.156.1696334375712.039905.6; acs_usuc_t=x_csrf=nywdm9jyyvm3&acs_rt=30cf6bf409f143d6bca5923ad7812197; aeu_cid=b22a47b58e9345079e335d1b850462e2-1696334387594-03599-_DlqYSor; traffic_se_co=%7B%22src%22%3A%22Google%22%2C%22timestamp%22%3A1696334387575%7D; af_ss_a=1; af_ss_b=1; e_id=pt100; _gid=GA1.2.1806542863.1696334390; _gcl_au=1.1.1842478091.1696334391; XSRF-TOKEN=1182f1e0-6227-4172-9e06-805eddd8f930; _gac_UA-17640202-1=1.1696334400.CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE; _gcl_aw=GCL.1696334400.CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE; _ym_uid=1696334400247532736; _ym_d=1696334400; _ym_isad=2; AB_DATA_TRACK=450145_617386; AB_ALG=; AB_STG=st_StrategyExp_1694492533501%23stg_687; ali_apache_track=; ali_apache_tracktmp=; _fbp=fb.1.1696359035617.1228727340; RT=\"z=1&dm=aliexpress.com&si=067620ff-c624-47ae-be60-44f4fc6ce2bd&ss=lnap3p21&sl=2&tt=3gi&rl=1&obo=1&ld=x9de&r=1ceb9ekj&ul=x9df&hd=x9dg\"; aep_history=keywords%5E%0Akeywords%09%0A%0Aproduct_selloffer%5E%0Aproduct_selloffer%091005006058768832%091005006058753920%091005006084190108%091005006058797681%091005003609706446%091005005614102888; intl_locale=de_DE; _ym_visorc=b; _m_h5_tk=9e69a87b459aadb5f609153fec2415ff_1696366684726; _m_h5_tk_enc=eb38b8bfc39b43b97b30f2b61705683f; JSESSIONID=359D57CF431A76E3F700EF829E45C534; AKA_A2=A; intl_common_forever=ZFHIR9CDfmspVPJHXKAXdfzdQP6dhXWnKwSZh2zR1AZsIhdlpsQiPg==; _ga_VED1YSGNC7=GS1.1.1696362302.4.1.1696364354.57.0.0; _ga=GA1.1.736258735.1696334390; cto_bundle=hBxs7V9DbUVNT0FrOFRya3k4cHklMkZoUWlPV3o2SCUyQkNzQ2p5R1dubVBiUTkwR0RHQkhQeVExN0psTk94Mng5QWVqUk4zaWRiUTlHVVI2V0ZwY1RvWHk1a2FKRHZVR1dDSlBGV0Nvcmc0eWlPdE5FRTc5NHRXTGJ0ZUhPWXolMkZNTEl1WFpQdWR5amtGSDdpbTYwJTJGZEltemFJV09jVDd6eW95SUxIeXYlMkY4V25uNEx6QVdWbnNkTzJuMkp4Qk1MazBnYTFNOXM1TmUlMkJpS3NQU3lXUWpqb2FpdnhWQ0ZnJTNEJTNE; aep_usuc_f=site=deu&c_tp=USD&region=LB&b_locale=de_DE; tfstk=djpXR3wcLFpPjPOA_liyO8WR8EX1hEMFWls9xhe4XtBAfR_W5O-qmR-O6e-g313c3dTWuHdVgtCv23IFXNFAXsIReGjaWPe9Xls9zUL1smbNWNTwXIorLv-DmOX9f2kEL-vYc9mnY0e92L6GB2uEnCFDEOYICPSRXhZg0z4Jfzw7eJ2PkkfTZwsMFi1-LnQR61mNVs_pDagKJOPQLwaR05Z5tRs580i7s54VqjvR.; l=fBanFBCrPPVU1yo2BO5Zlurza77OzIdfGsPzaNbMiIEGa6KcaFNtpNCtpu39udtjQTfv-etPt6A1OdhW7bU3WxOVMRdEm7a7Txv9-iRLS45..; isg=BMTEvuYsfasiRMngdG5feOBFlUS23ehHWAHa4d5kgA9SCWDTBu5C1pjrSbnRESCf; xman_us_f=x_l=1&x_locale=de_DE&x_c_chg=0&acs_rt=30cf6bf409f143d6bca5923ad7812197&x_as_i=%7B%22aeuCID%22%3A%22b22a47b58e9345079e335d1b850462e2-1696334387594-03599-_DlqYSor%22%2C%22af%22%3A%22CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE%22%2C%22affiliateKey%22%3A%22_DlqYSor%22%2C%22channel%22%3A%22AFFILIATE%22%2C%22cv%22%3A%221%22%2C%22isCookieCache%22%3A%22N%22%2C%22ms%22%3A%221%22%2C%22pid%22%3A%222791977130%22%2C%22tagtime%22%3A1696334387594%7D",
       });
 
-      if (isEmpty(screen?.body)) return;
+      if (isEmpty(screen.body)) return;
 
       var variant = _productLinkController.text.contains("variant")
           ? _productLinkController.text.split("variant=")[1]
@@ -569,11 +551,12 @@ class _MyHomePageState extends State<MyHomePage>
             description.body.split("og:title\" content=\"")[1].split("\"")[0];
       } catch (e) {}
 
-      price = (num.tryParse(screen.body
-                  .split("og:price:amount\" content=\"")[1]
-                  .split("\"")[0]
-                  ?.replaceAll(',', '')) /
-              num.tryParse(_controller.aedConversion))
+      price = ((num.tryParse(screen.body
+                      .split("og:price:amount\" content=\"")[1]
+                      .split("\"")[0]
+                      .replaceAll(',', '')) ??
+                  1) /
+              num.tryParse(_controller.aedConversion ?? "3.67")!)
           .toStringAsFixed(2);
       print("PRICE $price");
 
@@ -606,7 +589,7 @@ class _MyHomePageState extends State<MyHomePage>
             "xman_t=uCXGeTajsChq1zocFti5q1k6fZ/ef5Z3e9MAKG6Zq3zFtXivMtdeyP6fXLnmxl3X; xman_f=Kq1gECXbfYZp2+LHF4728YjcTCJqSRSU6j15emwgj9DRrBuPg16xOMB4c6AjbacaTl5rWEzNeU1h9LcrrQWqAem2FHaBUYZPna1p79MYutfVR38CE7OxFw==; cna=N+iiHdMPJFUCAblhXHxVztzC; xlly_s=1; ali_apache_id=33.1.244.156.1696334375712.039905.6; acs_usuc_t=x_csrf=nywdm9jyyvm3&acs_rt=30cf6bf409f143d6bca5923ad7812197; aeu_cid=b22a47b58e9345079e335d1b850462e2-1696334387594-03599-_DlqYSor; traffic_se_co=%7B%22src%22%3A%22Google%22%2C%22timestamp%22%3A1696334387575%7D; af_ss_a=1; af_ss_b=1; e_id=pt100; _gid=GA1.2.1806542863.1696334390; _gcl_au=1.1.1842478091.1696334391; XSRF-TOKEN=1182f1e0-6227-4172-9e06-805eddd8f930; _gac_UA-17640202-1=1.1696334400.CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE; _gcl_aw=GCL.1696334400.CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE; _ym_uid=1696334400247532736; _ym_d=1696334400; _ym_isad=2; AB_DATA_TRACK=450145_617386; AB_ALG=; AB_STG=st_StrategyExp_1694492533501%23stg_687; ali_apache_track=; ali_apache_tracktmp=; _fbp=fb.1.1696359035617.1228727340; RT=\"z=1&dm=aliexpress.com&si=067620ff-c624-47ae-be60-44f4fc6ce2bd&ss=lnap3p21&sl=2&tt=3gi&rl=1&obo=1&ld=x9de&r=1ceb9ekj&ul=x9df&hd=x9dg\"; aep_history=keywords%5E%0Akeywords%09%0A%0Aproduct_selloffer%5E%0Aproduct_selloffer%091005006058768832%091005006058753920%091005006084190108%091005006058797681%091005003609706446%091005005614102888; intl_locale=de_DE; _ym_visorc=b; _m_h5_tk=9e69a87b459aadb5f609153fec2415ff_1696366684726; _m_h5_tk_enc=eb38b8bfc39b43b97b30f2b61705683f; JSESSIONID=359D57CF431A76E3F700EF829E45C534; AKA_A2=A; intl_common_forever=ZFHIR9CDfmspVPJHXKAXdfzdQP6dhXWnKwSZh2zR1AZsIhdlpsQiPg==; _ga_VED1YSGNC7=GS1.1.1696362302.4.1.1696364354.57.0.0; _ga=GA1.1.736258735.1696334390; cto_bundle=hBxs7V9DbUVNT0FrOFRya3k4cHklMkZoUWlPV3o2SCUyQkNzQ2p5R1dubVBiUTkwR0RHQkhQeVExN0psTk94Mng5QWVqUk4zaWRiUTlHVVI2V0ZwY1RvWHk1a2FKRHZVR1dDSlBGV0Nvcmc0eWlPdE5FRTc5NHRXTGJ0ZUhPWXolMkZNTEl1WFpQdWR5amtGSDdpbTYwJTJGZEltemFJV09jVDd6eW95SUxIeXYlMkY4V25uNEx6QVdWbnNkTzJuMkp4Qk1MazBnYTFNOXM1TmUlMkJpS3NQU3lXUWpqb2FpdnhWQ0ZnJTNEJTNE; aep_usuc_f=site=deu&c_tp=USD&region=LB&b_locale=de_DE; tfstk=djpXR3wcLFpPjPOA_liyO8WR8EX1hEMFWls9xhe4XtBAfR_W5O-qmR-O6e-g313c3dTWuHdVgtCv23IFXNFAXsIReGjaWPe9Xls9zUL1smbNWNTwXIorLv-DmOX9f2kEL-vYc9mnY0e92L6GB2uEnCFDEOYICPSRXhZg0z4Jfzw7eJ2PkkfTZwsMFi1-LnQR61mNVs_pDagKJOPQLwaR05Z5tRs580i7s54VqjvR.; l=fBanFBCrPPVU1yo2BO5Zlurza77OzIdfGsPzaNbMiIEGa6KcaFNtpNCtpu39udtjQTfv-etPt6A1OdhW7bU3WxOVMRdEm7a7Txv9-iRLS45..; isg=BMTEvuYsfasiRMngdG5feOBFlUS23ehHWAHa4d5kgA9SCWDTBu5C1pjrSbnRESCf; xman_us_f=x_l=1&x_locale=de_DE&x_c_chg=0&acs_rt=30cf6bf409f143d6bca5923ad7812197&x_as_i=%7B%22aeuCID%22%3A%22b22a47b58e9345079e335d1b850462e2-1696334387594-03599-_DlqYSor%22%2C%22af%22%3A%22CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE%22%2C%22affiliateKey%22%3A%22_DlqYSor%22%2C%22channel%22%3A%22AFFILIATE%22%2C%22cv%22%3A%221%22%2C%22isCookieCache%22%3A%22N%22%2C%22ms%22%3A%221%22%2C%22pid%22%3A%222791977130%22%2C%22tagtime%22%3A1696334387594%7D",
       });
 
-      if (isEmpty(screen?.body)) return;
+      if (isEmpty(screen.body)) return;
 
       imageLink = screen.body.split("og:image\" content=\"")[1].split("\"")[0];
       var imagee = await http.get(Uri.parse(
@@ -717,28 +700,28 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    nameNode?.dispose();
-    quantityNode?.dispose();
-    colorNode?.dispose();
-    sizeNode?.dispose();
-    productLink?.dispose();
-    moreDetailsNode?.dispose();
+    nameNode.dispose();
+    quantityNode.dispose();
+    colorNode.dispose();
+    sizeNode.dispose();
+    productLink.dispose();
+    moreDetailsNode.dispose();
     super.dispose();
   }
 
   void checkForUpdate() {
     List<String> versionSplitAtPlus =
-        widget.homeScreenController.version.split('+');
+        widget.homeScreenController?.version?.split('+') ?? [];
     List<String> versionSplitAtDot = versionSplitAtPlus[0].split('.');
     String currentVersion = versionSplitAtDot[0] +
         versionSplitAtDot[1] +
         versionSplitAtDot[2] +
         versionSplitAtPlus[1];
 
-    if (widget.homeScreenController.forceUpdate ?? false) {
+    if (widget.homeScreenController?.forceUpdate ?? false) {
       if (Theme.of(context).platform == TargetPlatform.iOS) {
         List<String> iosVersionSplitAtPlus =
-            widget.homeScreenController.iosAppVersion.split('+');
+            widget.homeScreenController?.iosAppVersion?.split('+') ?? [];
         List<String> iosVersionSplitAtDot = iosVersionSplitAtPlus[0].split('.');
         String consoleString = iosVersionSplitAtDot[0] +
             iosVersionSplitAtDot[1] +
@@ -750,7 +733,7 @@ class _MyHomePageState extends State<MyHomePage>
           );
       } else {
         List<String> androidVersionSplitAtPlus =
-            widget.homeScreenController.androidAppVersion.split('+');
+            widget.homeScreenController?.androidAppVersion?.split('+') ?? [];
         List<String> androidVersionSplitAtDot =
             androidVersionSplitAtPlus[0].split('.');
         String consoleString = androidVersionSplitAtDot[0] +
@@ -782,100 +765,12 @@ class _MyHomePageState extends State<MyHomePage>
 
   void updateApp() async {
     StoreRedirect.redirect(
-      androidAppId: widget.homeScreenController.androidAppId,
-      iOSAppId: widget.homeScreenController.iOSAppId,
+      androidAppId: widget.homeScreenController?.androidAppId,
+      iOSAppId: widget.homeScreenController?.iOSAppId,
     );
   }
 
-  // Widget _categoryWidget() {
-  //   return Container(
-  //     margin: EdgeInsets.symmetric(vertical: 10),
-  //     width: AppTheme.fullWidth(context),
-  //     height: 80,
-  //     child: ListView(
-  //       scrollDirection: Axis.horizontal,
-  //       children: AppData.categoryList
-  //           .map(
-  //             (category) => ProductIcon(
-  //               model: category,
-  //               onSelected: (model) {
-  //                 setState(() {
-  //                   AppData.categoryList.forEach((item) {
-  //                     item.isSelected = false;
-  //                   });
-  //                   model.isSelected = true;
-  //                 });
-  //               },
-  //             ),
-  //           )
-  //           .toList(),
-  //     ),
-  //   );
-  // }
-  //
-  // Widget _productWidget() {
-  //   return Container(
-  //     margin: EdgeInsets.symmetric(vertical: 10),
-  //     width: AppTheme.fullWidth(context),
-  //     height: AppTheme.fullWidth(context) * .7,
-  //     child: GridView(
-  //       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-  //           crossAxisCount: 1,
-  //           childAspectRatio: 4 / 3,
-  //           mainAxisSpacing: 30,
-  //           crossAxisSpacing: 20),
-  //       padding: EdgeInsets.only(left: 20),
-  //       scrollDirection: Axis.horizontal,
-  //       children: AppData.productList
-  //           .map(
-  //             (product) => ProductCard(
-  //               product: product,
-  //               onSelected: (model) {
-  //                 setState(() {
-  //                   AppData.productList.forEach((item) {
-  //                     item.isSelected = false;
-  //                   });
-  //                   model.isSelected = true;
-  //                 });
-  //               },
-  //             ),
-  //           )
-  //           .toList(),
-  //     ),
-  //   );
-  // }
-  //
-  // Widget _search() {
-  //   return Container(
-  //     margin: AppTheme.padding,
-  //     child: Row(
-  //       children: <Widget>[
-  //         Expanded(
-  //           child: Container(
-  //             height: 40,
-  //             alignment: Alignment.center,
-  //             decoration: BoxDecoration(
-  //                 color: LightColor.lightGrey.withAlpha(100),
-  //                 borderRadius: BorderRadius.all(Radius.circular(10))),
-  //             child: TextField(
-  //               decoration: InputDecoration(
-  //                   border: InputBorder.none,
-  //                   hintText: "Search Products",
-  //                   hintStyle: TextStyle(fontSize: 12),
-  //                   contentPadding:
-  //                       EdgeInsets.only(left: 10, right: 10, bottom: 0, top: 5),
-  //                   prefixIcon: Icon(Icons.search, color: Colors.black54)),
-  //             ),
-  //           ),
-  //         ),
-  //         SizedBox(width: 20),
-  //         _icon(Icons.filter_list, color: Colors.black54)
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  InputDecoration inputDecoration(String hintText, {Widget prefixIcon}) {
+  InputDecoration inputDecoration(String hintText, {Widget? prefixIcon}) {
     return InputDecoration(
       labelText: hintText,
       counterText: "",
@@ -897,7 +792,7 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
-  Widget layoutContainer({Widget child}) {
+  Widget layoutContainer({Widget? child}) {
     return Container(
       width: MediaQuery.of(context).size.width,
       margin: EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
@@ -952,7 +847,8 @@ class _MyHomePageState extends State<MyHomePage>
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.max,
                       children: <Widget>[
-                        if (image != null)
+                        if (image != null &&
+                            (!(widget.homeScreenController?.hideImage ?? true)))
                           Container(
                             width: 130,
                             height: 130,
@@ -1047,9 +943,9 @@ class _MyHomePageState extends State<MyHomePage>
                             focusNode: productLink,
                             keyboardType: TextInputType.url,
                             onChanged: (value) async {
-                              if (isEmpty(_productLinkController?.text) ||
-                                  ((_productLinkController?.text?.length ?? 0) <
-                                      5)) return;
+                              if (isEmpty(_productLinkController.text) ||
+                                  ((_productLinkController.text.length) < 5))
+                                return;
                               try {
                                 setState(() {
                                   isLoading = true;
@@ -1069,11 +965,11 @@ class _MyHomePageState extends State<MyHomePage>
                               }
                             },
                             autovalidateMode:
-                                isEmpty(_productLinkController?.text)
+                                isEmpty(_productLinkController.text)
                                     ? null
                                     : AutovalidateMode.onUserInteraction,
-                            validator: (String value) {
-                              if (value.isEmpty) {
+                            validator: (String? value) {
+                              if (value?.isEmpty ?? false) {
                                 return Localization.of(
                                   context,
                                   'link_cannot_be_empty',
@@ -1109,8 +1005,8 @@ class _MyHomePageState extends State<MyHomePage>
                                 amount = value;
                               });
                             },
-                            validator: (String value) {
-                              if (value.isEmpty) {
+                            validator: (String? value) {
+                              if (value?.isEmpty ?? false) {
                                 return Localization.of(
                                   context,
                                   'quantity_cannot_be_empty',
@@ -1199,7 +1095,8 @@ class _MyHomePageState extends State<MyHomePage>
                             disabled: isLoading,
                             isLoading: isLoading,
                             onPressed: () async {
-                              if (!widget.homeScreenController.isBanned) {
+                              if (!(widget.homeScreenController?.isBanned ??
+                                  true)) {
                                 bool isRoot = await checkIfSuperUser();
                                 if ((widget.homeScreenController
                                             ?.checkForRoot ??
@@ -1214,8 +1111,9 @@ class _MyHomePageState extends State<MyHomePage>
                                         'jailbreak_info',
                                       ),
                                       'value',
-                                      widget
-                                          .homeScreenController.contactUsNumber,
+                                      widget.homeScreenController
+                                              ?.contactUsNumber ??
+                                          "",
                                     ),
                                     popOnPress: true,
                                     dismissOnTouchOutside: false,
@@ -1227,7 +1125,8 @@ class _MyHomePageState extends State<MyHomePage>
                                   );
                                   return;
                                 } else {
-                                  if (_formKey.currentState.validate()) {
+                                  if (_formKey.currentState?.validate() ??
+                                      false) {
                                     // if (widget.user?.phoneNumber == null) {
                                     //   showErrorBottomsheet(
                                     //     Localization.of(
@@ -1458,58 +1357,56 @@ class _MyHomePageState extends State<MyHomePage>
                                                           .languageCode ==
                                                       'ar')
                                                   ? widget.homeScreenController
-                                                      .nextTextAR
-                                                  : widget
-                                                      .homeScreenController.nextText)
+                                                      ?.nextTextAR
+                                                  : widget.homeScreenController
+                                                      ?.nextText)
                                               : (isNotEmpty(
                                                           _colorController.text)
-                                                      ? ((Localizations.localeOf(context).languageCode ==
-                                                              'ar')
-                                                          ? widget
-                                                              .homeScreenController
-                                                              .nextTextSizeAR
-                                                          : widget
-                                                              .homeScreenController
-                                                              .nextTextSize)
-                                                      : (Localizations.localeOf(context)
+                                                      ? ((Localizations.localeOf(context)
                                                                   .languageCode ==
                                                               'ar')
                                                           ? widget
                                                               .homeScreenController
-                                                              .nextTextColorAR
+                                                              ?.nextTextSizeAR
                                                           : widget
                                                               .homeScreenController
-                                                              .nextTextColor)
-                                                  .replaceAll(r'\n', '\n')
+                                                              ?.nextTextSize)
+                                                      : (Localizations.localeOf(context).languageCode ==
+                                                              'ar')
+                                                          ? widget
+                                                              .homeScreenController
+                                                              ?.nextTextColorAR
+                                                          : widget
+                                                              .homeScreenController
+                                                              ?.nextTextColor)
+                                                  ?.replaceAll(r'\n', '\n')
                                                   .replaceAll(r"\'", "\'"),
                                       confirmMessage:
                                           Localization.of(context, 'continue'),
                                       confirmAction: () async {
-                                        await Navigator.of(context).pop();
-                                        widget
-                                            .homeScreenController.productsTitles
+                                        // Navigator.of(context).pop();
+                                        widget.homeScreenController
+                                            ?.productsTitles
                                             .add(itemDescription ??
                                                 Localization.of(
                                                     context, "product"));
                                         widget
-                                            .homeScreenController.productsLinks
-                                            .add(_productLinkController.text ??
-                                                "");
+                                            .homeScreenController?.productsLinks
+                                            .add(_productLinkController.text);
                                         widget.homeScreenController
-                                            .productsQuantities
-                                            .add(
-                                                _quantityController.text ?? "");
+                                            ?.productsQuantities
+                                            .add(_quantityController.text);
+                                        widget.homeScreenController
+                                            ?.productsColors
+                                            .add(_colorController.text);
                                         widget
-                                            .homeScreenController.productsColors
-                                            .add(_colorController.text ?? "");
-                                        widget
-                                            .homeScreenController.productsSizes
-                                            .add(_sizeController.text ?? "");
-                                        widget
-                                            .homeScreenController.productsPrices
+                                            .homeScreenController?.productsSizes
+                                            .add(_sizeController.text);
+                                        widget.homeScreenController
+                                            ?.productsPrices
                                             .add(price ?? "0");
-                                        widget
-                                            .homeScreenController.productsImages
+                                        widget.homeScreenController
+                                            ?.productsImages
                                             .add(imageLink ?? "");
 
                                         _quantityController.text = "";
@@ -1523,7 +1420,7 @@ class _MyHomePageState extends State<MyHomePage>
                                         itemDescription = null;
 
                                         widget.homeScreenController
-                                            .refreshView();
+                                            ?.refreshView();
 
                                         FocusManager.instance.primaryFocus
                                             ?.unfocus();
@@ -1575,24 +1472,24 @@ class _MyHomePageState extends State<MyHomePage>
           "https://" + _productLinkController.text.split("https://")[1];
     }
 
-    var productImageLink = _productLinkController?.text?.toLowerCase();
+    var productImageLink = _productLinkController.text.toLowerCase();
 
-    if (!productImageLink.contains("https://")) {
+    if (!(productImageLink.contains("https://"))) {
       _productLinkController.text = "https://" + productImageLink;
       productImageLink = "https://" + productImageLink;
     }
 
-    if (productImageLink?.contains("aliexpress") ?? false) {
+    if (productImageLink.contains("aliexpress")) {
       await _loadAliExpressImage();
-    } else if (productImageLink?.contains("alibaba") ?? false) {
+    } else if (productImageLink.contains("alibaba")) {
       await _loadAliBaba();
-    } else if (productImageLink?.contains("thegivingmovement") ?? false) {
+    } else if (productImageLink.contains("thegivingmovement")) {
       await _loadTheGivingMovement();
-    } else if (((productImageLink?.contains("amazon") ?? false) ||
-        (productImageLink?.contains("amzn.eu") ?? false) ||
-        (productImageLink?.contains("a.co") ?? false))) {
+    } else if (((productImageLink.contains("amazon")) ||
+        (productImageLink.contains("amzn.eu")) ||
+        (productImageLink.contains("a.co")))) {
       await _loadAmazon();
-    } else if (productImageLink?.contains("sephora") ?? false) {
+    } else if (productImageLink.contains("sephora")) {
       await _loadSephora();
     }
   }
@@ -1633,7 +1530,7 @@ class _MyHomePageState extends State<MyHomePage>
                 child: Text(
                   Localization.of(context, 'add_to_cart_successful'),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),
@@ -1652,7 +1549,7 @@ class _MyHomePageState extends State<MyHomePage>
             padding: EdgeInsets.only(bottom: 8),
             child: RaisedButtonV2(
               label: Localization.of(context, 'done'),
-              onPressed: () {
+              onPressed: () async {
                 if (!mounted) return;
                 Navigator.of(context).pop();
               },

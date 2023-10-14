@@ -4,28 +4,29 @@ import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'dart:convert';
 
 class Order implements Comparable<Order> {
-  num amount;
-  num firstPayment;
-  num secondPayment;
-  List<dynamic> productsTitles = [];
-  List<dynamic> productsQuantities = [];
-  List<dynamic> productsLinks = [];
-  List<dynamic> productsColors = [];
-  List<dynamic> productsSizes = [];
-  List<dynamic> productsPrices = [];
-  List<dynamic> productsImages = [];
-  String notificationToken;
-  String acceptedBy;
-  String customerName;
-  String phoneNumber;
-  String employeeWhoSentTheOrder;
-  num referenceID;
-  String sentTime;
-  String acceptedTime;
-  num coins;
-  bool sentByEmployee;
-  List<ShipmentStatus> shipmentStatus;
-  List<OrderStatus> orderStatus;
+  num? amount;
+  num? firstPayment;
+  num? secondPayment;
+  List<dynamic>? productsTitles = [];
+  List<dynamic>? productsQuantities = [];
+  List<dynamic>? productsLinks = [];
+  List<dynamic>? productsColors = [];
+  List<dynamic>? productsSizes = [];
+  List<dynamic>? productsPrices = [];
+  List<dynamic>? productsImages = [];
+  String? notificationToken;
+  String? acceptedBy;
+  String? customerName;
+  String? phoneNumber;
+  String? orderSenderPhoneNumber;
+  String? employeeWhoSentTheOrder;
+  num? referenceID;
+  String? sentTime;
+  String? acceptedTime;
+  num? coins;
+  bool? sentByEmployee;
+  List<ShipmentStatus>? shipmentStatus;
+  List<OrderStatus>? orderStatus;
 
   Order({
     this.amount,
@@ -42,6 +43,7 @@ class Order implements Comparable<Order> {
     this.acceptedBy,
     this.customerName,
     this.phoneNumber,
+    this.orderSenderPhoneNumber,
     this.employeeWhoSentTheOrder,
     this.referenceID,
     this.sentTime,
@@ -54,11 +56,11 @@ class Order implements Comparable<Order> {
 
   @override
   int compareTo(Order other) {
-    if (num.tryParse(shipmentStatus[0].value) >
-        num.tryParse(other.shipmentStatus[0].value)) {
+    if (num.parse(shipmentStatus?[0].value ?? "-1") >
+        num.parse(other.shipmentStatus?[0].value ?? "-1")) {
       return -1;
-    } else if (num.tryParse(shipmentStatus[0].value) <
-        num.tryParse(other.shipmentStatus[0].value)) {
+    } else if (num.parse(shipmentStatus?[0].value ?? "-1") <
+        num.parse(other.shipmentStatus?[0].value ?? "-1")) {
       return 1;
     } else {
       return 0;
@@ -95,6 +97,7 @@ class Order implements Comparable<Order> {
       acceptedBy: json['acceptedBy'],
       customerName: json['customerName'],
       phoneNumber: json['phoneNumber'],
+      orderSenderPhoneNumber: json['orderSenderPhoneNumber'],
       employeeWhoSentTheOrder: json['employeeWhoSentTheOrder'],
       referenceID: num.tryParse(json['referenceID'].toString()),
       sentTime: json['sentTime'],
@@ -118,7 +121,7 @@ class Order implements Comparable<Order> {
   }
 
   static List<Order> fromJsonList(List json) {
-    List<Order> orders = json?.map((order) => Order.fromJson(order))?.toList();
+    List<Order>? orders = json.map((order) => Order.fromJson(order)).toList();
     return orders;
   }
 
@@ -139,13 +142,14 @@ class Order implements Comparable<Order> {
       'acceptedBy': acceptedBy,
       'customerName': customerName,
       'phoneNumber': phoneNumber,
+      'orderSenderPhoneNumber': orderSenderPhoneNumber,
       'employeeWhoSentTheOrder': employeeWhoSentTheOrder,
       'referenceID': referenceID,
       'sentTime': sentTime,
       'acceptedTime': acceptedTime,
       'coins': coins,
-      'shipmentStatus': [shipmentStatus[0].value],
-      'orderStatus': [orderStatus[0].value],
+      'shipmentStatus': [shipmentStatus?[0].value],
+      'orderStatus': [orderStatus?[0].value],
     };
 
     return json;
@@ -159,7 +163,7 @@ class OrderStatus extends Enum {
   static const pendingArrival = OrderStatus._internal("PA");
   static const rejected = OrderStatus._internal("R");
   static const completed = OrderStatus._internal("C");
-  static const unknown = OrderStatus._internal(null);
+  static const unknown = OrderStatus._internal("-1");
 
   static const List<OrderStatus> values = [
     contactCustomer,
@@ -188,7 +192,7 @@ class ShipmentStatus extends Enum {
   static const awaitingCustomerPickup = ShipmentStatus._internal("6");
   static const customerRejected = ShipmentStatus._internal("7");
   static const completed = ShipmentStatus._internal("8");
-  static const unknown = ShipmentStatus._internal(null);
+  static const unknown = ShipmentStatus._internal("-1");
 
   static const List<ShipmentStatus> values = [
     awaitingCustomer,
@@ -218,7 +222,7 @@ abstract class Enum {
   static const List<Enum> values = [];
 }
 
-String getShipmentStatusString(BuildContext context, ShipmentStatus status) {
+String? getShipmentStatusString(BuildContext context, ShipmentStatus status) {
   switch (status) {
     case ShipmentStatus.awaitingCustomer:
       return Localization.of(context, 'awaitingCustomer');
@@ -243,9 +247,9 @@ String getShipmentStatusString(BuildContext context, ShipmentStatus status) {
   }
 }
 
-String getShipmentStatusForEmployeeString(
+String? getShipmentStatusForEmployeeString(
   BuildContext context,
-  ShipmentStatus status,
+  ShipmentStatus? status,
 ) {
   switch (status) {
     case ShipmentStatus.awaitingCustomer:
@@ -271,7 +275,7 @@ String getShipmentStatusForEmployeeString(
   }
 }
 
-Color getShipmentStatusColor(ShipmentStatus status) {
+Color getShipmentStatusColor(ShipmentStatus? status) {
   switch (status) {
     case ShipmentStatus.awaitingCustomer:
     case ShipmentStatus.awaitingPayment:

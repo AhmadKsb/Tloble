@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
@@ -15,26 +14,19 @@ import 'package:flutter_ecommerce_app/src/pages/upcoming_orders.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
-import 'package:flutter_ecommerce_app/src/utils/UBScaffold/page_state.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/BottomNavigationBar/bottom_navigation_bar.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
-import 'package:flutter_ecommerce_app/src/widgets/extentions.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vibration/vibration.dart';
 
 import '../../main.dart';
-import '../firebase_notification.dart';
 import 'BottomSheets/add_employee_bottomsheet.dart';
 import 'BottomSheets/send_notification_bottomsheet.dart';
-import 'authentication/login.dart';
 import 'BottomSheets/ban_user_bottomsheet.dart';
 import 'check_customers_order.dart';
 import 'contact_us/contact_us_screen.dart';
@@ -47,9 +39,9 @@ import 'orders/paid_orders_screen.dart';
 GlobalKey coachMarkKey = GlobalObjectKey("coachMarkKey");
 
 class MainPage extends StatefulWidget {
-  MainPage({Key key, this.title}) : super(key: key);
+  MainPage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -62,7 +54,7 @@ class _MainPageState extends State<MainPage>
   bool isButtonLoading = false;
   var image;
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  SharedPreferences prefs;
+  late SharedPreferences prefss;
   List<String> adminPanelNames = [];
 
   void initState() {
@@ -84,7 +76,7 @@ class _MainPageState extends State<MainPage>
   Future<void> _load() async {
     if (adminPanelNames.isEmpty &&
         (homeScreenController.feedbackReceiversList?.isNotEmpty ?? false))
-      await _buildAdminPanelWidgets();
+      _buildAdminPanelWidgets();
   }
 
   Widget _appBar() {
@@ -108,8 +100,8 @@ class _MainPageState extends State<MainPage>
                 context,
                 Locale(isArabic ? "en" : "ar"),
               );
-              prefs = await SharedPreferences.getInstance();
-              await prefs.setString(
+              prefss = await SharedPreferences.getInstance();
+              await prefss.setString(
                 'swiftShop_language',
                 isArabic ? "en" : "ar",
               );
@@ -154,7 +146,7 @@ class _MainPageState extends State<MainPage>
     return GestureDetector(
       onTap: () {
         setState(() {});
-        scaffoldKey.currentState.openDrawer();
+        scaffoldKey.currentState?.openDrawer();
       },
       child: Container(
         padding: EdgeInsets.all(10),
@@ -218,7 +210,6 @@ class _MainPageState extends State<MainPage>
                               confirmMessage:
                                   Localization.of(context, 'confirm'),
                               confirmAction: () async {
-                                await Navigator.of(context).pop();
                                 homeScreenController.productsTitles = [];
                                 homeScreenController.productsLinks = [];
                                 homeScreenController.productsQuantities = [];
@@ -279,17 +270,15 @@ class _MainPageState extends State<MainPage>
         itemBuilder: (listTileName) {
           return ListTile(
             title: Text(
-              "${listTileName ?? ''}",
+              "${listTileName}",
             ),
           );
         },
         itemHeight: 60,
         onItemSelected: (listTileName) async {
+          await Navigator.of(context).pop;
           if (listTileName.toLowerCase() ==
               Localization.of(context, 'paid').toLowerCase()) {
-            await Navigator.popUntil(
-                context, (Route<dynamic> route) => route.isFirst);
-
             await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => PaidOrdersScreen(
@@ -300,9 +289,6 @@ class _MainPageState extends State<MainPage>
             );
           } else if (listTileName.toLowerCase() ==
               Localization.of(context, 'awaiting_shipment').toLowerCase()) {
-            await Navigator.popUntil(
-                context, (Route<dynamic> route) => route.isFirst);
-
             await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => PaidOrdersScreen(
@@ -313,9 +299,6 @@ class _MainPageState extends State<MainPage>
             );
           } else if (listTileName.toLowerCase() ==
               Localization.of(context, 'orderOnTheWay').toLowerCase()) {
-            await Navigator.popUntil(
-                context, (Route<dynamic> route) => route.isFirst);
-
             await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => PaidOrdersScreen(
@@ -327,9 +310,6 @@ class _MainPageState extends State<MainPage>
           } else if (listTileName.toLowerCase() ==
               Localization.of(context, 'awaitingCustomerPickup')
                   .toLowerCase()) {
-            await Navigator.popUntil(
-                context, (Route<dynamic> route) => route.isFirst);
-
             await Navigator.of(context).push(
               MaterialPageRoute(
                 builder: (context) => PaidOrdersScreen(
@@ -339,8 +319,6 @@ class _MainPageState extends State<MainPage>
               ),
             );
           }
-          // await Navigator.of(context).pop();
-          // getManagementListTileWidget(listTileName);
         },
       );
     } else if (listTileName ==
@@ -485,9 +463,10 @@ class _MainPageState extends State<MainPage>
         },
         itemHeight: 50,
         onItemSelected: (driver) async {
+          await Navigator.of(context).pop;
           FocusManager.instance.primaryFocus?.unfocus();
-          scaffoldKey.currentState.openDrawer();
-          await Navigator.of(context).pop();
+          scaffoldKey.currentState?.openDrawer();
+          Navigator.of(context).pop();
           await showConfirmationBottomSheet(
             context: context,
             flare: 'assets/flare/pending.flr',
@@ -497,7 +476,7 @@ class _MainPageState extends State<MainPage>
                 'are_you_sure_you_want_to_fire',
               ),
               'value',
-              driver.name,
+              driver.name ?? "",
             ),
             confirmMessage: Localization.of(context, 'confirm'),
             confirmAction: () async {
@@ -512,7 +491,6 @@ class _MainPageState extends State<MainPage>
                 newEmployeesList
                     .removeWhere((element) => element == driver.phoneNumber);
 
-                await Navigator.of(context).pop();
 
                 await Future.wait([
                   FirebaseFirestore.instance
@@ -531,7 +509,7 @@ class _MainPageState extends State<MainPage>
                       Localization.of(context, 'employee_fired_successfully'),
                 );
               } catch (e) {
-                await Navigator.of(context).pop();
+                Navigator.of(context).pop();
                 showErrorBottomsheet(context, e.toString());
               }
             },
@@ -629,25 +607,25 @@ class _MainPageState extends State<MainPage>
         [
           Localization.of(context, 'all_orders'),
           Localization.of(context, 'paid_orders'),
-          if (homeScreenController.canUserCheckOtherCustomersOrders)
+          if (homeScreenController.canUserCheckOtherCustomersOrders ?? false)
             Localization.of(context, 'check_customers_order'),
           if ((homeScreenController.feedbackReceiversList
                   ?.contains(FirebaseAuth.instance.currentUser?.phoneNumber) ??
               false))
             Localization.of(context, 'feedbacks'),
-          if (homeScreenController.isAdmin)
+          if (homeScreenController.isAdmin ?? false)
             Localization.of(context, 'send_notification'),
-          if (homeScreenController.isAdmin)
-            if (homeScreenController.isAdmin)
+          if (homeScreenController.isAdmin ?? false)
+            if (homeScreenController.isAdmin ?? false)
               Localization.of(context, 'add_employee'),
-          if (homeScreenController.isAdmin)
-            if (homeScreenController.isAdmin)
+          if (homeScreenController.isAdmin ?? false)
+            if (homeScreenController.isAdmin ?? false)
               Localization.of(context, 'fire_employee'),
-          if (homeScreenController.isAdmin)
-            if (homeScreenController.isAdmin)
+          if (homeScreenController.isAdmin ?? false)
+            if (homeScreenController.isAdmin ?? false)
               Localization.of(context, 'ban_user'),
-          if (homeScreenController.isAdmin)
-            if (homeScreenController.isAdmin)
+          if (homeScreenController.isAdmin ?? false)
+            if (homeScreenController.isAdmin ?? false)
               Localization.of(context, 'unban_user'),
         ],
       );
@@ -691,14 +669,14 @@ class _MainPageState extends State<MainPage>
             //     ),
             //   ),
 
-            if ((homeScreenController?.employees?.firstWhere(
-                      (element) =>
-                          element.phoneNumber ==
-                          FirebaseAuth.instance.currentUser?.phoneNumber,
-                      orElse: () => null,
-                    ) !=
-                    null) ??
-                false)
+            if (homeScreenController.employees
+                    .firstWhere(
+                        (element) =>
+                            element.phoneNumber ==
+                            FirebaseAuth.instance.currentUser?.phoneNumber,
+                        orElse: () => Employee(name: null))
+                    .name !=
+                null)
               ListTile(
                 title: Text(
                   Localization.of(context, 'admin_panel'),
@@ -712,13 +690,13 @@ class _MainPageState extends State<MainPage>
                     itemBuilder: (listTileName) {
                       return ListTile(
                         title: Text(
-                          "${listTileName ?? ''}",
+                          "${listTileName}",
                         ),
                       );
                     },
                     itemHeight: 60,
                     onItemSelected: (listTileName) async {
-                      await Navigator.of(context).pop();
+                      await Navigator.of(context).pop;
                       getManagementListTileWidget(listTileName);
                     },
                   );
@@ -745,7 +723,7 @@ class _MainPageState extends State<MainPage>
             //     ),
             //   ),
             if (!phoneNumberIsNull &&
-                (!(homeScreenController?.hideContents ?? true)))
+                (!(homeScreenController.hideContents ?? true)))
               Padding(
                 padding: EdgeInsetsDirectional.only(end: 6),
                 child: ListTile(
@@ -1098,7 +1076,7 @@ class _MainPageState extends State<MainPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   _appBar(),
-                  if (!homeScreenController.hideContents) _title(),
+                  if (!(homeScreenController.hideContents ?? true)) _title(),
                   Expanded(
                     child: AnimatedSwitcher(
                       duration: Duration(milliseconds: 300),
@@ -1152,7 +1130,7 @@ class _MainPageState extends State<MainPage>
     setState(() {});
   }
 
-  void showSuccessBottomsheet({String message}) async {
+  void showSuccessBottomsheet({String? message}) async {
     if (!mounted) return;
     String animResource;
     animResource = 'assets/flare/success.flr';
@@ -1188,7 +1166,7 @@ class _MainPageState extends State<MainPage>
                 child: Text(
                   message ?? Localization.of(context, "login_successful"),
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),
@@ -1209,7 +1187,7 @@ class _MainPageState extends State<MainPage>
               label: Localization.of(context, 'done'),
               // disabled: isLoading ?? false,
               onPressed: () async {
-                await Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
             ),
           ),

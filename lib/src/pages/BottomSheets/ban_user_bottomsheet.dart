@@ -11,8 +11,8 @@ import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:vibration/vibration.dart';
 
 class BanUserBottomsheet extends StatefulWidget {
-  final HomeScreenController controller;
-  final ValueChanged<bool> isBottomSheetLoading;
+  final HomeScreenController? controller;
+  final ValueChanged<bool>? isBottomSheetLoading;
 
   BanUserBottomsheet({
     this.controller,
@@ -25,7 +25,7 @@ class BanUserBottomsheet extends StatefulWidget {
 
 class _BanUserBottomsheetState extends State<BanUserBottomsheet> {
   bool _loading = false;
-  String userPhoneNumber;
+  String? userPhoneNumber;
 
   FocusNode userPhoneNumberNode = new FocusNode();
 
@@ -77,14 +77,15 @@ class _BanUserBottomsheetState extends State<BanUserBottomsheet> {
           Localization.of(context, 'phone_number_should_include_dial_code'));
     else {
       setState(() {
-        widget.isBottomSheetLoading(true);
+        if (widget.isBottomSheetLoading != null)
+          widget.isBottomSheetLoading!(true);
         _loading = true;
       });
 
       try {
-        userPhoneNumber = formatPhoneNumber(userPhoneNumber);
-        List<dynamic> newBansList = widget.controller.bansList;
-        newBansList.add(userPhoneNumber);
+        userPhoneNumber = formatPhoneNumber(userPhoneNumber ?? "");
+        List? newBansList = widget.controller?.bansList;
+        newBansList?.add(userPhoneNumber);
 
         await FirebaseFirestore.instance
             .collection('app info')
@@ -96,7 +97,8 @@ class _BanUserBottomsheetState extends State<BanUserBottomsheet> {
         showSuccessBottomsheet();
         setState(() {
           _loading = false;
-          widget.isBottomSheetLoading(false);
+          if (widget.isBottomSheetLoading != null)
+            widget.isBottomSheetLoading!(false);
         });
       } catch (e) {
         showErrorBottomsheet(
@@ -107,11 +109,12 @@ class _BanUserBottomsheetState extends State<BanUserBottomsheet> {
             ),
             'value',
             "${e.toString()}",
-          ),
+          ) ?? "",
         );
         setState(() {
           _loading = false;
-          widget.isBottomSheetLoading(false);
+          if (widget.isBottomSheetLoading != null)
+            widget.isBottomSheetLoading!(false);
         });
       }
     }
@@ -158,9 +161,9 @@ class _BanUserBottomsheetState extends State<BanUserBottomsheet> {
                     ),
                     'value',
                     "${userPhoneNumber.toString()}",
-                  ),
+                  ) ?? "",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1.copyWith(
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
                         fontSize: 14,
                         color: Colors.black,
                       ),
