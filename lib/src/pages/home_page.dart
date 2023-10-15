@@ -150,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage>
       colorShadow: LightColor.orange,
       textSkip: isEmpty(selectedTutorialElement) ? "" : "SKIP",
       paddingFocus: 10,
-      opacityShadow: 0.5,
+      opacityShadow: 0.6,
       showSkipInLastTarget: false,
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       onFinish: () {
@@ -193,6 +193,7 @@ class _MyHomePageState extends State<MyHomePage>
         contents: [
           TargetContent(
             align: ContentAlign.top,
+            padding: EdgeInsets.only(top: 20, left: 20, right: 20),
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.max,
@@ -204,14 +205,20 @@ class _MyHomePageState extends State<MyHomePage>
                     child: Text(
                       Localization.of(context, "product_details"),
                       style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20.0,
+                      ),
                     ),
                   ),
                   Text(
                     Localization.of(context, "product_details_description"),
-                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
                   ),
                 ],
               );
@@ -251,7 +258,12 @@ class _MyHomePageState extends State<MyHomePage>
                   ),
                   Text(
                     Localization.of(context, "add_to_cart_coachmark_details"),
-                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                    ),
                   ),
                 ],
               );
@@ -280,7 +292,12 @@ class _MyHomePageState extends State<MyHomePage>
                 children: <Widget>[
                   Text(
                     Localization.of(context, "added_to_cart_coachmark"),
-                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                    ),
                   ),
                 ],
               );
@@ -307,7 +324,12 @@ class _MyHomePageState extends State<MyHomePage>
                 children: <Widget>[
                   Text(
                     Localization.of(context, "upcoming_orders_coachmark"),
-                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                    ),
                   ),
                 ],
               );
@@ -1112,7 +1134,7 @@ class _MyHomePageState extends State<MyHomePage>
                             },
                             maxLength: 8,
                             decoration: inputDecoration(
-                              Localization.of(context, 'quantity'),
+                              Localization.of(context, 'quantity_s'),
                             ),
                             textAlign: TextAlign.start,
                           ),
@@ -1133,7 +1155,7 @@ class _MyHomePageState extends State<MyHomePage>
                               ),
                             ],
                             decoration: inputDecoration(
-                              Localization.of(context, 'color'),
+                              Localization.of(context, 'color_s'),
                             ),
                             textAlign: TextAlign.start,
                           ),
@@ -1154,7 +1176,7 @@ class _MyHomePageState extends State<MyHomePage>
                               ),
                             ],
                             decoration: inputDecoration(
-                              Localization.of(context, 'size'),
+                              Localization.of(context, 'size_s'),
                             ),
                             textAlign: TextAlign.start,
                           ),
@@ -1430,7 +1452,8 @@ class _MyHomePageState extends State<MyHomePage>
                                                       ?.nextTextAR
                                                   : widget.homeScreenController
                                                       ?.nextText)
-                                              : (isNotEmpty(_colorController.text)
+                                              : (isNotEmpty(
+                                                          _colorController.text)
                                                       ? ((Localizations.localeOf(context)
                                                                   .languageCode ==
                                                               'ar')
@@ -1440,8 +1463,7 @@ class _MyHomePageState extends State<MyHomePage>
                                                           : widget
                                                               .homeScreenController
                                                               ?.nextTextSize)
-                                                      : (Localizations.localeOf(context)
-                                                                  .languageCode ==
+                                                      : (Localizations.localeOf(context).languageCode ==
                                                               'ar')
                                                           ? widget
                                                               .homeScreenController
@@ -1455,26 +1477,28 @@ class _MyHomePageState extends State<MyHomePage>
                                           Localization.of(context, 'continue'),
                                       confirmAction: () async {
                                         // Navigator.of(context).pop();
-                                        widget
-                                            .homeScreenController?.productsTitles
+                                        widget.homeScreenController
+                                            ?.productsTitles
                                             .add(itemDescription ??
                                                 Localization.of(
                                                     context, "product"));
-                                        widget.homeScreenController?.productsLinks
+                                        widget
+                                            .homeScreenController?.productsLinks
                                             .add(_productLinkController.text);
                                         widget.homeScreenController
                                             ?.productsQuantities
                                             .add(_quantityController.text);
-                                        widget
-                                            .homeScreenController?.productsColors
+                                        widget.homeScreenController
+                                            ?.productsColors
                                             .add(_colorController.text);
-                                        widget.homeScreenController?.productsSizes
+                                        widget
+                                            .homeScreenController?.productsSizes
                                             .add(_sizeController.text);
-                                        widget
-                                            .homeScreenController?.productsPrices
+                                        widget.homeScreenController
+                                            ?.productsPrices
                                             .add(price ?? "0");
-                                        widget
-                                            .homeScreenController?.productsImages
+                                        widget.homeScreenController
+                                            ?.productsImages
                                             .add(imageLink ?? "");
 
                                         _quantityController.text = "";

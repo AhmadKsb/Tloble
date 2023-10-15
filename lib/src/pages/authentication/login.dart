@@ -96,7 +96,8 @@ class _LoginPageState extends State<LoginPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           RotatedBox(
-            quarterTurns: 4,
+            quarterTurns:
+                (Localizations.localeOf(context).languageCode == 'ar') ? 2 : 4,
             child: _icon(Icons.arrow_back_ios_new, color: Colors.black54),
           ),
         ],

@@ -113,12 +113,12 @@ class ContactUsScreenState extends State<ContactUsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TitleText(
-                  text: Localization.of(context, 'contact'),
+                  text: Localization.of(context, 'contact_s'),
                   fontSize: 27,
                   fontWeight: FontWeight.w400,
                 ),
                 TitleText(
-                  text: Localization.of(context, 'us'),
+                  text: Localization.of(context, 'us_s'),
                   fontSize: 27,
                   fontWeight: FontWeight.w700,
                 ),

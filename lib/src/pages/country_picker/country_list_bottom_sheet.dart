@@ -25,8 +25,8 @@ void showCountryListBottomSheet({
         child: _builder(
           context,
           onSelect!,
-          exclude ?? [],
-          countryFilter ?? [],
+          exclude,
+          countryFilter,
           showPhoneCode,
           countryListTheme ?? CountryListThemeData(),
           searchAutofocus,
@@ -42,8 +42,8 @@ void showCountryListBottomSheet({
 Widget _builder(
   BuildContext context,
   ValueChanged<Country> onSelect,
-  List<String> exclude,
-  List<String> countryFilter,
+  List<String>? exclude,
+  List<String>? countryFilter,
   bool showPhoneCode,
   CountryListThemeData countryListTheme,
   bool searchAutofocus,

@@ -267,7 +267,7 @@ class _MainPageState extends State<MainPage>
                   text: isHomePageSelected
                       ? Localization.of(context, "order")
                       : index == 1
-                          ? Localization.of(context, "upcoming")
+                          ? Localization.of(context, "upcoming_s")
                           : Localization.of(context, "shopping"),
                   fontSize: 27,
                   fontWeight: FontWeight.w400,
@@ -276,7 +276,7 @@ class _MainPageState extends State<MainPage>
                   text: isHomePageSelected
                       ? Localization.of(context, "now")
                       : index == 1
-                          ? Localization.of(context, "orders")
+                          ? Localization.of(context, "ordersss")
                           : Localization.of(context, "cart"),
                   fontSize: 27,
                   fontWeight: FontWeight.w700,
@@ -909,7 +909,7 @@ class _MainPageState extends State<MainPage>
             if (!phoneNumberIsNull)
               ListTile(
                 title: Text(
-                  Localization.of(context, 'send_feedback'),
+                  Localization.of(context, 'send_feedback_s'),
                   style: TextStyle(fontWeight: FontWeight.w400),
                 ),
                 onTap: () {

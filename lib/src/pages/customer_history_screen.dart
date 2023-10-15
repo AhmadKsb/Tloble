@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
 import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/models/order.dart';
@@ -159,7 +160,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
           children: orders[i].productsTitles!.map((y) {
         index += 1;
 
-        return _item(index, order: orders[i]);
+        return customListItem(orders[i], index);
       }).toList()));
     }
     return Column(
@@ -215,7 +216,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
 
     return Container(
       margin: EdgeInsets.only(bottom: 52),
-      height: 80,
+      height: 90,
       child: Row(
         children: <Widget>[
           WKNetworkImage(
@@ -232,86 +233,313 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
               'assets/images/placeholder.png',
             ),
           ),
-          Expanded(
-            child: ListTile(
-              title: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TitleText(
-                    text: int.tryParse(dateTimeTruncated.split(":")[0])! < 12
-                        ? "$day/$month/$year " +
-                            (replaceVariable(
-                                  Localization.of(
-                                    context,
-                                    "sent_at_am",
-                                  ),
-                                  'value',
-                                  dateTimeTruncated,
-                                ) ??
-                                "")
-                        : "$day/$month/$year " +
-                            (replaceVariable(
-                                  Localization.of(
-                                    context,
-                                    "sent_at_pm",
-                                  ),
-                                  'value',
-                                  dateTimeTruncated,
-                                ) ??
-                                ""),
-                    style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                          fontSize: 12,
-                          color: Color.fromARGB(255, 173, 173, 173),
+          Builder(
+            builder: (BuildContext buildContext) {
+              return Expanded(
+                child: ListTile(
+                  title: InkWell(
+                    onTap: () {
+                      Clipboard.setData(
+                        new ClipboardData(
+                            text: order.productsTitles?[index].toString()),
+                      ).then((result) {
+                        final snackBar = SnackBar(
+                          content: Text(Localization.of(
+                              context, 'copied_order_id_to_clipboard')),
+                          action: SnackBarAction(
+                            label: 'Done',
+                            onPressed: () {},
+                          ),
+                        );
+                        Scaffold.of(buildContext).showSnackBar(snackBar);
+                      });
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "${Localization.of(context, 'order_summary')} #${order.referenceID.toString()} ",
+                              maxLines: 1,
+                            ),
+                            Image.asset(
+                              "assets/images/copy.png",
+                              width: 20,
+                              height: 20,
+                              color: Colors.black,
+                            ),
+                          ],
                         ),
-                  ),
-                  SizedBox(height: 4),
-                  TitleText(
-                    text: order.productsTitles?[index],
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ],
-              ),
-              subtitle: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Container(
-                    width: 150,
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    child: Text(
-                      "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
-                      maxLines: 1,
-                      style: TextStyle(
-                        // fontSize: 15,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.w500,
-                      ),
+                        SizedBox(height: 4),
+                        TitleText(
+                          text: order.productsTitles?[index],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ],
                     ),
                   ),
-                  Container(
-                    width: 150,
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    child: Text(
-                      "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",
-                      maxLines: 1,
-                      style: TextStyle(
-                        // fontSize: 15,
-                        overflow: TextOverflow.ellipsis,
-                        fontWeight: FontWeight.w500,
+                  subtitle: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: 150,
+                        margin: EdgeInsets.symmetric(vertical: 2),
+                        child: Text(
+                          "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
+                          maxLines: 1,
+                          style: TextStyle(
+                            // fontSize: 15,
+                            overflow: TextOverflow.ellipsis,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
+                      Container(
+                        width: 150,
+                        margin: EdgeInsets.symmetric(vertical: 2),
+                        child: Text(
+                          "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",
+                          maxLines: 1,
+                          style: TextStyle(
+                            // fontSize: 15,
+                            overflow: TextOverflow.ellipsis,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  trailing: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TitleText(
+                            text:
+                                int.tryParse(dateTimeTruncated.split(":")[0])! <
+                                        12
+                                    ? "$day/$month/$year "
+                                    // +
+                                    //     (replaceVariable(
+                                    //           Localization.of(
+                                    //             context,
+                                    //             "sent_at_am",
+                                    //           ),
+                                    //           'value',
+                                    //           dateTimeTruncated,
+                                    //         ) ??
+                                    //         "")
+                                    : "$day/$month/$year ",
+                            // +
+                            //     (replaceVariable(
+                            //           Localization.of(
+                            //             context,
+                            //             "sent_at_pm",
+                            //           ),
+                            //           'value',
+                            //           dateTimeTruncated,
+                            //         ) ??
+                            //         ""),
+                            style:
+                                Theme.of(context).textTheme.subtitle1?.copyWith(
+                                      fontSize: 12,
+                                      color: Color.fromARGB(255, 173, 173, 173),
+                                    ),
+                          ),
+                        ),
+                        Container(
+                          width: 100,
+                          height: 40,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: getShipmentStatusColor(
+                                  order.shipmentStatus![0]),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: TitleText(
+                            text: getShipmentStatusString(
+                                context, order.shipmentStatus![0]),
+                            fontSize: 12,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget customListItem(Order order, int index) {
+    String dateTimeTruncated;
+    year = int.tryParse(order.sentTime?.split("-")[0] ?? "0");
+    month = int.tryParse(order.sentTime?.split("-")[1] ?? "0");
+    day = int.tryParse(order.sentTime?.split("-")[2].split(" ")[0] ?? "0");
+    hour = int.tryParse(order.sentTime?.split("at ")[1].split(":")[0] ?? "0");
+    minute = int.tryParse(order.sentTime?.split("at ")[1].split(":")[1] ?? "0");
+    second = int.tryParse(order.sentTime?.split("at ")[1].split(":")[2] ?? "0");
+
+    String fullDateTime = DateTime(
+      year!,
+      month!,
+      day!,
+      hour!,
+      minute!,
+      second!,
+    ).toString().split(".")[0].split(" ")[1];
+    dateTimeTruncated = DateTime(
+          year!,
+          month!,
+          day!,
+          hour!,
+          minute!,
+          second!,
+        ).toString().split(".")[0].split(" ")[1].split(":")[0] +
+        ":" +
+        DateTime(
+          year!,
+          month!,
+          day!,
+          hour!,
+          minute!,
+          second!,
+        ).toString().split(".")[0].split(" ")[1].split(":")[1];
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 52),
+      // height: 90,
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 16.0),
+            child: WKNetworkImage(
+              order.productsImages?[index],
+              fit: BoxFit.contain,
+              width: 60,
+              height: 60,
+              defaultWidget: Image.asset(
+                "assets/images/login_logo.png",
+                width: 60,
+                height: 60,
               ),
-              trailing: Container(
+              placeHolder: AssetImage('assets/images/placeholder.png'),
+            ),
+          ),
+          Builder(
+            builder: (BuildContext buildContext) {
+              return Expanded(
+                child: InkWell(
+                  onTap: () {
+                    Clipboard.setData(
+                      ClipboardData(
+                        text: order.referenceID.toString(),
+                      ),
+                    ).then((result) {
+                      final snackBar = SnackBar(
+                        content: Text(
+                          Localization.of(
+                              context, 'copied_order_id_to_clipboard'),
+                        ),
+                        action: SnackBarAction(
+                          label: 'Done',
+                          onPressed: () {},
+                        ),
+                      );
+                      Scaffold.of(buildContext).showSnackBar(snackBar);
+                    });
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "${Localization.of(context, 'order_summary')} #${order.referenceID.toString()} ",
+                            maxLines: 1,
+                          ),
+                          Image.asset(
+                            "assets/images/copy.png",
+                            width: 20,
+                            height: 20,
+                            color: Colors.black,
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 4),
+                      Padding(
+                        padding: EdgeInsetsDirectional.only(end: 8.0),
+                        child: TitleText(
+                          text: order.productsTitles?[index],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Container(
+                        width: 150,
+                        margin: EdgeInsets.symmetric(vertical: 2),
+                        child: Text(
+                          "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
+                          maxLines: 1,
+                          style: TextStyle(
+                            // fontSize: 15,
+                            overflow: TextOverflow.ellipsis,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 150,
+                        margin: EdgeInsets.symmetric(vertical: 2),
+                        child: Text(
+                          "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",
+                          maxLines: 1,
+                          style: TextStyle(
+                            // fontSize: 15,
+                            overflow: TextOverflow.ellipsis,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: TitleText(
+                  text: int.tryParse(dateTimeTruncated.split(":")[0])! < 12
+                      ? "$day/$month/$year "
+                      : "$day/$month/$year ",
+                  style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                        fontSize: 12,
+                        color: Color.fromARGB(255, 173, 173, 173),
+                      ),
+                ),
+              ),
+              Container(
                 width: 100,
                 height: 40,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                    color: getShipmentStatusColor(order.shipmentStatus![0]),
-                    borderRadius: BorderRadius.circular(10)),
+                  color: getShipmentStatusColor(order.shipmentStatus![0]),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: TitleText(
                   text: getShipmentStatusString(
                       context, order.shipmentStatus![0]),
@@ -319,8 +547,8 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                   textAlign: TextAlign.center,
                 ),
               ),
-            ),
-          )
+            ],
+          ),
         ],
       ),
     );
@@ -412,7 +640,9 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
             return <Widget>[
               SliverPadding(
                 padding: EdgeInsetsDirectional.only(
-                    top: 16.0, start: 12), // Adjust the padding as needed
+                  top: 16.0,
+                  start: 12,
+                ), // Adjust the padding as needed
                 sliver: SliverAppBar(
                   pinned: true,
                   toolbarHeight: 30.0,

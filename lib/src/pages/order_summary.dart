@@ -122,8 +122,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
           return <Widget>[
             SliverAppBar(
               pinned: true,
-              toolbarHeight: 40.0,
-              expandedHeight: 40.0,
+              toolbarHeight: 75.0,
+              expandedHeight: 75.0,
               backgroundColor: Color(0xfffbfbfb),
               iconTheme: IconThemeData(color: Colors.black54),
               leading: Padding(
@@ -131,22 +131,28 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   start: 12,
                   bottom: 12,
                 ),
-                child: IconButton(
-                  icon: Icon(Icons.arrow_back_ios_new),
-                  onPressed: () {
-                    if (_isSubmittingOrder || _isLoadingLogin)
-                      return;
-                    else {
-                      Navigator.of(context).pop();
-                    }
-                  },
+                child: RotatedBox(
+                  quarterTurns:
+                      (Localizations.localeOf(context).languageCode == 'ar')
+                          ? 2
+                          : 4,
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back_ios_new),
+                    onPressed: () {
+                      if (_isSubmittingOrder || _isLoadingLogin)
+                        return;
+                      else {
+                        Navigator.of(context).pop();
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
           ];
         },
         body: Container(
-          margin: EdgeInsets.only(top: 32),
+          margin: EdgeInsets.only(top: 8),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
@@ -203,8 +209,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                             message: ((Localizations.localeOf(context)
                                             .languageCode ==
                                         'ar')
-                                    ? widget.homeScreenController.submissionTextAR
-                                    : widget.homeScreenController.submissionText)
+                                    ? widget
+                                        .homeScreenController.submissionTextAR
+                                    : widget
+                                        .homeScreenController.submissionText)
                                 ?.replaceAll(r'\n', '\n')
                                 .replaceAll(r"\'", "\'"),
                             confirmMessage: Localization.of(context, 'confirm'),
@@ -403,8 +411,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                           .toString()
                                           .toLowerCase() ==
                                       "product"
-                                  ? widget.homeScreenController
-                                      .productsLinks[index]
+                                  ? widget
+                                      .homeScreenController.productsLinks[index]
                                   : widget.homeScreenController
                                       .productsTitles[index],
                               maxLines: 2,

@@ -329,12 +329,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TitleText(
-                  text: Localization.of(context, 'send'),
+                  text: Localization.of(context, 'send_s'),
                   fontSize: 27,
                   fontWeight: FontWeight.w400,
                 ),
                 TitleText(
-                  text: Localization.of(context, 'feedback'),
+                  text: Localization.of(context, 'feedback_s'),
                   fontSize: 27,
                   fontWeight: FontWeight.w700,
                 ),
