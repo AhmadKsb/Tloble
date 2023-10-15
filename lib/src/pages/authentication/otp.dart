@@ -87,7 +87,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
       leading: new InkWell(
         borderRadius: BorderRadius.circular(30.0),
         child: new Icon(
-          Icons.arrow_back,
+          Icons.arrow_back_ios_new,
           color: Colors.black54,
         ),
         onTap: () {

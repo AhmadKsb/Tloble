@@ -159,251 +159,261 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return UBScaffold(
-      state: AppState(
-        pageState: _state,
-        onRetry: _load,
-      ),
-      builder: (context) => KeyboardFormActions(
-        keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
-        nextFocus: false,
-        keyboardBarColor: Colors.black54,
-        actions: [
-          KeyboardFormAction(
-            focusNode: _nameNode,
-          ),
-          KeyboardFormAction(
-            focusNode: phoneField,
-          ),
-        ],
-        child: SingleChildScrollView(
-          child: Container(
-            margin: EdgeInsets.only(top: 68),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xfffcfcfc),
-                  Color(0xfffcfcfc),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+    return Scaffold(
+      body: UBScaffold(
+        backgroundColor: Colors.transparent,
+        state: AppState(
+          pageState: _state,
+          onRetry: _load,
+        ),
+        builder: (context) => KeyboardFormActions(
+          keyboardActionsPlatform: KeyboardActionsPlatform.IOS,
+          nextFocus: false,
+          keyboardBarColor: Colors.black54,
+          actions: [
+            KeyboardFormAction(
+              focusNode: _nameNode,
             ),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _appBar(),
-                  Container(
-                    padding: EdgeInsets.all(0.0),
-                    child: Center(
-                      child: Image.asset(
-                        "assets/images/login_logo.png",
-                        width: 250,
-                        height: 250,
-                      ),
-                    ),
-                  ),
-                  Column(
+            KeyboardFormAction(
+              focusNode: phoneField,
+            ),
+          ],
+          child: SingleChildScrollView(
+            child: Container(
+              // margin: EdgeInsets.only(top: 68),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xfffcfcfc),
+                    Color(0xfffcfcfc),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.only(top: 68),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      layoutContainer(
-                        child: TextFormField(
-                          textDirection:
-                              (Localizations.localeOf(context).languageCode ==
+                      _appBar(),
+                      Container(
+                        padding: EdgeInsets.all(0.0),
+                        child: Center(
+                          child: Image.asset(
+                            "assets/images/login_logo.png",
+                            width: 250,
+                            height: 250,
+                          ),
+                        ),
+                      ),
+                      Column(
+                        children: <Widget>[
+                          layoutContainer(
+                            child: TextFormField(
+                              textDirection: (Localizations.localeOf(context)
+                                          .languageCode ==
                                       'ar'
                                   ? TextDirection.rtl
                                   : TextDirection.ltr),
-                          controller: _nameController,
-                          focusNode: _nameNode,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(
-                                  r"[a-zA-Z0-9 .,()-_!?@+=;:!$'()*+-./:<=>[\]_{|}«»ÇÈÊÒÓÖ×÷،؛؟ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىيًٌٍَُِّْٕٓٔ٠١٢٣٤٥٦٧٨٩٪٫٬٭ٰٱپچژڤ۰۱۲۳۴۵۶۷۸۹‌‍‐“”␡ﭐﭑﭖﭗﭘﭙﭪﭫﭬﭭﭺﭻﭼﭽﮊﮋﯾﯿﱞﱟﱠﱡﱢﴼﴽ﴾﴿ﷲﹰﹲﹴﹶﹸﹺﹼﹾﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾ]"),
+                              controller: _nameController,
+                              focusNode: _nameNode,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(
+                                      r"[a-zA-Z0-9 .,()-_!?@+=;:!$'()*+-./:<=>[\]_{|}«»ÇÈÊÒÓÖ×÷،؛؟ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىيًٌٍَُِّْٕٓٔ٠١٢٣٤٥٦٧٨٩٪٫٬٭ٰٱپچژڤ۰۱۲۳۴۵۶۷۸۹‌‍‐“”␡ﭐﭑﭖﭗﭘﭙﭪﭫﭬﭭﭺﭻﭼﭽﮊﮋﯾﯿﱞﱟﱠﱡﱢﴼﴽ﴾﴿ﷲﹰﹲﹴﹶﹸﹺﹼﹾﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾ]"),
+                                ),
+                              ],
+                              decoration: inputDecoration(
+                                Localization.of(context, 'name'),
+                              ),
+                              validator: (String? value) {
+                                if (value?.isEmpty ?? true) {
+                                  return Localization.of(
+                                      context, 'name_cannot_be_empty');
+                                }
+                                // if (value.length > 0 && value.length > 8) {
+                                //   return 'Phone Number can not be more than 8 characters long.';
+                                // }
+                                return null;
+                              },
+                              textAlign: TextAlign.start,
                             ),
-                          ],
-                          decoration: inputDecoration(
-                            Localization.of(context, 'name'),
                           ),
-                          validator: (String? value) {
-                            if (value?.isEmpty ?? true) {
-                              return Localization.of(
-                                  context, 'name_cannot_be_empty');
-                            }
-                            // if (value.length > 0 && value.length > 8) {
-                            //   return 'Phone Number can not be more than 8 characters long.';
-                            // }
-                            return null;
-                          },
-                          textAlign: TextAlign.start,
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        margin: EdgeInsets.only(
-                          left: 25.0,
-                          right: 25.0,
-                          top: 10.0,
-                        ),
-                        alignment: Alignment.center,
-                        padding:
-                            EdgeInsetsDirectional.only(start: 0.0, end: 10.0),
-                        child: Padding(
-                          padding: EdgeInsets.only(bottom: 12.0),
-                          child: TextFormField(
-                            focusNode: phoneField,
-                            keyboardType: TextInputType.number,
-                            onChanged: (String phoneNumber) {
-                              setState(() {
-                                _phoneNumber = phoneNumber;
-                              });
-                            },
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                RegExp(r"[0-9]"),
-                              ),
-                            ],
-                            validator: (String? value) {
-                              if (value?.isEmpty ?? true) {
-                                return Localization.of(
-                                    context, 'phone_number_cannot_be_empty');
-                              }
-                              // if (value.length > 0 && value.length > 8) {
-                              //   return 'Phone Number can not be more than 8 characters long.';
-                              // }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              labelText:
-                                  Localization.of(context, 'phone_number'),
-                              labelStyle: TextStyle(
-                                color: Colors.black,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              prefixIcon: GestureDetector(
-                                onTap: () {
-                                  wkShowCountryPicker(
-                                    context: context,
-                                    showPhoneCode: false,
-                                    onSelect: (Country country) {
-                                      setState(() {
-                                        selectedCountry = CountryPickerUtils
-                                            .getCountryByPhoneCode(
-                                                country.phoneCode);
-                                        prefs?.setString(
-                                          'swiftShop_phoneCode',
-                                          selectedCountry?.phoneCode ?? "",
-                                        );
-                                        prefs?.setString(
-                                          'swiftShop_isoCode',
-                                          selectedCountry?.isoCode ?? "",
-                                        );
-                                      });
-                                    },
-                                  );
+                          Container(
+                            width: MediaQuery.of(context).size.width,
+                            margin: EdgeInsets.only(
+                              left: 25.0,
+                              right: 25.0,
+                              top: 10.0,
+                            ),
+                            alignment: Alignment.center,
+                            padding: EdgeInsetsDirectional.only(
+                                start: 0.0, end: 10.0),
+                            child: Padding(
+                              padding: EdgeInsets.only(bottom: 12.0),
+                              child: TextFormField(
+                                focusNode: phoneField,
+                                keyboardType: TextInputType.number,
+                                onChanged: (String phoneNumber) {
+                                  setState(() {
+                                    _phoneNumber = phoneNumber;
+                                  });
                                 },
-                                child: Container(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Padding(
-                                        padding: EdgeInsetsDirectional.only(
-                                          start: 8,
-                                        ),
-                                        child: Image.asset(
-                                          CountryPickerUtils
-                                              .getFlagImageAssetPath(
-                                            selectedCountry?.isoCode ?? "",
-                                          ),
-                                          height: 20.0,
-                                          width: 35.0,
-                                          package: "country_pickers",
-                                        ),
-                                      ),
-                                      Row(
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r"[0-9]"),
+                                  ),
+                                ],
+                                validator: (String? value) {
+                                  if (value?.isEmpty ?? true) {
+                                    return Localization.of(context,
+                                        'phone_number_cannot_be_empty');
+                                  }
+                                  // if (value.length > 0 && value.length > 8) {
+                                  //   return 'Phone Number can not be more than 8 characters long.';
+                                  // }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  labelText:
+                                      Localization.of(context, 'phone_number'),
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  prefixIcon: GestureDetector(
+                                    onTap: () {
+                                      wkShowCountryPicker(
+                                        context: context,
+                                        showPhoneCode: false,
+                                        onSelect: (Country country) {
+                                          setState(() {
+                                            selectedCountry = CountryPickerUtils
+                                                .getCountryByPhoneCode(
+                                                    country.phoneCode);
+                                            prefs?.setString(
+                                              'swiftShop_phoneCode',
+                                              selectedCountry?.phoneCode ?? "",
+                                            );
+                                            prefs?.setString(
+                                              'swiftShop_isoCode',
+                                              selectedCountry?.isoCode ?? "",
+                                            );
+                                          });
+                                        },
+                                      );
+                                    },
+                                    child: Container(
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Padding(
                                             padding: EdgeInsetsDirectional.only(
                                               start: 8,
                                             ),
-                                            child: Text(
-                                              (Localizations.localeOf(context)
-                                                          .languageCode ==
-                                                      'ar')
-                                                  ? ("${selectedCountry?.phoneCode ?? ""}" +
-                                                      "+")
-                                                  : "+${selectedCountry?.phoneCode ?? ""}",
-                                              style: TextStyle(fontSize: 16),
+                                            child: Image.asset(
+                                              CountryPickerUtils
+                                                  .getFlagImageAssetPath(
+                                                selectedCountry?.isoCode ?? "",
+                                              ),
+                                              height: 20.0,
+                                              width: 35.0,
+                                              package: "country_pickers",
                                             ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    EdgeInsetsDirectional.only(
+                                                  start: 8,
+                                                ),
+                                                child: Text(
+                                                  (Localizations.localeOf(
+                                                                  context)
+                                                              .languageCode ==
+                                                          'ar')
+                                                      ? ("${selectedCountry?.phoneCode ?? ""}" +
+                                                          "+")
+                                                      : "+${selectedCountry?.phoneCode ?? ""}",
+                                                  style:
+                                                      TextStyle(fontSize: 16),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    EdgeInsetsDirectional.only(
+                                                  end: 4,
+                                                ),
+                                                child: Icon(
+                                                  Icons.arrow_drop_down,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                           Padding(
                                             padding: EdgeInsetsDirectional.only(
-                                              end: 4,
-                                            ),
-                                            child: Icon(
-                                              Icons.arrow_drop_down,
+                                                end: 8),
+                                            child: Container(
+                                              width: 1,
+                                              height: 35,
                                               color: Colors.black,
                                             ),
                                           ),
                                         ],
                                       ),
-                                      Padding(
-                                        padding:
-                                            EdgeInsetsDirectional.only(end: 8),
-                                        child: Container(
-                                          width: 1,
-                                          height: 35,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ),
+                                textAlign: TextAlign.start,
                               ),
                             ),
-                            textAlign: TextAlign.start,
                           ),
-                        ),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width - 175,
-                        margin: const EdgeInsets.only(
-                          left: 30.0,
-                          right: 30.0,
-                          top: 20.0,
-                        ),
-                        alignment: Alignment.center,
-                        child: RaisedButtonV2(
-                          label: Localization.of(context, 'login_register'),
-                          onPressed: () async {
-                            if (_formKey.currentState?.validate() ?? true) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => Otp(
-                                    name: _nameController.text,
-                                    country: selectedCountry,
-                                    mobileNumber: _phoneNumber,
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        ),
+                          Container(
+                            width: MediaQuery.of(context).size.width - 175,
+                            margin: const EdgeInsets.only(
+                              left: 30.0,
+                              right: 30.0,
+                              top: 20.0,
+                            ),
+                            alignment: Alignment.center,
+                            child: RaisedButtonV2(
+                              label: Localization.of(context, 'login_register'),
+                              onPressed: () async {
+                                if (_formKey.currentState?.validate() ?? true) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Otp(
+                                        name: _nameController.text,
+                                        country: selectedCountry,
+                                        mobileNumber: _phoneNumber,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ),

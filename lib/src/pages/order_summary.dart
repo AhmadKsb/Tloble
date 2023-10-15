@@ -180,65 +180,67 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                     ),
                     child: _buildUserPhoneNumber(),
                   ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    left: 62,
-                    right: 62,
-                    top: 16,
-                    bottom: 64,
-                  ),
-                  child: RaisedButtonV2(
-                    disabled: _isSubmittingOrder || _isLoadingLogin,
-                    isLoading: _isSubmittingOrder || _isLoadingLogin,
-                    onPressed: () async {
-                      if (!(widget.homeScreenController.isBanned ?? false)) {
-                        await showConfirmationBottomSheet(
-                          context: context,
-                          // flare: 'assets/flare/pending.flr',
-                          title: Localization.of(
-                            context,
-                            'are_you_sure_you_want_to_submit_this_request',
-                          ),
-                          message: ((Localizations.localeOf(context)
-                                          .languageCode ==
-                                      'ar')
-                                  ? widget.homeScreenController.submissionTextAR
-                                  : widget.homeScreenController.submissionText)
-                              ?.replaceAll(r'\n', '\n')
-                              .replaceAll(r"\'", "\'"),
-                          confirmMessage: Localization.of(context, 'confirm'),
-                          confirmAction: () async {
-                            await confirmAction();
-                          },
-                          cancelMessage: Localization.of(context, 'cancel'),
-                        );
-                      } else {
-                        await showActionBottomSheet(
-                          context: context,
-                          status: OperationStatus.error,
-                          message: replaceVariable(
-                            Localization.of(
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: 62,
+                      right: 62,
+                      top: 16,
+                      bottom: 64,
+                    ),
+                    child: RaisedButtonV2(
+                      disabled: _isSubmittingOrder || _isLoadingLogin,
+                      isLoading: _isSubmittingOrder || _isLoadingLogin,
+                      onPressed: () async {
+                        if (!(widget.homeScreenController.isBanned ?? false)) {
+                          await showConfirmationBottomSheet(
+                            context: context,
+                            // flare: 'assets/flare/pending.flr',
+                            title: Localization.of(
                               context,
-                              'banned_disclaimer',
+                              'are_you_sure_you_want_to_submit_this_request',
                             ),
-                            'value',
-                            widget.homeScreenController.contactUsNumber ?? "",
-                          ),
-                          popOnPress: true,
-                          dismissOnTouchOutside: false,
-                          buttonMessage: Localization.of(
-                            context,
-                            'ok',
-                          ).toUpperCase(),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        );
-                        return;
-                      }
-                      // }
-                    },
-                    label: Localization.of(context, 'submit'),
+                            message: ((Localizations.localeOf(context)
+                                            .languageCode ==
+                                        'ar')
+                                    ? widget.homeScreenController.submissionTextAR
+                                    : widget.homeScreenController.submissionText)
+                                ?.replaceAll(r'\n', '\n')
+                                .replaceAll(r"\'", "\'"),
+                            confirmMessage: Localization.of(context, 'confirm'),
+                            confirmAction: () async {
+                              await confirmAction();
+                            },
+                            cancelMessage: Localization.of(context, 'cancel'),
+                          );
+                        } else {
+                          await showActionBottomSheet(
+                            context: context,
+                            status: OperationStatus.error,
+                            message: replaceVariable(
+                              Localization.of(
+                                context,
+                                'banned_disclaimer',
+                              ),
+                              'value',
+                              widget.homeScreenController.contactUsNumber ?? "",
+                            ),
+                            popOnPress: true,
+                            dismissOnTouchOutside: false,
+                            buttonMessage: Localization.of(
+                              context,
+                              'ok',
+                            ).toUpperCase(),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          );
+                          return;
+                        }
+                        // }
+                      },
+                      label: Localization.of(context, 'submit'),
+                    ),
                   ),
                 ),
                 if (!(widget.homeScreenController.hideDisclaimer ?? true))

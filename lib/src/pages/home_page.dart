@@ -1182,339 +1182,341 @@ class _MyHomePageState extends State<MyHomePage>
                         //     ],
                         //   ),
                         // ),
-                        Padding(
-                          key: _addToCart,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 62,
-                            vertical: 16,
-                          ),
-                          child: RaisedButtonV2(
-                            // buttonKey: _addToCart,
-                            disabled: isLoading,
-                            isLoading: isLoading,
-                            onPressed: () async {
-                              if (!(widget.homeScreenController?.isBanned ??
-                                  false)) {
-                                if (_formKey.currentState!.validate()) {
-                                  // if (widget.user?.phoneNumber == null) {
-                                  //   showErrorBottomsheet(
-                                  //     Localization.of(
-                                  //       context,
-                                  //       'please_login_to_use_this_feature',
-                                  //     ),
-                                  //   );
-                                  // } else {
-                                  // if (!(widget.homeScreenController.isAdmin) &&
-                                  //     widget.homeScreenController.showCustomError) {
-                                  //   await showActionBottomSheet(
-                                  //     context: context,
-                                  //     status: OperationStatus.error,
-                                  //     message:
-                                  //         (Localizations.localeOf(context)
-                                  //                     .languageCode ==
-                                  //                 'ar')
-                                  //             ? widget.homeScreenController.customErrorAR
-                                  //             : widget.homeScreenController.customError,
-                                  //     popOnPress: true,
-                                  //     dismissOnTouchOutside: false,
-                                  //     buttonMessage: Localization.of(
-                                  //       context,
-                                  //       'ok',
-                                  //     ),
-                                  //     onPressed: () {
-                                  //       Navigator.of(context).pop();
-                                  //     },
-                                  //   );
-                                  //   return;
-                                  // }
-                                  //
-                                  // if (!(widget.homeScreenController.isAdmin) &&
-                                  //     widget.homeScreenController.isHoliday) {
-                                  //   await showActionBottomSheet(
-                                  //     context: context,
-                                  //     status: OperationStatus.error,
-                                  //     message: Localization.of(
-                                  //       context,
-                                  //       'we_are_currently_closed',
-                                  //     ),
-                                  //     popOnPress: true,
-                                  //     dismissOnTouchOutside: false,
-                                  //     buttonMessage: Localization.of(
-                                  //       context,
-                                  //       'ok',
-                                  //     ),
-                                  //     onPressed: () {
-                                  //       Navigator.of(context).pop();
-                                  //     },
-                                  //   );
-                                  //   return;
-                                  // }
-                                  //
-                                  // if (!(widget.homeScreenController.isAdmin) &&
-                                  //     widget.homeScreenController.checkForOpeningHours) {
-                                  //   DateTime currentDateTime =
-                                  //       DateTime.now();
-                                  //   String errorMsg = (widget.homeScreenController
-                                  //                   .weekdayOpeningHours ==
-                                  //               widget.homeScreenController
-                                  //                   .weekendOpeningHours) &&
-                                  //           (widget.homeScreenController
-                                  //                   .weekdayClosingHours ==
-                                  //               widget.homeScreenController
-                                  //                   .weekendClosingHours)
-                                  //       ? widget.homeScreenController.isSundayOff
-                                  //           ? replaceVariable(
-                                  //               replaceVariable(
-                                  //                 Localization.of(
-                                  //                   context,
-                                  //                   'Our opening hours are Monday till Saturday from',
-                                  //                 ),
-                                  //                 'valueone',
-                                  //                 widget.homeScreenController
-                                  //                     .weekdayOpeningHours,
-                                  //               ),
-                                  //               'valuetwo',
-                                  //               widget.homeScreenController
-                                  //                   .weekdayClosingHours,
-                                  //             )
-                                  //           // 'Our opening hours are Monday till Saturday from ${widget.homeScreenController.weekdayOpeningHours}:00 AM till ${_controller.weekdayClosingHours}:00 PM.\n Please submit an order during our working hours.'
-                                  //           : replaceVariable(
-                                  //               replaceVariable(
-                                  //                 Localization.of(
-                                  //                   context,
-                                  //                   'Our opening hours are everyday from',
-                                  //                 ),
-                                  //                 'valueone',
-                                  //                 widget.homeScreenController
-                                  //                     .weekdayOpeningHours,
-                                  //               ),
-                                  //               'valuetwo',
-                                  //               widget.homeScreenController
-                                  //                   .weekdayClosingHours,
-                                  //             )
-                                  //       // 'Our opening hours are everyday from ${widget.homeScreenController.weekdayOpeningHours}:00 AM till ${_controller.weekdayClosingHours}:00 PM. \nPlease submit an order during our working hours.'
-                                  //       : widget.homeScreenController.isSundayOff
-                                  //           ? replaceVariable(
-                                  //               replaceVariable(
-                                  //                 replaceVariable(
-                                  //                   replaceVariable(
-                                  //                     Localization.of(
-                                  //                       context,
-                                  //                       'Our opening hours are Monday till Friday from',
-                                  //                     ),
-                                  //                     'valueone',
-                                  //                     _controller
-                                  //                         .weekdayOpeningHours,
-                                  //                   ),
-                                  //                   'valuetwo',
-                                  //                   _controller
-                                  //                       .weekdayClosingHours,
-                                  //                 ),
-                                  //                 'valuethree',
-                                  //                 _controller
-                                  //                     .weekendOpeningHours,
-                                  //               ),
-                                  //               'valuefour',
-                                  //               _controller
-                                  //                   .weekendClosingHours,
-                                  //             )
-                                  //
-                                  //           // 'Our opening hours are Monday till Friday from ${_controller.weekdayOpeningHours}:00 AM till ${_controller.weekdayClosingHours}:00 PM and Saturday from ${_controller.weekendOpeningHours}:00 AM till ${_controller.weekendClosingHours}:00 PM. \nPlease submit an order during our working hours.'
-                                  //           : replaceVariable(
-                                  //               replaceVariable(
-                                  //                 replaceVariable(
-                                  //                   replaceVariable(
-                                  //                     Localization.of(
-                                  //                       context,
-                                  //                       'Our opening hours are Monday till Friday fromm',
-                                  //                     ),
-                                  //                     'valueone',
-                                  //                     _controller
-                                  //                         .weekdayOpeningHours,
-                                  //                   ),
-                                  //                   'valuetwo',
-                                  //                   _controller
-                                  //                       .weekdayClosingHours,
-                                  //                 ),
-                                  //                 'valuethree',
-                                  //                 _controller
-                                  //                     .weekendOpeningHours,
-                                  //               ),
-                                  //               'valuefour',
-                                  //               _controller
-                                  //                   .weekendClosingHours,
-                                  //             );
-                                  //   // 'Our opening hours are Monday till Friday from ${_controller.weekdayOpeningHours}:00 AM till ${_controller.weekdayClosingHours}:00 PM, Saturday and Sunday from ${_controller.weekendOpeningHours}:00 AM till ${_controller.weekendClosingHours}:00 PM. \nPlease submit an order during our working hours.';
-                                  //   if ((currentDateTime.weekday) == 7 ||
-                                  //       (currentDateTime.weekday) == 6) {
-                                  //     if ((currentDateTime.weekday) == 7 &&
-                                  //         _controller.isSundayOff) {
-                                  //       await showActionBottomSheet(
-                                  //         context: context,
-                                  //         status: OperationStatus.error,
-                                  //         message: errorMsg,
-                                  //         popOnPress: true,
-                                  //         dismissOnTouchOutside: false,
-                                  //         buttonMessage:
-                                  //             Localization.of(context, 'ok')
-                                  //                 .toUpperCase(),
-                                  //         onPressed: () {
-                                  //           Navigator.of(context).pop();
-                                  //         },
-                                  //       );
-                                  //       return;
-                                  //     }
-                                  //     if (currentDateTime.hour <
-                                  //             int.tryParse(_controller
-                                  //                 .weekendOpeningHours) ||
-                                  //         currentDateTime.hour >=
-                                  //             int.tryParse(_controller
-                                  //                 .weekendClosingHours)) {
-                                  //       await showActionBottomSheet(
-                                  //         context: context,
-                                  //         status: OperationStatus.error,
-                                  //         message: errorMsg,
-                                  //         popOnPress: true,
-                                  //         dismissOnTouchOutside: false,
-                                  //         buttonMessage: Localization.of(
-                                  //           context,
-                                  //           'ok',
-                                  //         ).toUpperCase(),
-                                  //         onPressed: () {
-                                  //           Navigator.of(context).pop();
-                                  //         },
-                                  //       );
-                                  //       return;
-                                  //     }
-                                  //   }
-                                  //   if (currentDateTime.hour <
-                                  //           int.tryParse(_controller
-                                  //               .weekdayOpeningHours) ||
-                                  //       currentDateTime.hour >=
-                                  //           int.tryParse(_controller
-                                  //               .weekdayClosingHours)) {
-                                  //     await showActionBottomSheet(
-                                  //       context: context,
-                                  //       status: OperationStatus.error,
-                                  //       message: errorMsg,
-                                  //       popOnPress: true,
-                                  //       dismissOnTouchOutside: false,
-                                  //       buttonMessage: Localization.of(
-                                  //         context,
-                                  //         'ok',
-                                  //       ).toUpperCase(),
-                                  //       onPressed: () {
-                                  //         Navigator.of(context).pop();
-                                  //       },
-                                  //     );
-                                  //     return;
-                                  //   }
-                                  // }
-                                  await showConfirmationBottomSheet(
-                                    context: context,
-                                    // flare: 'assets/flare/pending.flr',
-                                    title: Localization.of(
-                                      context,
-                                      'are_you_sure_you_want_to_add_this_item_to_your_cart',
-                                    ),
-                                    message: isNotEmpty(_colorController.text) &&
-                                            isNotEmpty(_sizeController.text)
-                                        ? null
-                                        : isEmpty(_colorController.text) &&
-                                                isEmpty(_sizeController.text)
-                                            ? ((Localizations.localeOf(context)
-                                                        .languageCode ==
-                                                    'ar')
-                                                ? widget.homeScreenController
-                                                    ?.nextTextAR
-                                                : widget.homeScreenController
-                                                    ?.nextText)
-                                            : (isNotEmpty(_colorController.text)
-                                                    ? ((Localizations.localeOf(context)
-                                                                .languageCode ==
-                                                            'ar')
-                                                        ? widget
-                                                            .homeScreenController
-                                                            ?.nextTextSizeAR
-                                                        : widget
-                                                            .homeScreenController
-                                                            ?.nextTextSize)
-                                                    : (Localizations.localeOf(context)
-                                                                .languageCode ==
-                                                            'ar')
-                                                        ? widget
-                                                            .homeScreenController
-                                                            ?.nextTextColorAR
-                                                        : widget
-                                                            .homeScreenController
-                                                            ?.nextTextColor)
-                                                ?.replaceAll(r'\n', '\n')
-                                                .replaceAll(r"\'", "\'"),
-                                    confirmMessage:
-                                        Localization.of(context, 'continue'),
-                                    confirmAction: () async {
-                                      // Navigator.of(context).pop();
-                                      widget
-                                          .homeScreenController?.productsTitles
-                                          .add(itemDescription ??
-                                              Localization.of(
-                                                  context, "product"));
-                                      widget.homeScreenController?.productsLinks
-                                          .add(_productLinkController.text);
-                                      widget.homeScreenController
-                                          ?.productsQuantities
-                                          .add(_quantityController.text);
-                                      widget
-                                          .homeScreenController?.productsColors
-                                          .add(_colorController.text);
-                                      widget.homeScreenController?.productsSizes
-                                          .add(_sizeController.text);
-                                      widget
-                                          .homeScreenController?.productsPrices
-                                          .add(price ?? "0");
-                                      widget
-                                          .homeScreenController?.productsImages
-                                          .add(imageLink ?? "");
+                        Center(
+                          child: Padding(
+                            key: _addToCart,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 62,
+                              vertical: 16,
+                            ),
+                            child: RaisedButtonV2(
+                              // buttonKey: _addToCart,
+                              disabled: isLoading,
+                              isLoading: isLoading,
+                              onPressed: () async {
+                                if (!(widget.homeScreenController?.isBanned ??
+                                    false)) {
+                                  if (_formKey.currentState!.validate()) {
+                                    // if (widget.user?.phoneNumber == null) {
+                                    //   showErrorBottomsheet(
+                                    //     Localization.of(
+                                    //       context,
+                                    //       'please_login_to_use_this_feature',
+                                    //     ),
+                                    //   );
+                                    // } else {
+                                    // if (!(widget.homeScreenController.isAdmin) &&
+                                    //     widget.homeScreenController.showCustomError) {
+                                    //   await showActionBottomSheet(
+                                    //     context: context,
+                                    //     status: OperationStatus.error,
+                                    //     message:
+                                    //         (Localizations.localeOf(context)
+                                    //                     .languageCode ==
+                                    //                 'ar')
+                                    //             ? widget.homeScreenController.customErrorAR
+                                    //             : widget.homeScreenController.customError,
+                                    //     popOnPress: true,
+                                    //     dismissOnTouchOutside: false,
+                                    //     buttonMessage: Localization.of(
+                                    //       context,
+                                    //       'ok',
+                                    //     ),
+                                    //     onPressed: () {
+                                    //       Navigator.of(context).pop();
+                                    //     },
+                                    //   );
+                                    //   return;
+                                    // }
+                                    //
+                                    // if (!(widget.homeScreenController.isAdmin) &&
+                                    //     widget.homeScreenController.isHoliday) {
+                                    //   await showActionBottomSheet(
+                                    //     context: context,
+                                    //     status: OperationStatus.error,
+                                    //     message: Localization.of(
+                                    //       context,
+                                    //       'we_are_currently_closed',
+                                    //     ),
+                                    //     popOnPress: true,
+                                    //     dismissOnTouchOutside: false,
+                                    //     buttonMessage: Localization.of(
+                                    //       context,
+                                    //       'ok',
+                                    //     ),
+                                    //     onPressed: () {
+                                    //       Navigator.of(context).pop();
+                                    //     },
+                                    //   );
+                                    //   return;
+                                    // }
+                                    //
+                                    // if (!(widget.homeScreenController.isAdmin) &&
+                                    //     widget.homeScreenController.checkForOpeningHours) {
+                                    //   DateTime currentDateTime =
+                                    //       DateTime.now();
+                                    //   String errorMsg = (widget.homeScreenController
+                                    //                   .weekdayOpeningHours ==
+                                    //               widget.homeScreenController
+                                    //                   .weekendOpeningHours) &&
+                                    //           (widget.homeScreenController
+                                    //                   .weekdayClosingHours ==
+                                    //               widget.homeScreenController
+                                    //                   .weekendClosingHours)
+                                    //       ? widget.homeScreenController.isSundayOff
+                                    //           ? replaceVariable(
+                                    //               replaceVariable(
+                                    //                 Localization.of(
+                                    //                   context,
+                                    //                   'Our opening hours are Monday till Saturday from',
+                                    //                 ),
+                                    //                 'valueone',
+                                    //                 widget.homeScreenController
+                                    //                     .weekdayOpeningHours,
+                                    //               ),
+                                    //               'valuetwo',
+                                    //               widget.homeScreenController
+                                    //                   .weekdayClosingHours,
+                                    //             )
+                                    //           // 'Our opening hours are Monday till Saturday from ${widget.homeScreenController.weekdayOpeningHours}:00 AM till ${_controller.weekdayClosingHours}:00 PM.\n Please submit an order during our working hours.'
+                                    //           : replaceVariable(
+                                    //               replaceVariable(
+                                    //                 Localization.of(
+                                    //                   context,
+                                    //                   'Our opening hours are everyday from',
+                                    //                 ),
+                                    //                 'valueone',
+                                    //                 widget.homeScreenController
+                                    //                     .weekdayOpeningHours,
+                                    //               ),
+                                    //               'valuetwo',
+                                    //               widget.homeScreenController
+                                    //                   .weekdayClosingHours,
+                                    //             )
+                                    //       // 'Our opening hours are everyday from ${widget.homeScreenController.weekdayOpeningHours}:00 AM till ${_controller.weekdayClosingHours}:00 PM. \nPlease submit an order during our working hours.'
+                                    //       : widget.homeScreenController.isSundayOff
+                                    //           ? replaceVariable(
+                                    //               replaceVariable(
+                                    //                 replaceVariable(
+                                    //                   replaceVariable(
+                                    //                     Localization.of(
+                                    //                       context,
+                                    //                       'Our opening hours are Monday till Friday from',
+                                    //                     ),
+                                    //                     'valueone',
+                                    //                     _controller
+                                    //                         .weekdayOpeningHours,
+                                    //                   ),
+                                    //                   'valuetwo',
+                                    //                   _controller
+                                    //                       .weekdayClosingHours,
+                                    //                 ),
+                                    //                 'valuethree',
+                                    //                 _controller
+                                    //                     .weekendOpeningHours,
+                                    //               ),
+                                    //               'valuefour',
+                                    //               _controller
+                                    //                   .weekendClosingHours,
+                                    //             )
+                                    //
+                                    //           // 'Our opening hours are Monday till Friday from ${_controller.weekdayOpeningHours}:00 AM till ${_controller.weekdayClosingHours}:00 PM and Saturday from ${_controller.weekendOpeningHours}:00 AM till ${_controller.weekendClosingHours}:00 PM. \nPlease submit an order during our working hours.'
+                                    //           : replaceVariable(
+                                    //               replaceVariable(
+                                    //                 replaceVariable(
+                                    //                   replaceVariable(
+                                    //                     Localization.of(
+                                    //                       context,
+                                    //                       'Our opening hours are Monday till Friday fromm',
+                                    //                     ),
+                                    //                     'valueone',
+                                    //                     _controller
+                                    //                         .weekdayOpeningHours,
+                                    //                   ),
+                                    //                   'valuetwo',
+                                    //                   _controller
+                                    //                       .weekdayClosingHours,
+                                    //                 ),
+                                    //                 'valuethree',
+                                    //                 _controller
+                                    //                     .weekendOpeningHours,
+                                    //               ),
+                                    //               'valuefour',
+                                    //               _controller
+                                    //                   .weekendClosingHours,
+                                    //             );
+                                    //   // 'Our opening hours are Monday till Friday from ${_controller.weekdayOpeningHours}:00 AM till ${_controller.weekdayClosingHours}:00 PM, Saturday and Sunday from ${_controller.weekendOpeningHours}:00 AM till ${_controller.weekendClosingHours}:00 PM. \nPlease submit an order during our working hours.';
+                                    //   if ((currentDateTime.weekday) == 7 ||
+                                    //       (currentDateTime.weekday) == 6) {
+                                    //     if ((currentDateTime.weekday) == 7 &&
+                                    //         _controller.isSundayOff) {
+                                    //       await showActionBottomSheet(
+                                    //         context: context,
+                                    //         status: OperationStatus.error,
+                                    //         message: errorMsg,
+                                    //         popOnPress: true,
+                                    //         dismissOnTouchOutside: false,
+                                    //         buttonMessage:
+                                    //             Localization.of(context, 'ok')
+                                    //                 .toUpperCase(),
+                                    //         onPressed: () {
+                                    //           Navigator.of(context).pop();
+                                    //         },
+                                    //       );
+                                    //       return;
+                                    //     }
+                                    //     if (currentDateTime.hour <
+                                    //             int.tryParse(_controller
+                                    //                 .weekendOpeningHours) ||
+                                    //         currentDateTime.hour >=
+                                    //             int.tryParse(_controller
+                                    //                 .weekendClosingHours)) {
+                                    //       await showActionBottomSheet(
+                                    //         context: context,
+                                    //         status: OperationStatus.error,
+                                    //         message: errorMsg,
+                                    //         popOnPress: true,
+                                    //         dismissOnTouchOutside: false,
+                                    //         buttonMessage: Localization.of(
+                                    //           context,
+                                    //           'ok',
+                                    //         ).toUpperCase(),
+                                    //         onPressed: () {
+                                    //           Navigator.of(context).pop();
+                                    //         },
+                                    //       );
+                                    //       return;
+                                    //     }
+                                    //   }
+                                    //   if (currentDateTime.hour <
+                                    //           int.tryParse(_controller
+                                    //               .weekdayOpeningHours) ||
+                                    //       currentDateTime.hour >=
+                                    //           int.tryParse(_controller
+                                    //               .weekdayClosingHours)) {
+                                    //     await showActionBottomSheet(
+                                    //       context: context,
+                                    //       status: OperationStatus.error,
+                                    //       message: errorMsg,
+                                    //       popOnPress: true,
+                                    //       dismissOnTouchOutside: false,
+                                    //       buttonMessage: Localization.of(
+                                    //         context,
+                                    //         'ok',
+                                    //       ).toUpperCase(),
+                                    //       onPressed: () {
+                                    //         Navigator.of(context).pop();
+                                    //       },
+                                    //     );
+                                    //     return;
+                                    //   }
+                                    // }
+                                    await showConfirmationBottomSheet(
+                                      context: context,
+                                      // flare: 'assets/flare/pending.flr',
+                                      title: Localization.of(
+                                        context,
+                                        'are_you_sure_you_want_to_add_this_item_to_your_cart',
+                                      ),
+                                      message: isNotEmpty(_colorController.text) &&
+                                              isNotEmpty(_sizeController.text)
+                                          ? null
+                                          : isEmpty(_colorController.text) &&
+                                                  isEmpty(_sizeController.text)
+                                              ? ((Localizations.localeOf(context)
+                                                          .languageCode ==
+                                                      'ar')
+                                                  ? widget.homeScreenController
+                                                      ?.nextTextAR
+                                                  : widget.homeScreenController
+                                                      ?.nextText)
+                                              : (isNotEmpty(_colorController.text)
+                                                      ? ((Localizations.localeOf(context)
+                                                                  .languageCode ==
+                                                              'ar')
+                                                          ? widget
+                                                              .homeScreenController
+                                                              ?.nextTextSizeAR
+                                                          : widget
+                                                              .homeScreenController
+                                                              ?.nextTextSize)
+                                                      : (Localizations.localeOf(context)
+                                                                  .languageCode ==
+                                                              'ar')
+                                                          ? widget
+                                                              .homeScreenController
+                                                              ?.nextTextColorAR
+                                                          : widget
+                                                              .homeScreenController
+                                                              ?.nextTextColor)
+                                                  ?.replaceAll(r'\n', '\n')
+                                                  .replaceAll(r"\'", "\'"),
+                                      confirmMessage:
+                                          Localization.of(context, 'continue'),
+                                      confirmAction: () async {
+                                        // Navigator.of(context).pop();
+                                        widget
+                                            .homeScreenController?.productsTitles
+                                            .add(itemDescription ??
+                                                Localization.of(
+                                                    context, "product"));
+                                        widget.homeScreenController?.productsLinks
+                                            .add(_productLinkController.text);
+                                        widget.homeScreenController
+                                            ?.productsQuantities
+                                            .add(_quantityController.text);
+                                        widget
+                                            .homeScreenController?.productsColors
+                                            .add(_colorController.text);
+                                        widget.homeScreenController?.productsSizes
+                                            .add(_sizeController.text);
+                                        widget
+                                            .homeScreenController?.productsPrices
+                                            .add(price ?? "0");
+                                        widget
+                                            .homeScreenController?.productsImages
+                                            .add(imageLink ?? "");
 
-                                      _quantityController.text = "";
-                                      _productLinkController.text = "";
-                                      _moreDetailsController.text = "";
-                                      _colorController.text = "";
-                                      _sizeController.text = "";
-                                      image = null;
-                                      imageLink = null;
-                                      price = null;
-                                      itemDescription = null;
+                                        _quantityController.text = "";
+                                        _productLinkController.text = "";
+                                        _moreDetailsController.text = "";
+                                        _colorController.text = "";
+                                        _sizeController.text = "";
+                                        image = null;
+                                        imageLink = null;
+                                        price = null;
+                                        itemDescription = null;
 
-                                      widget.homeScreenController
-                                          ?.refreshView();
+                                        widget.homeScreenController
+                                            ?.refreshView();
 
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
+                                        FocusManager.instance.primaryFocus
+                                            ?.unfocus();
 
-                                      showSuccessBottomsheet();
+                                        showSuccessBottomsheet();
 
-                                      // if (widget.homeScreenController
-                                      //         .productsTitles.length ==
-                                      //     1) {
-                                      //   widget.homeScreenController
-                                      //       .jumpToCartScreen();
-                                      // }
+                                        // if (widget.homeScreenController
+                                        //         .productsTitles.length ==
+                                        //     1) {
+                                        //   widget.homeScreenController
+                                        //       .jumpToCartScreen();
+                                        // }
 
-                                      try {
-                                        Vibration.vibrate();
-                                      } catch (e) {}
+                                        try {
+                                          Vibration.vibrate();
+                                        } catch (e) {}
 
-                                      setState(() {});
-                                    },
-                                    cancelMessage:
-                                        Localization.of(context, 'cancel'),
-                                  );
+                                        setState(() {});
+                                      },
+                                      cancelMessage:
+                                          Localization.of(context, 'cancel'),
+                                    );
+                                  }
                                 }
-                              }
-                              // }
-                            },
-                            label: Localization.of(context, 'add_to_cart'),
+                                // }
+                              },
+                              label: Localization.of(context, 'add_to_cart'),
+                            ),
                           ),
                         ),
                       ],
