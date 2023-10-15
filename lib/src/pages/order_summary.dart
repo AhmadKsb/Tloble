@@ -907,6 +907,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
                       : customer.phoneNumber,
+                  locale: (Localizations.localeOf(context).languageCode == 'ar') ? 'ar' : 'en',
                   employeeWhoSentTheOrder: (widget
                           .homeScreenController.employees
                           .firstWhere(
@@ -963,6 +964,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
                       : customer.phoneNumber,
+                  locale: (Localizations.localeOf(context).languageCode == 'ar') ? 'ar' : 'en',
                   employeeWhoSentTheOrder: (widget
                           .homeScreenController.employees
                           .firstWhere(
@@ -1018,6 +1020,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
                       : customer.phoneNumber,
+                  locale: (Localizations.localeOf(context).languageCode == 'ar') ? 'ar' : 'en',
                   employeeWhoSentTheOrder: (widget
                           .homeScreenController.employees
                           .firstWhere(

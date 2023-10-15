@@ -152,8 +152,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                     child: Column(
                       children: [
                         if (_order.sentByEmployee ?? false)
-                        Row(
-                          children: [
+                          Row(
+                            children: [
                               Text(
                                 "Sent by employee: ",
                                 style: TextStyle(
@@ -161,18 +161,18 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 1),
                               ),
-                            Text(
-                              _order.employeeWhoSentTheOrder ?? "",
-                              style: TextStyle(
-                                fontSize: 16,
-                                letterSpacing: 1,
+                              Text(
+                                _order.employeeWhoSentTheOrder ?? "",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  letterSpacing: 1,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                         if (isNotEmpty(_order.acceptedBy))
-                        Row(
-                          children: [
+                          Row(
+                            children: [
                               Text(
                                 "Accepted by: ",
                                 style: TextStyle(
@@ -180,15 +180,15 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                     fontWeight: FontWeight.bold,
                                     letterSpacing: 1),
                               ),
-                            Text(
-                              _order.acceptedBy!,
-                              style: TextStyle(
-                                fontSize: 16,
-                                letterSpacing: 1,
+                              Text(
+                                _order.acceptedBy!,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  letterSpacing: 1,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                         if (_order.firstPayment.toString() != "0")
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
@@ -248,8 +248,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                         ),
                         child: RaisedButtonV2(
                           disabled:
-                              // _isLoading || isNotEmpty(_order.acceptedTime),
-                          _isLoading,
+                              _isLoading || isNotEmpty(_order.acceptedTime),
+                              // _isLoading,
                           isLoading: _isLoading,
                           onPressed: () async {
                             await showConfirmationBottomSheet(
@@ -852,41 +852,48 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
 
   void openWhatsapp() async {
     try {
-      bool? isEnglish = _order.customerName?.contains(RegExp(r'[a-zA-Z]'));
-      // if (isEnglish ?? false) {
-      if (false) {
+      // _order.locale == "en"
+      if (_order.locale == "en") {
+        // if (true) {
         String text =
-            "Welcome%20to%20Tloble%21%20We%27re%20thrilled%20to%20have%20you%20as%20our%20valued%20customer.%20Our%20goal%20is%20to%20provide%20you%20with%20a%20seamless%20and%20enjoyable%20experience.%0ALet%20us%20first%20confirm%20your%20order.%0A";
-        text +=
-            "%0AOrder%20Summary%20for%20Order%20%20%2A%23${_order.referenceID}%2A%0A";
+            "Welcome to Tloble! We're thrilled to have you as our valued customer. Our goal is to provide you with a seamless and enjoyable experience.\nLet us first confirm your order.\n\n";
+
+        text += "Order Summary for Order *#${_order.referenceID}*";
         for (int index = 0;
             index < (_order.productsTitles?.length ?? 0);
             index++) {
           text +=
-              "%0A%2A%20%2A${isEmpty(_order.productsTitles?[index]) || (_order.productsTitles![index].toString().toLowerCase() == "product") ? "${_order.productsTitles?[index]}%20${index + 1}" : Uri.encodeComponent(_order.productsTitles?[index])}%3A%2A%0A-%20Quantity%3A%20${_order.productsQuantities?[index]}${isNotEmpty(_order.productsColors?[index]) ? "%0A-%20Color%3A%20${_order.productsColors?[index]}" : "%0A-%20Color%3A%20Not%20specified"}${isNotEmpty(_order.productsSizes?[index]) ? "%0A-%20Size%3A%20${_order.productsSizes?[index]}" : "%0A-%20Size%3A%20Not%20specified"}${isNotEmpty(_order.productsLinks?[index]) ? "%0A-%20Link%3A%20${Uri.encodeComponent(_order.productsLinks?[index])}" : ""}%0A";
+              "\n\n* *${isEmpty(_order.productsTitles?[index]) || (_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) ? "${_order.productsTitles?[index]} ${index + 1}" : _order.productsTitles?[index]}*\n- Quantity: ${_order.productsQuantities?[index]}${isNotEmpty(_order.productsColors?[index]) ? "\n- Color: ${_order.productsColors?[index]}" : "\n- Color: Not specified"}${isNotEmpty(_order.productsSizes?[index]) ? "\n- Size: ${_order.productsSizes?[index]}" : "\n- Size: Not specified"}${isNotEmpty(_order.productsLinks?[index]) ? "\n- Link: ${_order.productsLinks?[index]}" : ""}\n";
         }
         text +=
-            "%0AWe%20will%20begin%20processing%20your%20order%20after%20receiving%20the%20payment.%20You%20may%20pay%20through%20%2AOMT%2A%2C%20%2AWhish%2A%2C%20%2AUSDT%2A%20or%20%2Acash%2A%20at%20our%20office.";
-        launch('https://wa.me/${_order.orderSenderPhoneNumber}?text=$text');
+            "\n\nWe will begin processing your order after receiving the payment. You may pay through *OMT*, *Whish*, *USDT* or *cash* at our office.";
+        String encodedText = Uri.encodeComponent(text);
+        launch(
+            'https://wa.me/${_order.orderSenderPhoneNumber}?text=$encodedText');
       } else {
         String text =
-            "مرحبا%20بكم%20في%20Tloble%21%20نحن%20سعداء%20أن%20يكون%20لك%20كما%20عملائنا%20الكرام.%20هدفنا%20هو%20أن%20نقدم%20لك%20تجربة%20سلسة%20وممتعة.%0Aدعونا%20أولا%20تأكيد%20طلبك.";
+            "مرحبا بكم في Tloble! نحن سعداء بوجودك كعميل لدينا. هدفنا هو أن نقدم لك تجربة سلسة وممتعة.\n";
+        text += "دعونا أولا تأكيد طلبك.";
+        text += "\n\n";
+        text += "ملخص الطلب رقم *#${_order.referenceID.toString()}*";
+
+        for (int index = 0;
+            index < (_order.productsTitles?.length ?? 0);
+            index++) {
+          text += """\n
+        ${isEmpty(_order.productsTitles?[index]) || (_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) ? "*المنتج ${index + 1}* " : "*" + _order.productsTitles![index].toString().trim() + "*"}
+${isNotEmpty(_order.productsQuantities?[index]) ? "- الكمية: ${_order.productsQuantities![index]}" : ""}
+${isNotEmpty(_order.productsColors?[index]) ? "- اللون: ${_order.productsColors![index]}" : "- اللون: غير محدد"}
+${isNotEmpty(_order.productsSizes?[index]) ? "- الحجم: ${_order.productsSizes![index]}" : "- الحجم: غير محدد"}
+${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsLinks![index]}" : ""}
+""";
+          //- الرابط: ${_order.productsLinks[index]}
+        }
+        text += """\n
+سنبدأ معالجة طلبك بعد تلقي الدفع. يمكنك الدفع من خلال *USDT* ،*Whish* ،*OMT* أو *الدفع* في مكتبنا.
+""";
 
         String encodedText = Uri.encodeComponent(text);
-
-
-        // for (int index = 0; index < _order.productsTitles.length; index++) {
-        //   text += """
-// ${isEmpty(_order.productsTitles[index]) || (_order.productsTitles[index].toString().toLowerCase() == "product") ? "*المنتج*%20" : "*" + Uri.encodeComponent(_order.productsTitles[index]) + "*"}
-// %3A%2A%0A-%20الكمية%3A%20${_order.productsQuantities[index]}
-// ${isNotEmpty(_order.productsColors[index]) ? "- اللون:${_order.productsColors[index]}" : ""}
-// ${isNotEmpty(_order.productsSizes[index]) ? "- الحجم:${_order.productsSizes[index]}" : ""}
-// """;
-        //- الرابط: ${_order.productsLinks[index]}
-        // }
-        // text += """
-// سنبدأ معالجة طلبك بعد تلقي الدفع. يمكنك الدفع من خلال *OMT* ، *Whish* ، *USDT* أو *المال* في مكتبنا.
-// """;
 
         launch(
           // 'https://wa.me/${widget.order?.phoneNumber}?text=مرحبًا، لقد تلقينا طلبك ${(widget.order.action.toLowerCase() == 'buy') ? Localization.of(context, 'for_buy_ar').toLowerCase() : Localization.of(context, 'for_sell_ar').toLowerCase()} بقيمة \$ ${widget.order.amount}.'),

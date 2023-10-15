@@ -20,6 +20,7 @@ class Order implements Comparable<Order> {
   String? phoneNumber;
   String? orderSenderPhoneNumber;
   String? employeeWhoSentTheOrder;
+  String? locale;
   num? referenceID;
   String? sentTime;
   String? acceptedTime;
@@ -45,6 +46,7 @@ class Order implements Comparable<Order> {
     this.phoneNumber,
     this.orderSenderPhoneNumber,
     this.employeeWhoSentTheOrder,
+    this.locale,
     this.referenceID,
     this.sentTime,
     this.acceptedTime,
@@ -99,6 +101,7 @@ class Order implements Comparable<Order> {
       phoneNumber: json['phoneNumber'],
       orderSenderPhoneNumber: json['orderSenderPhoneNumber'],
       employeeWhoSentTheOrder: json['employeeWhoSentTheOrder'],
+      locale: json['locale'],
       referenceID: num.tryParse(json['referenceID'].toString()),
       sentTime: json['sentTime'],
       acceptedTime: json['acceptedTime'],
@@ -144,6 +147,7 @@ class Order implements Comparable<Order> {
       'phoneNumber': phoneNumber,
       'orderSenderPhoneNumber': orderSenderPhoneNumber,
       'employeeWhoSentTheOrder': employeeWhoSentTheOrder,
+      'locale': locale,
       'referenceID': referenceID,
       'sentTime': sentTime,
       'acceptedTime': acceptedTime,

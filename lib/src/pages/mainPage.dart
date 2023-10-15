@@ -762,7 +762,7 @@ class _MainPageState extends State<MainPage>
                           style: TextStyle(fontWeight: FontWeight.w400),
                         ),
                   onTap: () async {
-                     Navigator.of(context).pop();
+                     // Navigator.of(context).pop();
                     var customerNamee = await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) =>
@@ -834,6 +834,10 @@ class _MainPageState extends State<MainPage>
                                 coins: customer.coins ?? 0,
                               ).toJson());
                         }
+
+                        adminPanelNames = [];
+                        _load();
+                        _buildAdminPanelWidgets();
 
                         showLoginSuccessBottomsheet(
                           Localization.of(context, "login_successful"),
