@@ -87,6 +87,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
               child: index == 1
                   ? Image.asset(
                       'assets/images/delivery.png',
+                      key: upcomingOrdersKey,
                       width: 26,
                       color: isEnable
                           ? LightColor.orange
@@ -95,7 +96,7 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar>
                   : Icon(
                       icon,
                       key: icon == Icons.shopping_cart_outlined
-                          ? coachMarkKey
+                          ? shoppingCartKey
                           : null,
                       color: isEnable
                           ? LightColor.orange

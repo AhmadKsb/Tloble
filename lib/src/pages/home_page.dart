@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
 import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/mixins/home_screen_controller_mixin.dart';
+import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
@@ -18,9 +20,11 @@ import 'package:flutter_ecommerce_app/src/utils/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store_redirect/store_redirect.dart';
 import 'package:http/http.dart' as http;
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:vibration/vibration.dart';
 // import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 
+import '../widgets/title_text.dart';
 import 'mainPage.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -76,6 +80,7 @@ class _MyHomePageState extends State<MyHomePage>
   List<String> adminPanelNames = [];
 
   final _formKey = GlobalKey<FormState>();
+  GlobalKey _addToCart = GlobalObjectKey("addToCart");
 
   Key key = UniqueKey();
 
@@ -91,6 +96,27 @@ class _MyHomePageState extends State<MyHomePage>
     if (!mounted) return;
     WidgetsBinding.instance.addObserver(this);
     _load();
+    _showCoachMark();
+  }
+
+  Future<void> _showCoachMark() async {
+    if (_controller.showCoachMark ?? false) {
+      SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
+      String coachMark = _controller.coachMarkCampaign ?? '';
+      String? showCoachMarkCampaign = sharedPreferences.getString(coachMark);
+
+      if ((_controller.forceShowCoachmark ?? false) ||
+          (showCoachMarkCampaign == null ||
+              showCoachMarkCampaign != 'coachmarkAlreadyShown')) {
+        sharedPreferences.setString(
+          _controller.coachMarkCampaign ?? '',
+          "coachmarkAlreadyShown",
+        );
+        createTutorial();
+        Future.delayed(Duration.zero, showTutorial);
+      }
+    }
   }
 
   Future<void> refresh() async {
@@ -112,99 +138,198 @@ class _MyHomePageState extends State<MyHomePage>
       _controller = widget.homeScreenController!;
     }
 
-    checkForUpdate();
-
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     // _buildCoachMarkCampaign(sharedPreferences);
   }
 
-  // void _buildCoachMarkCampaign(SharedPreferences prefs) {
-  //   if (_controller.showCoachMark ?? false) {
-  //     String coachMark = _controller.coachMarkCampaign ?? '';
-  //     String? showCoachMarkCampaign = prefs.getString(coachMark);
-  //
-  //     if (showCoachMarkCampaign == null ||
-  //         showCoachMarkCampaign != 'alreadyshown') {
-  //       WidgetsBinding.instance.addPostFrameCallback(
-  //         (_) {
-  //           CoachMark coachMarkTile = CoachMark();
-  //           RenderObject? target =
-  //               coachMarkKey.currentContext?.findRenderObject();
-  //
-  //           // Rect markRect = target?.localToGlobal(Offset.zero) & target?.size;
-  //           // markRect = markRect.inflate(5.0);
-  //
-  //           coachMarkTile.show(
-  //             targetContext: coachMarkKey.currentContext,
-  //             // markRect: markRect,
-  //             markShape: BoxShape.rectangle,
-  //             onClose: () {
-  //               if (_controller.showCampaignOnLaunch ?? false) {
-  //                 String campaignName = _controller.campaignName ?? '';
-  //                 String showCampaign = prefs.getString(campaignName) ?? "";
-  //
-  //                 if (showCampaign != 'alreadyshown') {
-  //                   showCampaignDialog();
-  //                   prefs.setString(
-  //                     campaignName,
-  //                     'alreadyshown',
-  //                   );
-  //                 }
-  //               }
-  //             },
-  //             children: [
-  //               Center(
-  //                 child: Text(
-  //                   ((Localizations.localeOf(context).languageCode == 'ar')
-  //                           ? _controller.coachMarkTextAR
-  //                           : _controller.coachMarkText) ??
-  //                       "",
-  //                   textAlign: TextAlign.center,
-  //                   style: const TextStyle(
-  //                     fontSize: 24.0,
-  //                     fontStyle: FontStyle.italic,
-  //                     color: Colors.white,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //             duration: null,
-  //           );
-  //         },
-  //       );
-  //       prefs.setString(
-  //         coachMark,
-  //         'alreadyshown',
-  //       );
-  //     } else {
-  //       if (_controller.showCampaignOnLaunch ?? false) {
-  //         String campaignName = _controller.campaignName ?? '';
-  //         String showCampaign = prefs.getString(campaignName) ?? "";
-  //
-  //         if (showCampaign != 'alreadyshown') {
-  //           showCampaignDialog();
-  //           prefs.setString(
-  //             campaignName,
-  //             'alreadyshown',
-  //           );
-  //         }
-  //       }
-  //     }
-  //   } else {
-  //     if (_controller.showCampaignOnLaunch ?? false) {
-  //       String campaignName = _controller.campaignName ?? '';
-  //       String showCampaign = prefs.getString(campaignName) ?? "";
-  //
-  //       if (showCampaign != 'alreadyshown') {
-  //         showCampaignDialog();
-  //         prefs.setString(
-  //           campaignName,
-  //           'alreadyshown',
-  //         );
-  //       }
-  //     }
-  //   }
-  // }
+  GlobalKey keyButton = GlobalKey();
+  late TutorialCoachMark tutorialCoachMark;
+
+  void showTutorial() {
+    tutorialCoachMark.show(context: context);
+  }
+
+  var selectedTutorialElement;
+
+  void createTutorial() {
+    tutorialCoachMark = TutorialCoachMark(
+      targets: _createTargets(),
+      colorShadow: LightColor.orange,
+      textSkip: isEmpty(selectedTutorialElement) ? "" : "SKIP",
+      paddingFocus: 10,
+      opacityShadow: 0.5,
+      showSkipInLastTarget: false,
+      imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      onFinish: () {
+        if (isEmpty(selectedTutorialElement)) {
+          tutorialCoachMark.goTo(1);
+          return false;
+        } else {
+          return true;
+        }
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+        // target.identify == "keyBottomNavigation2";
+      },
+      onClickTargetWithTapPosition: (target, tapDetails) {
+        selectedTutorialElement = target.identify;
+        print(selectedTutorialElement);
+        // print("target: $target");
+        // print(
+        //     "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlay: $target');
+      },
+      onSkip: () {
+        if (isEmpty(selectedTutorialElement)) {
+          tutorialCoachMark.goTo(1);
+          return false;
+        } else {
+          return true;
+        }
+        print("skip");
+      },
+    );
+  }
+
+  List<TargetFocus> _createTargets() {
+    List<TargetFocus> targets = [];
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation1",
+        keyTarget: _formKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        paddingFocus: 0.5,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 20.0),
+                    child: Text(
+                      Localization.of(context, "product_details"),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0),
+                    ),
+                  ),
+                  Text(
+                    Localization.of(context, "product_details_description"),
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 30,
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation2",
+        keyTarget: _addToCart,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        paddingFocus: 0.5,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 20.0),
+                    child: Text(
+                      Localization.of(context, "add_to_cart_coachmark"),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.0),
+                    ),
+                  ),
+                  Text(
+                    Localization.of(context, "add_to_cart_coachmark_details"),
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 30,
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation3",
+        keyTarget: shoppingCartKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "added_to_cart_coachmark"),
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation4",
+        keyTarget: upcomingOrdersKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "upcoming_orders_coachmark"),
+                    style: TextStyle(color: Colors.white, fontSize: 16.0),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    return targets;
+  }
 
   void showCampaignDialog() {
     showDialog(
@@ -503,6 +628,10 @@ class _MyHomePageState extends State<MyHomePage>
     setState(() {});
   }
 
+  Future<void> _loadIkea() async {
+
+  }
+
   Future<void> _loadTheGivingMovement() async {
     var originalUrl = _productLinkController.text;
     var url = _productLinkController.text;
@@ -709,67 +838,6 @@ class _MyHomePageState extends State<MyHomePage>
     productLink.dispose();
     moreDetailsNode.dispose();
     super.dispose();
-  }
-
-  void checkForUpdate() {
-    List<String> versionSplitAtPlus =
-        widget.homeScreenController?.version?.split('+') ?? [];
-    List<String> versionSplitAtDot = versionSplitAtPlus[0].split('.');
-    String currentVersion = versionSplitAtDot[0] +
-        versionSplitAtDot[1] +
-        versionSplitAtDot[2] +
-        versionSplitAtPlus[1];
-
-    if (widget.homeScreenController?.forceUpdate ?? false) {
-      if (Theme.of(context).platform == TargetPlatform.iOS) {
-        List<String> iosVersionSplitAtPlus =
-            widget.homeScreenController?.iosAppVersion?.split('+') ?? [];
-        List<String> iosVersionSplitAtDot = iosVersionSplitAtPlus[0].split('.');
-        String consoleString = iosVersionSplitAtDot[0] +
-            iosVersionSplitAtDot[1] +
-            iosVersionSplitAtDot[2] +
-            iosVersionSplitAtPlus[1];
-        if (num.parse(consoleString) > num.parse(currentVersion))
-          showUpdateBottomSheet(
-            Localization.of(context, 'newer_version_available'),
-          );
-      } else {
-        List<String> androidVersionSplitAtPlus =
-            widget.homeScreenController?.androidAppVersion?.split('+') ?? [];
-        List<String> androidVersionSplitAtDot =
-            androidVersionSplitAtPlus[0].split('.');
-        String consoleString = androidVersionSplitAtDot[0] +
-            androidVersionSplitAtDot[1] +
-            androidVersionSplitAtDot[2] +
-            androidVersionSplitAtPlus[1];
-        if (num.parse(consoleString) > num.parse(currentVersion))
-          showUpdateBottomSheet(
-            Localization.of(context, 'newer_version_available'),
-          );
-      }
-    }
-  }
-
-  void showUpdateBottomSheet(String error) async {
-    if (!mounted) return;
-    await showActionBottomSheet(
-      context: context,
-      status: OperationStatus.error,
-      message: error,
-      popOnPress: true,
-      dismissOnTouchOutside: false,
-      buttonMessage: Localization.of(context, 'update_app'),
-      onPressed: () {
-        updateApp();
-      },
-    );
-  }
-
-  void updateApp() async {
-    StoreRedirect.redirect(
-      androidAppId: widget.homeScreenController?.androidAppId,
-      iOSAppId: widget.homeScreenController?.iOSAppId,
-    );
   }
 
   InputDecoration inputDecoration(String hintText, {Widget? prefixIcon}) {
@@ -1089,11 +1157,13 @@ class _MyHomePageState extends State<MyHomePage>
                         //   ),
                         // ),
                         Padding(
+                          key: _addToCart,
                           padding: EdgeInsets.symmetric(
                             horizontal: 62,
                             vertical: 16,
                           ),
                           child: RaisedButtonV2(
+                            // buttonKey: _addToCart,
                             disabled: isLoading,
                             isLoading: isLoading,
                             onPressed: () async {

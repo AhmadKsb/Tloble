@@ -119,6 +119,7 @@ class HomeScreenController {
       _showLargeOrders = false,
       _showMisc = false,
       _showAddToAhmadSalary = false,
+      _forceShowCoachmark = false,
       _allowedToCheckCustomersBalance = false,
       _showSortingButton = true,
       _isBanned = false,
@@ -349,6 +350,11 @@ class HomeScreenController {
   String? get coachMarkCampaign => _coachMarkCampaign;
   set coachMarkCampaign(value) {
     _coachMarkCampaign = value;
+  }
+
+  bool? get forceShowCoachmark => _forceShowCoachmark;
+  set forceShowCoachmark(value) {
+    _forceShowCoachmark = value;
   }
 
   String? get aedConversion => _aedConversion;
@@ -948,6 +954,7 @@ class HomeScreenController {
     _showCoachMark = appInfoSnapshot?['showCoachMark'] ?? true;
     _showProductPrice = appInfoSnapshot?['showProductPrice'] ?? true;
     _showProductsSubtotal = appInfoSnapshot?['showProductsSubtotal'] ?? true;
+    _forceShowCoachmark = appInfoSnapshot?['forceShowCoachmark'] ?? true;
     _showMinableItemSearchBar =
         appInfoSnapshot?['showMinableItemSearchBar'] ?? true;
 

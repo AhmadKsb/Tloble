@@ -793,24 +793,26 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
             //   );
             // }
 
-            setState(() {});
-            showSuccessBottomsheet(
-              Localization.of(context, "login_successful"),
-              closeOnTapOutside: false,
-              shouldPop: false,
-              onTap: () async {
-                // Navigator.pushAndRemoveUntil(
-                //     context,
-                //     MaterialPageRoute(
-                //       builder: (context) =>
-                //           FirebaseNotification(child: MainPage()),
-                //     ),
-                //     (Route<dynamic> route) => false);
-              },
-            );
+            // setState(() {});
+            // showSuccessBottomsheet(
+            //   Localization.of(context, "login_successful"),
+            //   closeOnTapOutside: false,
+            //   shouldPop: false,
+            //   onTap: () async {
+            //     Navigator.of(context).pop(true);
+            //     Navigator.of(context).pop(true);
+            //     // Navigator.pushAndRemoveUntil(
+            //     //     context,
+            //     //     MaterialPageRoute(
+            //     //       builder: (context) =>
+            //     //           FirebaseNotification(child: MainPage()),
+            //     //     ),
+            //     //     (Route<dynamic> route) => false);
+            //   },
+            // );
             await submitOrder();
             showSuccessBottomsheet(
-              Localization.of(context, "order_submitted_successfully"),
+              Localization.of(context, "login_order_submitted_successfully"),
               closeOnTapOutside: false,
               shouldSetState: false,
               onTap: () async {

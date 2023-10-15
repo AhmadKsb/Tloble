@@ -24,9 +24,11 @@ import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'package:vibration/vibration.dart';
 
 import '../../main.dart';
+import '../utils/BottomSheets/operation_status.dart';
 import 'BottomSheets/add_employee_bottomsheet.dart';
 import 'BottomSheets/send_notification_bottomsheet.dart';
 import 'BottomSheets/ban_user_bottomsheet.dart';
@@ -38,7 +40,8 @@ import 'feedback/send_us_your_feedbacks_screen.dart';
 import 'orders/all_orders_screen.dart';
 import 'orders/paid_orders_screen.dart';
 
-GlobalKey coachMarkKey = GlobalObjectKey("coachMarkKey");
+GlobalKey shoppingCartKey = GlobalObjectKey("shoppingCartKey");
+GlobalKey upcomingOrdersKey = GlobalObjectKey("upcomingOrdersKey");
 
 class MainPage extends StatefulWidget {
   MainPage({Key? key, this.title}) : super(key: key);
@@ -90,6 +93,8 @@ class _MainPageState extends State<MainPage>
     if (!forceRefresh) setHomeScreenControllerView(this);
     await loadHomeScreenController();
 
+    checkForUpdate();
+
     if ((homeScreenController.shouldLoadAgainAfterTimer ?? false)) _loadAgain();
   }
 
@@ -97,6 +102,67 @@ class _MainPageState extends State<MainPage>
     if (adminPanelNames.isEmpty &&
         (homeScreenController.feedbackReceiversList?.isNotEmpty ?? false))
       _buildAdminPanelWidgets();
+  }
+
+  void checkForUpdate() {
+    List<String> versionSplitAtPlus =
+        homeScreenController.version?.split('+') ?? [];
+    List<String> versionSplitAtDot = versionSplitAtPlus[0].split('.');
+    String currentVersion = versionSplitAtDot[0] +
+        versionSplitAtDot[1] +
+        versionSplitAtDot[2] +
+        versionSplitAtPlus[1];
+
+    if (homeScreenController.forceUpdate ?? false) {
+      if (Theme.of(context).platform == TargetPlatform.iOS) {
+        List<String> iosVersionSplitAtPlus =
+            homeScreenController.iosAppVersion?.split('+') ?? [];
+        List<String> iosVersionSplitAtDot = iosVersionSplitAtPlus[0].split('.');
+        String consoleString = iosVersionSplitAtDot[0] +
+            iosVersionSplitAtDot[1] +
+            iosVersionSplitAtDot[2] +
+            iosVersionSplitAtPlus[1];
+        if (num.parse(consoleString) > num.parse(currentVersion))
+          showUpdateBottomSheet(
+            Localization.of(context, 'newer_version_available'),
+          );
+      } else {
+        List<String> androidVersionSplitAtPlus =
+            homeScreenController.androidAppVersion?.split('+') ?? [];
+        List<String> androidVersionSplitAtDot =
+        androidVersionSplitAtPlus[0].split('.');
+        String consoleString = androidVersionSplitAtDot[0] +
+            androidVersionSplitAtDot[1] +
+            androidVersionSplitAtDot[2] +
+            androidVersionSplitAtPlus[1];
+        if (num.parse(consoleString) > num.parse(currentVersion))
+          showUpdateBottomSheet(
+            Localization.of(context, 'newer_version_available'),
+          );
+      }
+    }
+  }
+
+  void showUpdateBottomSheet(String error) async {
+    if (!mounted) return;
+    await showActionBottomSheet(
+      context: context,
+      status: OperationStatus.error,
+      message: error,
+      popOnPress: true,
+      dismissOnTouchOutside: false,
+      buttonMessage: Localization.of(context, 'update_app'),
+      onPressed: () {
+        updateApp();
+      },
+    );
+  }
+
+  void updateApp() async {
+    StoreRedirect.redirect(
+      androidAppId: homeScreenController.androidAppId,
+      iOSAppId: homeScreenController.iOSAppId,
+    );
   }
 
   @override
