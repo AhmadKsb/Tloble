@@ -151,23 +151,37 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                     ),
                     child: Column(
                       children: [
+                        if (_order.sentByEmployee ?? false)
                         Row(
                           children: [
+                              Text(
+                                "Sent by employee: ",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1),
+                              ),
                             Text(
-                              "Accepted by: ",
+                              _order.employeeWhoSentTheOrder ?? "",
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1),
+                                fontSize: 16,
+                                letterSpacing: 1,
+                              ),
                             ),
+                          ],
+                        ),
+                        if (isNotEmpty(_order.acceptedBy))
+                        Row(
+                          children: [
+                              Text(
+                                "Accepted by: ",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1),
+                              ),
                             Text(
-                              widget.homeScreenController.employees
-                                      .firstWhere((emp) =>
-                                          emp.phoneNumber ==
-                                          FirebaseAuth.instance.currentUser
-                                              ?.phoneNumber)
-                                      .name ??
-                                  "",
+                              _order.acceptedBy!,
                               style: TextStyle(
                                 fontSize: 16,
                                 letterSpacing: 1,
@@ -1688,7 +1702,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
       context: context,
       isScrollControlled: true,
       dismissOnTouchOutside: closeOnTapOutside,
-      height: MediaQuery.of(context).size.height * 0.25,
+      height: MediaQuery.of(context).size.height *
+          (Theme.of(context).platform == TargetPlatform.iOS ? 0.27 : 0.3),
       upperWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -1731,7 +1746,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
               label: Localization.of(context, 'done'),
               // disabled: isLoading ?? false,
               onPressed: () async {
-                 Navigator.of(context).pop();
+                Navigator.of(context).pop();
                 if (onTap != null) onTap();
                 if (shouldSetState) setState(() {});
               },

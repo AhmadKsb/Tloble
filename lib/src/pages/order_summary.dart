@@ -165,56 +165,29 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                       disabled: _isSubmittingOrder || _isLoadingLogin,
                       isLoading: _isSubmittingOrder || _isLoadingLogin,
                       onPressed: () async {
-                        if (!(widget.homeScreenController.isBanned ?? true)) {
-                          bool isRoot = await checkIfSuperUser();
-                          if ((widget.homeScreenController.checkForRoot ??
-                                  true) &&
-                              isRoot) {
-                            await showActionBottomSheet(
-                              context: context,
-                              status: OperationStatus.error,
-                              message: replaceVariable(
-                                Localization.of(
-                                  context,
-                                  'jailbreak_info',
-                                ),
-                                'value',
-                                widget.homeScreenController.contactUsNumber ??
-                                    "",
-                              ),
-                              popOnPress: true,
-                              dismissOnTouchOutside: false,
-                              buttonMessage: Localization.of(context, 'ok'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            );
-                            return;
-                          } else {
-                            await showConfirmationBottomSheet(
-                              context: context,
-                              // flare: 'assets/flare/pending.flr',
-                              title: Localization.of(
-                                context,
-                                'are_you_sure_you_want_to_submit_this_request',
-                              ),
-                              message: ((Localizations.localeOf(context)
-                                              .languageCode ==
-                                          'ar')
-                                      ? widget
-                                          .homeScreenController.submissionTextAR
-                                      : widget
-                                          .homeScreenController.submissionText)
-                                  ?.replaceAll(r'\n', '\n')
-                                  .replaceAll(r"\'", "\'"),
-                              confirmMessage:
-                                  Localization.of(context, 'confirm'),
-                              confirmAction: () async {
-                                await confirmAction();
-                              },
-                              cancelMessage: Localization.of(context, 'cancel'),
-                            );
-                          }
+                        if (!(widget.homeScreenController.isBanned ?? false)) {
+                          await showConfirmationBottomSheet(
+                            context: context,
+                            // flare: 'assets/flare/pending.flr',
+                            title: Localization.of(
+                              context,
+                              'are_you_sure_you_want_to_submit_this_request',
+                            ),
+                            message: ((Localizations.localeOf(context)
+                                            .languageCode ==
+                                        'ar')
+                                    ? widget
+                                        .homeScreenController.submissionTextAR
+                                    : widget
+                                        .homeScreenController.submissionText)
+                                ?.replaceAll(r'\n', '\n')
+                                .replaceAll(r"\'", "\'"),
+                            confirmMessage: Localization.of(context, 'confirm'),
+                            confirmAction: () async {
+                              await confirmAction();
+                            },
+                            cancelMessage: Localization.of(context, 'cancel'),
+                          );
                         } else {
                           await showActionBottomSheet(
                             context: context,
@@ -904,9 +877,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                   element.phoneNumber ==
                                   FirebaseAuth
                                       .instance.currentUser?.phoneNumber,
-                              orElse: () => Employee(name: "unknownnnn"))
+                              orElse: () => Employee(name: null))
                           .name !=
-                      "unknownnnn"),
+                      null),
                   notificationToken: notificationToken,
                   acceptedTime: '',
                   referenceID: referenceID,
@@ -960,9 +933,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                   element.phoneNumber ==
                                   FirebaseAuth
                                       .instance.currentUser?.phoneNumber,
-                              orElse: () => Employee(name: "unknownnnn"))
+                              orElse: () => Employee(name: null))
                           .name !=
-                      "unknownnnn"),
+                      null),
                   notificationToken: notificationToken,
                   acceptedTime: '',
                   referenceID: referenceID,
@@ -1015,9 +988,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                   element.phoneNumber ==
                                   FirebaseAuth
                                       .instance.currentUser?.phoneNumber,
-                              orElse: () => Employee(name: "unknownnnn"))
+                              orElse: () => Employee(name: null))
                           .name !=
-                      "unknownnnn"),
+                      null),
                   notificationToken: notificationToken,
                   acceptedTime: '',
                   referenceID: referenceID,

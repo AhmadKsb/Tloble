@@ -102,7 +102,7 @@ class Order implements Comparable<Order> {
       referenceID: num.tryParse(json['referenceID'].toString()),
       sentTime: json['sentTime'],
       acceptedTime: json['acceptedTime'],
-      sentByEmployee: false,
+      sentByEmployee: json['sentByEmployee'],
       coins: num.tryParse((json['coins'] ?? "0").toString()),
       shipmentStatus: json['shipmentStatus'] != null
           ? [
