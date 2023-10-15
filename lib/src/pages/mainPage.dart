@@ -1145,7 +1145,7 @@ class _MainPageState extends State<MainPage>
         backgroundColor: Colors.transparent,
         state: AppState(
           pageState: homeScreenControllerState,
-          onRetry: _load,
+          onRetry: _loadController,
         ),
         builder: (context) => Stack(
           fit: StackFit.expand,

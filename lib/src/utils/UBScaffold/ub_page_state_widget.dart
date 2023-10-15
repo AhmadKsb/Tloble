@@ -39,7 +39,9 @@ class UBPageStateWidget extends StatelessWidget {
       case PageState.error:
         pageBody = ErrorSwitcher(
           message: Localization.of(context, 'network_error'),
-          onRetry: () => onRetry,
+          onRetry: () {
+            if (onRetry != null) onRetry!();
+          },
           error: error,
         );
         break;
