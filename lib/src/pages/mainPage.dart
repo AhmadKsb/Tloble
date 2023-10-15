@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
@@ -18,6 +19,7 @@ import 'package:flutter_ecommerce_app/src/themes/theme.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
 import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
+import 'package:flutter_ecommerce_app/src/utils/string_helper_extension.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/BottomNavigationBar/bottom_navigation_bar.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
@@ -28,10 +30,13 @@ import 'package:store_redirect/store_redirect.dart';
 import 'package:vibration/vibration.dart';
 
 import '../../main.dart';
+import '../firebase_notification.dart';
+import '../models/customer.dart';
 import '../utils/BottomSheets/operation_status.dart';
 import 'BottomSheets/add_employee_bottomsheet.dart';
 import 'BottomSheets/send_notification_bottomsheet.dart';
 import 'BottomSheets/ban_user_bottomsheet.dart';
+import 'authentication/login.dart';
 import 'check_customers_order.dart';
 import 'contact_us/contact_us_screen.dart';
 import 'customer_history_screen.dart';
@@ -62,6 +67,7 @@ class _MainPageState extends State<MainPage>
   late SharedPreferences prefss;
   List<String> adminPanelNames = [];
   Timer? _loadTimer;
+  bool _isLoadingLogin = false;
 
   void initState() {
     super.initState();
@@ -130,7 +136,7 @@ class _MainPageState extends State<MainPage>
         List<String> androidVersionSplitAtPlus =
             homeScreenController.androidAppVersion?.split('+') ?? [];
         List<String> androidVersionSplitAtDot =
-        androidVersionSplitAtPlus[0].split('.');
+            androidVersionSplitAtPlus[0].split('.');
         String consoleString = androidVersionSplitAtDot[0] +
             androidVersionSplitAtDot[1] +
             androidVersionSplitAtDot[2] +
@@ -736,29 +742,121 @@ class _MainPageState extends State<MainPage>
             ),
 
             /// TODO, to add back we have to fix GET CUSTOMER (order customerName coming null)
-            // if (phoneNumberIsNull)
-            //   Padding(
-            //     padding: EdgeInsetsDirectional.only(end: 6),
-            //     child: ListTile(
-            //       title: Text(
-            //         Localization.of(context, 'login'),
-            //         style: TextStyle(fontWeight: FontWeight.w400),
-            //       ),
-            //       onTap: () async {
-            //         bool didLogin = await Navigator.of(context).push(
-            //           MaterialPageRoute(
-            //             builder: (context) =>
-            //                 FirebaseNotification(child: LoginPage()),
-            //           ),
-            //         );
-            //         if (didLogin ?? false) {
-            //           await Navigator.of(context).pop();
-            //           setState(() {});
-            //           showSuccessBottomsheet();
-            //         }
-            //       },
-            //     ),
-            //   ),
+            if (phoneNumberIsNull)
+              Padding(
+                padding: EdgeInsetsDirectional.only(end: 6),
+                child: ListTile(
+                  title: _isLoadingLogin
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            backgroundColor: Colors.white,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              LightColor.orange,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          Localization.of(context, 'login'),
+                          style: TextStyle(fontWeight: FontWeight.w400),
+                        ),
+                  onTap: () async {
+                     Navigator.of(context).pop();
+                    var customerNamee = await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            FirebaseNotification(child: LoginPage()),
+                      ),
+                    );
+                    try {
+                      Customer customer;
+                      setState(() {
+                        _isLoadingLogin = true;
+                      });
+
+                      if (isNotEmpty(customerNamee)) {
+                        await Navigator.of(context).pop;
+                        await Navigator.of(context).pop;
+
+                        notificationToken =
+                            await FirebaseMessaging.instance.getToken();
+                        var result = await FirebaseFirestore.instance
+                            .collection('Customers')
+                            .doc(FirebaseAuth
+                                    .instance.currentUser?.phoneNumber ??
+                                '')
+                            .snapshots()
+                            .first;
+                        if (result.data() == null) {
+                          var newCustomer = Customer(
+                            name: customerNamee.toString().capitalize,
+                            phoneNumber: FirebaseAuth
+                                    .instance.currentUser?.phoneNumber ??
+                                '',
+                            notificationToken: notificationToken,
+                            coins: 0,
+                          );
+
+                          customer = newCustomer;
+                          homeScreenController.customer = newCustomer;
+
+                          await FirebaseFirestore.instance
+                              .collection('Customers')
+                              .doc(FirebaseAuth
+                                      .instance.currentUser?.phoneNumber ??
+                                  '')
+                              .set(newCustomer.toJson());
+                        } else {
+                          customer = Customer.fromJson(
+                              result.data() as Map<dynamic, dynamic>);
+                          customer = Customer(
+                            name: customerNamee.toString().capitalize,
+                            phoneNumber: customer.phoneNumber,
+                            notificationToken: notificationToken,
+                            coins: customer.coins ?? 0,
+                          );
+
+                          homeScreenController.customer = Customer(
+                            name: customerNamee.toString().capitalize,
+                            phoneNumber: customer.phoneNumber,
+                            notificationToken: notificationToken,
+                            coins: customer.coins ?? 0,
+                          );
+
+                          await FirebaseFirestore.instance
+                              .collection('Customers')
+                              .doc(customer.phoneNumber)
+                              .set(Customer(
+                                name: customerNamee.toString().capitalize,
+                                phoneNumber: customer.phoneNumber,
+                                notificationToken: notificationToken,
+                                coins: customer.coins ?? 0,
+                              ).toJson());
+                        }
+
+                        showLoginSuccessBottomsheet(
+                          Localization.of(context, "login_successful"),
+                          closeOnTapOutside: false,
+                          shouldSetState: false,
+                          onTap: () async {
+                            // Navigator.of(context).pop();
+                          },
+                        );
+                      } else {
+                        setState(() {
+                          _isLoadingLogin = false;
+                        });
+                      }
+                    } catch (e) {
+                      print("error submitting order ${e.toString()}");
+                      setState(() {
+                        _isLoadingLogin = false;
+                      });
+                    }
+                  },
+                ),
+              ),
 
             if (homeScreenController.employees
                     .firstWhere(
@@ -1211,6 +1309,79 @@ class _MainPageState extends State<MainPage>
                 ),
               ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void showLoginSuccessBottomsheet(
+    String message, {
+    bool closeOnTapOutside = true,
+    Function? onTap,
+    bool shouldSetState = true,
+    bool shouldPop = true,
+  }) async {
+    if (!mounted) return;
+    String animResource;
+    animResource = 'assets/flare/success.flr';
+    // setState(() {
+    Vibration.vibrate();
+    // });
+
+    await showBottomsheet(
+      context: context,
+      isScrollControlled: true,
+      dismissOnTouchOutside: closeOnTapOutside,
+      height: MediaQuery.of(context).size.height *
+          (Theme.of(context).platform == TargetPlatform.iOS ? 0.27 : 0.3),
+      upperWidget: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Center(
+            child: Container(
+              width: 100,
+              height: 80,
+              child: FlareActor(
+                animResource,
+                animation: 'animate',
+                fit: BoxFit.fitWidth,
+              ),
+            ),
+          ),
+          Center(
+            child: Container(
+              width: MediaQuery.of(context).size.width / 1.5,
+              child: Center(
+                child: Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 16),
+        ],
+      ),
+      bottomWidget: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 18),
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 24),
+            child: RaisedButtonV2(
+              label: Localization.of(context, 'done'),
+              // disabled: isLoading ?? false,
+              onPressed: () async {
+                if (shouldPop) Navigator.of(context).pop();
+                if (onTap != null) onTap();
+                if (shouldSetState) setState(() {});
+              },
+            ),
+          ),
         ),
       ),
     );

@@ -248,8 +248,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                         ),
                         child: RaisedButtonV2(
                           disabled:
-                              _isLoading || isNotEmpty(_order.acceptedTime),
-                          // _isLoading,
+                              // _isLoading || isNotEmpty(_order.acceptedTime),
+                          _isLoading,
                           isLoading: _isLoading,
                           onPressed: () async {
                             await showConfirmationBottomSheet(
@@ -853,7 +853,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
   void openWhatsapp() async {
     try {
       bool? isEnglish = _order.customerName?.contains(RegExp(r'[a-zA-Z]'));
-      if (isEnglish ?? false) {
+      // if (isEnglish ?? false) {
+      if (false) {
         String text =
             "Welcome%20to%20Tloble%21%20We%27re%20thrilled%20to%20have%20you%20as%20our%20valued%20customer.%20Our%20goal%20is%20to%20provide%20you%20with%20a%20seamless%20and%20enjoyable%20experience.%0ALet%20us%20first%20confirm%20your%20order.%0A";
         text +=
@@ -871,6 +872,9 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
         String text =
             "مرحبا%20بكم%20في%20Tloble%21%20نحن%20سعداء%20أن%20يكون%20لك%20كما%20عملائنا%20الكرام.%20هدفنا%20هو%20أن%20نقدم%20لك%20تجربة%20سلسة%20وممتعة.%0Aدعونا%20أولا%20تأكيد%20طلبك.";
 
+        String encodedText = Uri.encodeComponent(text);
+
+
         // for (int index = 0; index < _order.productsTitles.length; index++) {
         //   text += """
 // ${isEmpty(_order.productsTitles[index]) || (_order.productsTitles[index].toString().toLowerCase() == "product") ? "*المنتج*%20" : "*" + Uri.encodeComponent(_order.productsTitles[index]) + "*"}
@@ -886,7 +890,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
 
         launch(
           // 'https://wa.me/${widget.order?.phoneNumber}?text=مرحبًا، لقد تلقينا طلبك ${(widget.order.action.toLowerCase() == 'buy') ? Localization.of(context, 'for_buy_ar').toLowerCase() : Localization.of(context, 'for_sell_ar').toLowerCase()} بقيمة \$ ${widget.order.amount}.'),
-          'https://wa.me/${_order.orderSenderPhoneNumber}?text=$text',
+          'https://wa.me/${_order.orderSenderPhoneNumber}?text=$encodedText',
         );
       }
     } catch (e) {

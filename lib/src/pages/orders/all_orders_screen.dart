@@ -412,7 +412,11 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                             .currentUser?.phoneNumber ??
                                         "",
                                     shouldRefresh: (shouldRefrsh) {
-                                      if (shouldRefrsh) _load();
+                                      if (shouldRefrsh)
+                                        _load(
+                                          selectedDateFormatted: dateSelected,
+                                          selectedDate: selectedDateAsString,
+                                        );
                                     },
                                   );
                                 },
