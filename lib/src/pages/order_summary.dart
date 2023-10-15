@@ -26,6 +26,7 @@ import 'package:flutter_ecommerce_app/src/utils/string_helper_extension.dart';
 
 import '../firebase_notification.dart';
 import '../models/employee.dart';
+import '../utils/UBScaffold/ub_scaffold.dart';
 import 'authentication/login.dart';
 import 'mainPage.dart';
 import 'package:http/http.dart' as http;
@@ -116,127 +117,149 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(top: 68),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color(0xfffbfbfb),
-                  Color(0xfff7f7f7),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+      body: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return <Widget>[
+            SliverAppBar(
+              pinned: true,
+              toolbarHeight: 40.0,
+              expandedHeight: 40.0,
+              backgroundColor: Color(0xfffbfbfb),
+              iconTheme: IconThemeData(color: Colors.black54),
+              leading: Padding(
+                padding: const EdgeInsetsDirectional.only(
+                  start: 12,
+                  bottom: 12,
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back_ios_new),
+                  onPressed: () {
+                    if (_isSubmittingOrder || _isLoadingLogin)
+                      return;
+                    else {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
               ),
             ),
-            child: SingleChildScrollView(
-              // Wrap the content in a SingleChildScrollView
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _appBar(),
-                  _title(),
-                  _buildProducts(),
-                  if ((widget.homeScreenController.employees
-                          .firstWhere(
-                              (element) =>
-                                  element.phoneNumber ==
-                                  FirebaseAuth
-                                      .instance.currentUser?.phoneNumber,
-                              orElse: () => Employee(name: null))
-                          .name !=
-                      null))
-                    Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 16,
-                      ),
-                      child: _buildUserPhoneNumber(),
-                    ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 62,
-                      vertical: 16,
-                    ),
-                    child: RaisedButtonV2(
-                      disabled: _isSubmittingOrder || _isLoadingLogin,
-                      isLoading: _isSubmittingOrder || _isLoadingLogin,
-                      onPressed: () async {
-                        if (!(widget.homeScreenController.isBanned ?? false)) {
-                          await showConfirmationBottomSheet(
-                            context: context,
-                            // flare: 'assets/flare/pending.flr',
-                            title: Localization.of(
-                              context,
-                              'are_you_sure_you_want_to_submit_this_request',
-                            ),
-                            message: ((Localizations.localeOf(context)
-                                            .languageCode ==
-                                        'ar')
-                                    ? widget
-                                        .homeScreenController.submissionTextAR
-                                    : widget
-                                        .homeScreenController.submissionText)
-                                ?.replaceAll(r'\n', '\n')
-                                .replaceAll(r"\'", "\'"),
-                            confirmMessage: Localization.of(context, 'confirm'),
-                            confirmAction: () async {
-                              await confirmAction();
-                            },
-                            cancelMessage: Localization.of(context, 'cancel'),
-                          );
-                        } else {
-                          await showActionBottomSheet(
-                            context: context,
-                            status: OperationStatus.error,
-                            message: replaceVariable(
-                              Localization.of(
-                                context,
-                                'banned_disclaimer',
-                              ),
-                              'value',
-                              widget.homeScreenController.contactUsNumber ?? "",
-                            ),
-                            popOnPress: true,
-                            dismissOnTouchOutside: false,
-                            buttonMessage: Localization.of(
-                              context,
-                              'ok',
-                            ).toUpperCase(),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          );
-                          return;
-                        }
-                        // }
-                      },
-                      label: Localization.of(context, 'submit'),
-                    ),
-                  ),
-                  if (!(widget.homeScreenController.hideDisclaimer ?? true))
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16.0, right: 16.0, top: 16, bottom: 48),
-                      child: Text(
-                        ((Localizations.localeOf(context).languageCode == 'ar')
-                                ? widget.homeScreenController
-                                    .orderSummaryDisclaimerAR
-                                : widget.homeScreenController
-                                    .orderSummaryDisclaimer) ??
-                            "",
-                        style: TextStyle(
-                            fontSize: 12, color: Colors.black.withOpacity(0.6)),
-                      ),
-                    ),
-                ],
-              ),
+          ];
+        },
+        body: Container(
+          margin: EdgeInsets.only(top: 32),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xfffbfbfb),
+                Color(0xfff7f7f7),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
-        ],
+          child: SingleChildScrollView(
+            // Wrap the content in a SingleChildScrollView
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                // _appBar(),
+                _title(),
+                _buildProducts(),
+                if ((widget.homeScreenController.employees
+                        .firstWhere(
+                            (element) =>
+                                element.phoneNumber ==
+                                FirebaseAuth.instance.currentUser?.phoneNumber,
+                            orElse: () => Employee(name: null))
+                        .name !=
+                    null))
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 16,
+                    ),
+                    child: _buildUserPhoneNumber(),
+                  ),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 62,
+                    right: 62,
+                    top: 16,
+                    bottom: 64,
+                  ),
+                  child: RaisedButtonV2(
+                    disabled: _isSubmittingOrder || _isLoadingLogin,
+                    isLoading: _isSubmittingOrder || _isLoadingLogin,
+                    onPressed: () async {
+                      if (!(widget.homeScreenController.isBanned ?? false)) {
+                        await showConfirmationBottomSheet(
+                          context: context,
+                          // flare: 'assets/flare/pending.flr',
+                          title: Localization.of(
+                            context,
+                            'are_you_sure_you_want_to_submit_this_request',
+                          ),
+                          message: ((Localizations.localeOf(context)
+                                          .languageCode ==
+                                      'ar')
+                                  ? widget.homeScreenController.submissionTextAR
+                                  : widget.homeScreenController.submissionText)
+                              ?.replaceAll(r'\n', '\n')
+                              .replaceAll(r"\'", "\'"),
+                          confirmMessage: Localization.of(context, 'confirm'),
+                          confirmAction: () async {
+                            await confirmAction();
+                          },
+                          cancelMessage: Localization.of(context, 'cancel'),
+                        );
+                      } else {
+                        await showActionBottomSheet(
+                          context: context,
+                          status: OperationStatus.error,
+                          message: replaceVariable(
+                            Localization.of(
+                              context,
+                              'banned_disclaimer',
+                            ),
+                            'value',
+                            widget.homeScreenController.contactUsNumber ?? "",
+                          ),
+                          popOnPress: true,
+                          dismissOnTouchOutside: false,
+                          buttonMessage: Localization.of(
+                            context,
+                            'ok',
+                          ).toUpperCase(),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        );
+                        return;
+                      }
+                      // }
+                    },
+                    label: Localization.of(context, 'submit'),
+                  ),
+                ),
+                if (!(widget.homeScreenController.hideDisclaimer ?? true))
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16.0, right: 16.0, top: 16, bottom: 48),
+                    child: Text(
+                      ((Localizations.localeOf(context).languageCode == 'ar')
+                              ? widget
+                                  .homeScreenController.orderSummaryDisclaimerAR
+                              : widget.homeScreenController
+                                  .orderSummaryDisclaimer) ??
+                          "",
+                      style: TextStyle(
+                          fontSize: 12, color: Colors.black.withOpacity(0.6)),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1098,7 +1121,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
 
   Widget _title() {
     return Container(
-        margin: AppTheme.padding,
+        margin: EdgeInsets.only(left: 20, right: 30, bottom: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[

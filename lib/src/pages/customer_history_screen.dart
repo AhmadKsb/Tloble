@@ -328,7 +328,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
 
   Widget _title() {
     return Container(
-        margin: AppTheme.padding,
+        margin: EdgeInsets.only(left: 20, right: 20, bottom: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -415,8 +415,8 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                     top: 16.0, start: 12), // Adjust the padding as needed
                 sliver: SliverAppBar(
                   pinned: true,
-                  toolbarHeight: _isScrolled ? 30.0 : 0.0,
-                  expandedHeight: _isScrolled ? 30.0 : 0.0,
+                  toolbarHeight: 30.0,
+                  expandedHeight: 30.0,
                   backgroundColor: Color(0xfffbfbfb),
                   iconTheme: IconThemeData(color: Colors.black54),
                 ),
@@ -441,7 +441,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  _appBar(),
+                  // _appBar(),
                   _title(),
                   Container(
                     padding: AppTheme.padding,

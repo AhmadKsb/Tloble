@@ -107,8 +107,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
       var newFeedbacks = (data[0] as QuerySnapshot).docs;
 
       if (newFeedbacks.isNotEmpty) {
-        if ((feedbacks.length) == (newFeedbacks.length))
-          canLoadMore = false;
+        if ((feedbacks.length) == (newFeedbacks.length)) canLoadMore = false;
         feedbacks = newFeedbacks;
         if (newFeedbacks.length % _limit != 0) canLoadMore = false;
       } else {
@@ -202,97 +201,126 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          UBScaffold(
-            backgroundColor: Colors.transparent,
-            state: AppState(
-              pageState: _state,
-              onRetry: _load,
-            ),
-            builder: (context) => Container(
-              margin: EdgeInsets.only(top: 68),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xfffbfbfb),
-                    Color(0xfff7f7f7),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+      body: UBScaffold(
+        state: AppState(
+          pageState: _state,
+          onRetry: _load,
+        ),
+        backgroundColor: Colors.transparent,
+        builder: (context) => NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                pinned: true,
+                toolbarHeight: 50.0,
+                expandedHeight: 50.0,
+                backgroundColor: Color(0xfffbfbfb),
+                iconTheme: IconThemeData(color: Colors.black54),
+                leadingWidth: MediaQuery.of(context).size.width,
+                leading: SizedBox(),
+                flexibleSpace: SafeArea(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        RotatedBox(
+                          quarterTurns:
+                              (Localizations.localeOf(context).languageCode ==
+                                      'ar')
+                                  ? 2
+                                  : 4,
+                          child: _icon(Icons.arrow_back_ios_new,
+                              color: Colors.black54),
+                        ),
+                        SizedBox.shrink(),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _appBar(),
-                    _title(),
-                    feedbacks.isEmpty
-                        ? Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: NoData(
-                              Localization.of(
-                                  context, 'you_dont_have_any_feedbacks_yet'),
-                            ),
-                          )
-                        : Padding(
-                            padding: EdgeInsets.only(top: 32),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 4),
-                                  child: Center(
-                                    child: CustomScrollView(
-                                      shrinkWrap: true,
-                                      controller: _scrollController,
-                                      slivers: <Widget>[
-                                        SliverList(
-                                          delegate: SliverChildBuilderDelegate(
-                                            (context, index) =>
-                                                FeedbackListTile(
-                                              feedback:
-                                                  Feedback.Feedback.fromJson(
-                                                feedbacks[index].data()
-                                                    as Map<dynamic, dynamic>,
-                                              ),
-                                              prefs: prefs!,
-                                              controller: widget.controller!,
-                                              isLastRow:
-                                                  index == feedbacks.length - 1,
-                                              shouldRefresh: (shouldRefrsh) {
-                                                if (shouldRefrsh) _load();
-                                              },
+            ];
+          },
+          body: Container(
+            margin: EdgeInsets.only(top: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xfffbfbfb),
+                  Color(0xfff7f7f7),
+                ],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  // _appBar(),
+                  _title(),
+                  feedbacks.isEmpty
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: NoData(
+                            Localization.of(
+                                context, 'you_dont_have_any_feedbacks_yet'),
+                          ),
+                        )
+                      : Padding(
+                          padding: EdgeInsets.only(top: 32),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 4),
+                                child: Center(
+                                  child: CustomScrollView(
+                                    shrinkWrap: true,
+                                    controller: _scrollController,
+                                    slivers: <Widget>[
+                                      SliverList(
+                                        delegate: SliverChildBuilderDelegate(
+                                          (context, index) => FeedbackListTile(
+                                            feedback:
+                                                Feedback.Feedback.fromJson(
+                                              feedbacks[index].data()
+                                                  as Map<dynamic, dynamic>,
                                             ),
-                                            childCount: feedbacks.length,
+                                            prefs: prefs!,
+                                            controller: widget.controller!,
+                                            isLastRow:
+                                                index == feedbacks.length - 1,
+                                            shouldRefresh: (shouldRefrsh) {
+                                              if (shouldRefrsh) _load();
+                                            },
                                           ),
+                                          childCount: feedbacks.length,
                                         ),
-                                        SliverToBoxAdapter(
-                                          child: isLoadingMore
-                                              ? Padding(
-                                                  padding: EdgeInsets.all(16.0),
-                                                  child: Center(
-                                                    child:
-                                                        CircularProgressIndicator(),
-                                                  ),
-                                                )
-                                              : SizedBox.shrink(),
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                      SliverToBoxAdapter(
+                                        child: isLoadingMore
+                                            ? Padding(
+                                                padding: EdgeInsets.all(16.0),
+                                                child: Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                              )
+                                            : SizedBox.shrink(),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                  ],
-                ),
+                        ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

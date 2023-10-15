@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -56,27 +58,51 @@ class _MainPageState extends State<MainPage>
   var scaffoldKey = GlobalKey<ScaffoldState>();
   late SharedPreferences prefss;
   List<String> adminPanelNames = [];
+  Timer? _loadTimer;
 
   void initState() {
     super.initState();
     _loadController();
-    // homeScreenController = HomeScreenController(
-    //   {},
-    //   null,
-    //   {},
-    // );
-    // homeScreenController.setView(this);
   }
 
-  Future<void> _loadController() async {
-    setHomeScreenControllerView(this);
+  Future<void> _loadAgain() async {
+    _loadTimer = Timer(
+        Duration(
+            minutes: int.tryParse(
+                homeScreenController.loadUpdateDuration.toString())!),
+        () async {
+      try {
+        cancelLoadTimer();
+        await _loadController(forceRefresh: true);
+      } catch (e) {
+        cancelLoadTimer();
+        await _loadController(forceRefresh: true);
+        print("Error ${e.toString()}");
+      }
+    });
+  }
+
+  void cancelLoadTimer() {
+    _loadTimer?.cancel();
+  }
+
+  Future<void> _loadController({bool forceRefresh = false}) async {
+    if (!forceRefresh) setHomeScreenControllerView(this);
     await loadHomeScreenController();
+
+    if ((homeScreenController.shouldLoadAgainAfterTimer ?? false)) _loadAgain();
   }
 
   Future<void> _load() async {
     if (adminPanelNames.isEmpty &&
         (homeScreenController.feedbackReceiversList?.isNotEmpty ?? false))
       _buildAdminPanelWidgets();
+  }
+
+  @override
+  void dispose() {
+    _loadTimer?.cancel();
+    super.dispose();
   }
 
   Widget _appBar() {
@@ -490,7 +516,6 @@ class _MainPageState extends State<MainPage>
                 }
                 newEmployeesList
                     .removeWhere((element) => element == driver.phoneNumber);
-
 
                 await Future.wait([
                   FirebaseFirestore.instance

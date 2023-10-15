@@ -47,17 +47,15 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
       secondaryActions: <Widget>[
         SlideAction(
           color: LightColor.lightGrey.withAlpha(75),
-          child: Padding(
-            padding: EdgeInsets.only(top: 28.0),
-            child: Column(
-              children: <Widget>[
-                Icon(
-                  Icons.delete_outline,
-                  color: Colors.red,
-                  size: 24,
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                Icons.delete_outline,
+                color: Colors.red,
+                size: 24,
+              ),
+            ],
           ),
           onTap: () async {
             await showConfirmationBottomSheet(

@@ -204,100 +204,115 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          UBScaffold(
-            state: AppState(
-              pageState: _state,
-              onRetry: _load,
-            ),
-            backgroundColor: Colors.transparent,
-            builder: (context) => Container(
-              margin: EdgeInsets.only(top: 68),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Color(0xfffbfbfb),
-                    Color(0xfff7f7f7),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      _appBar(),
-                      _title(),
-                      orders.isEmpty
-                          ? Container(
-                              height: MediaQuery.of(context).size.height / 2,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: NoData(
-                                  Localization.of(context, 'no_paid_orders'),
-                                ),
-                              ),
-                            )
-                          : Column(
-                              children: [
-                                if (_controller?.isAdmin ?? false)
-                                  Padding(
-                                    padding: EdgeInsets.only(bottom: 16),
-                                    child: Text(
-                                      replaceVariable(
-                                            Localization.of(
-                                              context,
-                                              'total_orders',
-                                            ),
-                                            'value',
-                                            "${orders.length}",
-                                          ) ??
-                                          "",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ListView.builder(
-                                  padding: EdgeInsets.zero,
-                                  shrinkWrap: true,
-                                  physics:
-                                      NeverScrollableScrollPhysics(), // Disable inner ListView scrolling
-
-                                  itemCount: orders.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return OrdersListTile(
-                                      order: Order.fromJson(orders[index].data()
-                                          as Map<dynamic, dynamic>),
-                                      controller: _controller,
-                                      isLastRow: index == orders.length - 1,
-                                      selectedPhoneNumber: _firebaseAuth
-                                              .currentUser?.phoneNumber ??
-                                          "",
-                                      shouldRefresh: (shouldRefrsh) {
-                                        if (shouldRefrsh) _load();
-                                      },
-                                    );
-                                  },
-                                ),
-                                if (orders.isNotEmpty) SizedBox(height: 64),
-                              ],
-                            ),
-                    ],
+      body: UBScaffold(
+        state: AppState(
+          pageState: _state,
+          onRetry: _load,
+        ),
+        backgroundColor: Colors.transparent,
+        builder: (context) => NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              SliverAppBar(
+                pinned: true,
+                toolbarHeight: 50.0,
+                expandedHeight: 50.0,
+                backgroundColor: Color(0xfffbfbfb),
+                iconTheme: IconThemeData(color: Colors.black54),
+                leadingWidth: MediaQuery.of(context).size.width,
+                leading: SizedBox(),
+                flexibleSpace: SafeArea(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        RotatedBox(
+                          quarterTurns:
+                              (Localizations.localeOf(context).languageCode ==
+                                      'ar')
+                                  ? 2
+                                  : 4,
+                          child: _icon(Icons.arrow_back_ios_new,
+                              color: Colors.black54),
+                        ),
+                        SizedBox(),
+                      ],
+                    ),
                   ),
                 ),
               ),
+            ];
+          },
+          body: SingleChildScrollView(
+            child: Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  _title(),
+                  orders.isEmpty
+                      ? Container(
+                          height: MediaQuery.of(context).size.height / 2,
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: NoData(
+                              Localization.of(context, 'no_paid_orders'),
+                            ),
+                          ),
+                        )
+                      : Column(
+                          children: [
+                            if (_controller?.isAdmin ?? false)
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 16),
+                                child: Text(
+                                  replaceVariable(
+                                        Localization.of(
+                                          context,
+                                          'total_orders',
+                                        ),
+                                        'value',
+                                        "${orders.length}",
+                                      ) ??
+                                      "",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ListView.builder(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics:
+                                  NeverScrollableScrollPhysics(), // Disable inner ListView scrolling
+
+                              itemCount: orders.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return OrdersListTile(
+                                  order: Order.fromJson(orders[index].data()
+                                      as Map<dynamic, dynamic>),
+                                  controller: _controller,
+                                  isLastRow: index == orders.length - 1,
+                                  selectedPhoneNumber:
+                                      _firebaseAuth.currentUser?.phoneNumber ??
+                                          "",
+                                  shouldRefresh: (shouldRefrsh) {
+                                    if (shouldRefrsh) _load();
+                                  },
+                                );
+                              },
+                            ),
+                            if (orders.isNotEmpty) SizedBox(height: 64),
+                          ],
+                        ),
+                ],
+              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

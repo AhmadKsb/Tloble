@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -112,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage>
     }
 
     checkForUpdate();
+
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     // _buildCoachMarkCampaign(sharedPreferences);
   }

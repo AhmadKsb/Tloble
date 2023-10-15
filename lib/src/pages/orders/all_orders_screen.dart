@@ -50,18 +50,6 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
     super.initState();
     if (!mounted) return;
     _controller = widget.controller;
-    _scrollController = ScrollController();
-    _scrollController.addListener(() {
-      if (_scrollController.offset > 45) {
-        setState(() {
-          _isScrolled = true;
-        });
-      } else {
-        setState(() {
-          _isScrolled = false;
-        });
-      }
-    });
     _load();
   }
 
@@ -85,7 +73,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
       prefss = await SharedPreferences.getInstance();
       selectedDateAsString = selectedDate ??
           "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)}";
-      print(selectedDateAsString);
+
       List data = await Future.wait([
         FirebaseFirestore.instance
             .collection('Orders')
@@ -93,15 +81,8 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
             .collection(selectedDateAsString)
             .snapshots()
             .first
-        // .get()
-        // .collection("2023-10-07 at 08:34:28")
-        //     .snapshots()
-        //     .first,
       ]);
-      // print("OOO ${(data[0] as QuerySnapshot).docs}");
-      // print("OOO ${(data[0] as DocumentSnapshot).data()}");
       orders = (data[0] as QuerySnapshot).docs;
-      // print("OOO ${(data[0] as QuerySnapshot).docs}");
 
       orders.sort((a, b) => -(getDateTime(a.id)).compareTo(getDateTime(b.id)));
 
@@ -180,7 +161,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
 
   Widget _title() {
     return Container(
-        margin: AppTheme.padding,
+        margin: EdgeInsetsDirectional.only(start: 20, end: 20, bottom: 10),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
@@ -250,7 +231,6 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
     );
   }
 
-  ScrollController _scrollController = ScrollController();
   bool _isScrolled = false;
 
   @override
@@ -263,15 +243,48 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
         ),
         backgroundColor: Colors.transparent,
         builder: (context) => NestedScrollView(
-          controller: _scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverAppBar(
                 pinned: true,
-                toolbarHeight: _isScrolled ? 50.0 : 0.0,
-                expandedHeight: _isScrolled ? 50.0 : 0.0,
+                toolbarHeight: 50.0,
+                expandedHeight: 50.0,
                 backgroundColor: Color(0xfffbfbfb),
                 iconTheme: IconThemeData(color: Colors.black54),
+                leadingWidth: MediaQuery.of(context).size.width,
+                leading: SizedBox(),
+                flexibleSpace: SafeArea(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        RotatedBox(
+                          quarterTurns:
+                              (Localizations.localeOf(context).languageCode ==
+                                      'ar')
+                                  ? 2
+                                  : 4,
+                          child: _icon(Icons.arrow_back_ios_new,
+                              color: Colors.black54),
+                        ),
+                        Padding(
+                          padding: EdgeInsetsDirectional.only(end: 24),
+                          child: GestureDetector(
+                            onTap: () {
+                              _selectDate();
+                            },
+                            child: SvgPicture.asset(
+                              'assets/svgs/calendar.svg',
+                              width: 20,
+                              color: Colors.black54,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ];
           },
@@ -295,7 +308,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    _appBar(),
+                    // _appBar(),
                     _title(),
                     orders.isEmpty
                         ? Container(
@@ -310,7 +323,8 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                       ),
                                       'value',
                                       DateFormat(
-                                        prefss.getString("swiftShop_language") ==
+                                        prefss.getString(
+                                                    "swiftShop_language") ==
                                                 'ar'
                                             ? 'EEEE d MMMM yyyy'
                                             : 'EEEE MMMM d, yyyy',
@@ -420,8 +434,10 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
     if (balance == 0) {
       orders.forEach((element) {
         if (balance == null) balance = 0;
-        balance += Order.fromJson(element.data() as Map<dynamic, dynamic>).firstPayment! +
-            Order.fromJson(element.data() as Map<dynamic, dynamic>).secondPayment!;
+        balance += Order.fromJson(element.data() as Map<dynamic, dynamic>)
+                .firstPayment! +
+            Order.fromJson(element.data() as Map<dynamic, dynamic>)
+                .secondPayment!;
       });
     }
     return balance.toString();
