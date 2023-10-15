@@ -108,7 +108,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
             Expanded(
               child: ListTile(
                 title: TitleText(
-                  text: widget.homeScreenController!.productsTitles[index],
+                  text: widget.homeScreenController!.productsTitles[index].toString().toLowerCase() == "product" ? widget.homeScreenController!.productsLinks[index] : widget.homeScreenController!.productsTitles[index],
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                 ),

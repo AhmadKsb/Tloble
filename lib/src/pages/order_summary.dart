@@ -397,7 +397,14 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                     ? 100
                                     : 150,
                             child: Text(
-                              widget.homeScreenController.productsTitles[index],
+                              widget.homeScreenController.productsTitles[index]
+                                          .toString()
+                                          .toLowerCase() ==
+                                      "product"
+                                  ? widget.homeScreenController
+                                      .productsLinks[index]
+                                  : widget.homeScreenController
+                                      .productsTitles[index],
                               maxLines: 2,
                               style: TextStyle(
                                 fontWeight: FontWeight.w900,
@@ -825,6 +832,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                     (Route<dynamic> route) => false);
               },
             );
+          } else {
+            setState(() {
+              _isLoadingLogin = false;
+            });
           }
         } catch (e) {
           print("error submitting order ${e.toString()}");

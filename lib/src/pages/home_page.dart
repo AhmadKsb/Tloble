@@ -16,15 +16,12 @@ import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.da
 import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/keyboard_actions_form.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
-import 'package:flutter_ecommerce_app/src/utils/util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:store_redirect/store_redirect.dart';
 import 'package:http/http.dart' as http;
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:vibration/vibration.dart';
 // import 'package:highlighter_coachmark/highlighter_coachmark.dart';
 
-import '../widgets/title_text.dart';
 import 'mainPage.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -129,7 +126,6 @@ class _MyHomePageState extends State<MyHomePage>
     });
   }
 
-  /// Make mixin
   Future<void> _load() async {
     if (widget.homeScreenController == null) {
       await loadHomeScreenController();
@@ -137,8 +133,6 @@ class _MyHomePageState extends State<MyHomePage>
     } else {
       _controller = widget.homeScreenController!;
     }
-
-    // _buildCoachMarkCampaign(sharedPreferences);
   }
 
   GlobalKey keyButton = GlobalKey();
@@ -182,13 +176,7 @@ class _MyHomePageState extends State<MyHomePage>
         print('onClickOverlay: $target');
       },
       onSkip: () {
-        if (isEmpty(selectedTutorialElement)) {
-          tutorialCoachMark.goTo(1);
-          return false;
-        } else {
-          return true;
-        }
-        print("skip");
+        return true;
       },
     );
   }
@@ -629,7 +617,45 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> _loadIkea() async {
+    var url = _productLinkController.text;
 
+    print(url);
+
+    try {
+      image = null;
+      imageLink = null;
+      price = null;
+      itemDescription = null;
+      var screen = await http.get(Uri.parse(url), headers: {
+        "Content-Language": "en",
+        // "cookie":
+        // "xman_t=uCXGeTajsChq1zocFti5q1k6fZ/ef5Z3e9MAKG6Zq3zFtXivMtdeyP6fXLnmxl3X; xman_f=Kq1gECXbfYZp2+LHF4728YjcTCJqSRSU6j15emwgj9DRrBuPg16xOMB4c6AjbacaTl5rWEzNeU1h9LcrrQWqAem2FHaBUYZPna1p79MYutfVR38CE7OxFw==; cna=N+iiHdMPJFUCAblhXHxVztzC; xlly_s=1; ali_apache_id=33.1.244.156.1696334375712.039905.6; acs_usuc_t=x_csrf=nywdm9jyyvm3&acs_rt=30cf6bf409f143d6bca5923ad7812197; aeu_cid=b22a47b58e9345079e335d1b850462e2-1696334387594-03599-_DlqYSor; traffic_se_co=%7B%22src%22%3A%22Google%22%2C%22timestamp%22%3A1696334387575%7D; af_ss_a=1; af_ss_b=1; e_id=pt100; _gid=GA1.2.1806542863.1696334390; _gcl_au=1.1.1842478091.1696334391; XSRF-TOKEN=1182f1e0-6227-4172-9e06-805eddd8f930; _gac_UA-17640202-1=1.1696334400.CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE; _gcl_aw=GCL.1696334400.CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE; _ym_uid=1696334400247532736; _ym_d=1696334400; _ym_isad=2; AB_DATA_TRACK=450145_617386; AB_ALG=; AB_STG=st_StrategyExp_1694492533501%23stg_687; ali_apache_track=; ali_apache_tracktmp=; _fbp=fb.1.1696359035617.1228727340; RT=\"z=1&dm=aliexpress.com&si=067620ff-c624-47ae-be60-44f4fc6ce2bd&ss=lnap3p21&sl=2&tt=3gi&rl=1&obo=1&ld=x9de&r=1ceb9ekj&ul=x9df&hd=x9dg\"; aep_history=keywords%5E%0Akeywords%09%0A%0Aproduct_selloffer%5E%0Aproduct_selloffer%091005006058768832%091005006058753920%091005006084190108%091005006058797681%091005003609706446%091005005614102888; intl_locale=de_DE; _ym_visorc=b; _m_h5_tk=9e69a87b459aadb5f609153fec2415ff_1696366684726; _m_h5_tk_enc=eb38b8bfc39b43b97b30f2b61705683f; JSESSIONID=359D57CF431A76E3F700EF829E45C534; AKA_A2=A; intl_common_forever=ZFHIR9CDfmspVPJHXKAXdfzdQP6dhXWnKwSZh2zR1AZsIhdlpsQiPg==; _ga_VED1YSGNC7=GS1.1.1696362302.4.1.1696364354.57.0.0; _ga=GA1.1.736258735.1696334390; cto_bundle=hBxs7V9DbUVNT0FrOFRya3k4cHklMkZoUWlPV3o2SCUyQkNzQ2p5R1dubVBiUTkwR0RHQkhQeVExN0psTk94Mng5QWVqUk4zaWRiUTlHVVI2V0ZwY1RvWHk1a2FKRHZVR1dDSlBGV0Nvcmc0eWlPdE5FRTc5NHRXTGJ0ZUhPWXolMkZNTEl1WFpQdWR5amtGSDdpbTYwJTJGZEltemFJV09jVDd6eW95SUxIeXYlMkY4V25uNEx6QVdWbnNkTzJuMkp4Qk1MazBnYTFNOXM1TmUlMkJpS3NQU3lXUWpqb2FpdnhWQ0ZnJTNEJTNE; aep_usuc_f=site=deu&c_tp=USD&region=LB&b_locale=de_DE; tfstk=djpXR3wcLFpPjPOA_liyO8WR8EX1hEMFWls9xhe4XtBAfR_W5O-qmR-O6e-g313c3dTWuHdVgtCv23IFXNFAXsIReGjaWPe9Xls9zUL1smbNWNTwXIorLv-DmOX9f2kEL-vYc9mnY0e92L6GB2uEnCFDEOYICPSRXhZg0z4Jfzw7eJ2PkkfTZwsMFi1-LnQR61mNVs_pDagKJOPQLwaR05Z5tRs580i7s54VqjvR.; l=fBanFBCrPPVU1yo2BO5Zlurza77OzIdfGsPzaNbMiIEGa6KcaFNtpNCtpu39udtjQTfv-etPt6A1OdhW7bU3WxOVMRdEm7a7Txv9-iRLS45..; isg=BMTEvuYsfasiRMngdG5feOBFlUS23ehHWAHa4d5kgA9SCWDTBu5C1pjrSbnRESCf; xman_us_f=x_l=1&x_locale=de_DE&x_c_chg=0&acs_rt=30cf6bf409f143d6bca5923ad7812197&x_as_i=%7B%22aeuCID%22%3A%22b22a47b58e9345079e335d1b850462e2-1696334387594-03599-_DlqYSor%22%2C%22af%22%3A%22CjwKCAjw9-6oBhBaEiwAHv1QvGhlIfkbK6SYgSUWJ5s3jsq7FliE1_5y6ihnm8R-trxaTay6nkgCzxoCIbMQAvD_BwE%22%2C%22affiliateKey%22%3A%22_DlqYSor%22%2C%22channel%22%3A%22AFFILIATE%22%2C%22cv%22%3A%221%22%2C%22isCookieCache%22%3A%22N%22%2C%22ms%22%3A%221%22%2C%22pid%22%3A%222791977130%22%2C%22tagtime%22%3A1696334387594%7D",
+      });
+
+      if (isEmpty(screen.body)) return;
+
+      imageLink = screen.body
+          .split(
+              "pip-aspect-ratio-box pip-aspect-ratio-box--square pip-media-grid__media-image pip-media-grid__media-image--main")[1]
+          .split("src=\"")[1]
+          .split("\" ")[0];
+
+      var imagee = await http.get(Uri.parse(imageLink));
+
+      print("IMAGE TITLE");
+      try {
+        itemDescription = screen.body.split("title\>")[1].split("\<")[0];
+      } catch (e) {}
+
+      image = MemoryImage(
+        imagee.bodyBytes,
+        // fit: BoxFit.fill,
+      );
+    } catch (e) {
+      print(e);
+    }
+
+    setState(() {});
   }
 
   Future<void> _loadTheGivingMovement() async {
@@ -1504,6 +1530,11 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> _getProductImage() async {
+    image = null;
+    imageLink = null;
+    price = null;
+    itemDescription = null;
+
     if (isEmpty(_productLinkController.text)) return;
 
     _productLinkController.text = _productLinkController.text.trim();
@@ -1526,12 +1557,14 @@ class _MyHomePageState extends State<MyHomePage>
       await _loadAliBaba();
     } else if (productImageLink.contains("thegivingmovement")) {
       await _loadTheGivingMovement();
+    } else if (productImageLink.contains("ikea")) {
+      await _loadIkea();
+    } else if (productImageLink.contains("sephora")) {
+      await _loadSephora();
     } else if (((productImageLink.contains("amazon")) ||
         (productImageLink.contains("amzn.eu")) ||
         (productImageLink.contains("a.co")))) {
       await _loadAmazon();
-    } else if (productImageLink.contains("sephora")) {
-      await _loadSephora();
     }
   }
 
@@ -1555,13 +1588,11 @@ class _MyHomePageState extends State<MyHomePage>
             child: Container(
               width: 100,
               height: 100,
-              child: animResource != null
-                  ? FlareActor(
-                      animResource,
-                      animation: 'animate',
-                      fit: BoxFit.fitWidth,
-                    )
-                  : Container(),
+              child: FlareActor(
+                animResource,
+                animation: 'animate',
+                fit: BoxFit.fitWidth,
+              ),
             ),
           ),
           Center(
