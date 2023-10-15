@@ -289,7 +289,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
             ];
           },
           body: Container(
-            margin: EdgeInsets.only(top: 36),
+            margin: EdgeInsets.only(top: 12),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [

@@ -34,9 +34,7 @@ class ContactUsScreenState extends State<ContactUsScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          UBScaffold(
-            backgroundColor: Colors.transparent,
-            builder: (context) => Container(
+          Container(
               margin: EdgeInsets.only(top: 68),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -99,7 +97,7 @@ class ContactUsScreenState extends State<ContactUsScreen> {
                 ),
               ),
             ),
-          ),
+
         ],
       ),
     );
