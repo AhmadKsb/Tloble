@@ -897,7 +897,7 @@
    "Republic of Congo": "جمهورية الكونغو",
    "Cook Islands": "جزر كوك",
    "Costa Rica": "كوستا ريكا",
-   "Côte d'Ivoire": "كوت دي إيفوار",
+   "Côte d'Ivoire": "كوت ديفوار",
    "Croatia": "كرواتيا",
    "Cuba": "كوبا",
    "Curaçao": "كوراساو",
@@ -1393,5 +1393,9 @@
    "send_feedback_s": "أرسل تعليقك",
    "copied_order_id_to_clipboard": " تم نسخ رقم الطلب إلى الحافظة",
    "contact_s": "اتصل",
-   "us_s": "بنا"
+   "us_s": "بنا",
+   "deactivate_account": "إلغاء تنشيط الحساب",
+   "are_you_sure_you_want_to_deactivate_account": "هل أنت متأكد أنك تريد إلغاء تنشيط حسابك؟",
+   "customerCancelled": "Canceled",
+   "Cancelled": "Canceled"
 }

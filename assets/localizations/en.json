@@ -1393,5 +1393,9 @@
    "send_feedback_s": "Send feedback",
    "copied_order_id_to_clipboard": "Copied order id to clipboard",
    "contact_s": "Contact",
-   "us_s": "Us"
+   "us_s": "Us",
+   "deactivate_account": "Deactivate account",
+   "are_you_sure_you_want_to_deactivate_account": "Are you sure you want to deactivate your account?",
+   "customerCancelled": "Canceled",
+   "Cancelled": "Canceled"
 }

@@ -762,7 +762,7 @@ class _MainPageState extends State<MainPage>
                           style: TextStyle(fontWeight: FontWeight.w400),
                         ),
                   onTap: () async {
-                     // Navigator.of(context).pop();
+                    // Navigator.of(context).pop();
                     var customerNamee = await Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) =>
@@ -895,26 +895,7 @@ class _MainPageState extends State<MainPage>
                   );
                 },
               ),
-            // if (!phoneNumberIsNull && _controller.isAdmin)
-            //   Padding(
-            //     padding: EdgeInsetsDirectional.only(end: 6),
-            //     child: ListTile(
-            //       title: Text(
-            //         Localization.of(context, 'all_orders'),
-            //         style: TextStyle(fontWeight: FontWeight.w400),
-            //       ),
-            //       onTap: () async {
-            //         await Navigator.of(context).push(
-            //           MaterialPageRoute(
-            //             builder: (context) => AllOrdersScreen(
-            //               controller: _controller,
-            //             ),
-            //           ),
-            //         );
-            //         setState(() {});
-            //       },
-            //     ),
-            //   ),
+
             if (!phoneNumberIsNull &&
                 (!(homeScreenController.hideContents ?? true)))
               Padding(
@@ -937,77 +918,6 @@ class _MainPageState extends State<MainPage>
                 ),
               ),
 
-            // if (!phoneNumberIsNull &&
-            //     _controller.canUserCheckOtherCustomersOrders)
-            //   Padding(
-            //     padding: EdgeInsetsDirectional.only(end: 6),
-            //     child: ListTile(
-            //       title: Text(
-            //         Localization.of(context, 'check_customers_order'),
-            //         style: TextStyle(fontWeight: FontWeight.w400),
-            //       ),
-            //       onTap: () async {
-            //         showBottomsheet(
-            //           context: context,
-            //           height: MediaQuery.of(context).size.height * 0.4,
-            //           dismissOnTouchOutside: false,
-            //           isScrollControlled: true,
-            //           upperWidget: Row(
-            //             mainAxisAlignment: MainAxisAlignment.end,
-            //             children: <Widget>[
-            //               GestureDetector(
-            //                   child: Padding(
-            //                     padding: EdgeInsets.symmetric(
-            //                       horizontal: 16.0,
-            //                       vertical: 16.0,
-            //                     ),
-            //                     child: Icon(
-            //                       Icons.close,
-            //                       color: Colors.black,
-            //                       size: 30,
-            //                     ),
-            //                   ),
-            //                   onTap: () {
-            //                     setState(() {
-            //                       return isButtonLoading
-            //                           ? null
-            //                           : Navigator.of(context).pop();
-            //                     });
-            //                   })
-            //             ],
-            //           ),
-            //           body: CheckCustomersOrderBottomsheet(
-            //             controller: _controller,
-            //             isBottomSheetLoading: (isLoad) {
-            //               setState(() {
-            //                 isButtonLoading = isLoad;
-            //               });
-            //             },
-            //           ),
-            //         );
-            //         setState(() {});
-            //       },
-            //     ),
-            //   ),
-            // if (!phoneNumberIsNull &&
-            //     (_controller.feedbackReceiversList?.contains(
-            //             FirebaseAuth.instance.currentUser?.phoneNumber) ??
-            //         false))
-            //   ListTile(
-            //     title: Text(
-            //       Localization.of(context, 'feedbacks'),
-            //       style: TextStyle(fontWeight: FontWeight.w400),
-            //     ),
-            //     onTap: () async {
-            //       await Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //           builder: (context) =>
-            //               FeedbackListScreen(controller: _controller),
-            //         ),
-            //       );
-            //     },
-            //   ),
             if (!phoneNumberIsNull)
               ListTile(
                 title: Text(
@@ -1025,160 +935,6 @@ class _MainPageState extends State<MainPage>
                   );
                 },
               ),
-            // if (!phoneNumberIsNull && _controller.isAdmin)
-            //   Padding(
-            //     padding: EdgeInsetsDirectional.only(end: 6),
-            //     child: ListTile(
-            //       title: Text(
-            //         Localization.of(context, 'send_notification'),
-            //         style: TextStyle(fontWeight: FontWeight.w400),
-            //       ),
-            //       onTap: () async {
-            //         showBottomsheet(
-            //           context: context,
-            //           height: MediaQuery.of(context).size.height * 0.4,
-            //           dismissOnTouchOutside: false,
-            //           isScrollControlled: true,
-            //           upperWidget: Row(
-            //             mainAxisAlignment: MainAxisAlignment.end,
-            //             children: <Widget>[
-            //               GestureDetector(
-            //                   child: Padding(
-            //                     padding: EdgeInsets.symmetric(
-            //                       horizontal: 16.0,
-            //                       vertical: 16.0,
-            //                     ),
-            //                     child: Icon(
-            //                       Icons.close,
-            //                       color: Colors.black,
-            //                       size: 30,
-            //                     ),
-            //                   ),
-            //                   onTap: () {
-            //                     setState(() {
-            //                       return isButtonLoading
-            //                           ? null
-            //                           : Navigator.of(context).pop();
-            //                     });
-            //                   })
-            //             ],
-            //           ),
-            //           body: SendNotificationBottomsheet(
-            //             controller: _controller,
-            //             isBottomSheetLoading: (isLoad) {
-            //               setState(() {
-            //                 isButtonLoading = isLoad;
-            //               });
-            //             },
-            //             changed: (hasChanged) {},
-            //           ),
-            //         );
-            //         setState(() {});
-            //       },
-            //     ),
-            //   ),
-            // if (!phoneNumberIsNull && _controller.isAdmin)
-            //   Padding(
-            //     padding: EdgeInsetsDirectional.only(end: 6),
-            //     child: ListTile(
-            //       title: Text(
-            //         Localization.of(context, 'ban_user'),
-            //         style: TextStyle(fontWeight: FontWeight.w400),
-            //       ),
-            //       onTap: () async {
-            //         showBottomsheet(
-            //           context: context,
-            //           height: MediaQuery.of(context).size.height * 0.4,
-            //           dismissOnTouchOutside: false,
-            //           isScrollControlled: true,
-            //           upperWidget: Row(
-            //             mainAxisAlignment: MainAxisAlignment.end,
-            //             children: <Widget>[
-            //               GestureDetector(
-            //                   child: Padding(
-            //                     padding: EdgeInsets.symmetric(
-            //                       horizontal: 16.0,
-            //                       vertical: 16.0,
-            //                     ),
-            //                     child: Icon(
-            //                       Icons.close,
-            //                       color: Colors.black,
-            //                       size: 30,
-            //                     ),
-            //                   ),
-            //                   onTap: () {
-            //                     setState(() {
-            //                       return isButtonLoading
-            //                           ? null
-            //                           : Navigator.of(context).pop();
-            //                     });
-            //                   })
-            //             ],
-            //           ),
-            //           body: BanUserBottomsheet(
-            //             controller: _controller,
-            //             isBottomSheetLoading: (isLoad) {
-            //               setState(() {
-            //                 isButtonLoading = isLoad;
-            //               });
-            //             },
-            //           ),
-            //         );
-            //         setState(() {});
-            //       },
-            //     ),
-            //   ),
-            // if (!phoneNumberIsNull && _controller.isAdmin)
-            //   Padding(
-            //     padding: EdgeInsetsDirectional.only(end: 6),
-            //     child: ListTile(
-            //       title: Text(
-            //         Localization.of(context, 'unban_user'),
-            //         style: TextStyle(fontWeight: FontWeight.w400),
-            //       ),
-            //       onTap: () async {
-            //         showBottomsheet(
-            //           context: context,
-            //           height: MediaQuery.of(context).size.height * 0.4,
-            //           dismissOnTouchOutside: false,
-            //           isScrollControlled: true,
-            //           upperWidget: Row(
-            //             mainAxisAlignment: MainAxisAlignment.end,
-            //             children: <Widget>[
-            //               GestureDetector(
-            //                   child: Padding(
-            //                     padding: EdgeInsets.symmetric(
-            //                       horizontal: 16.0,
-            //                       vertical: 16.0,
-            //                     ),
-            //                     child: Icon(
-            //                       Icons.close,
-            //                       color: Colors.black,
-            //                       size: 30,
-            //                     ),
-            //                   ),
-            //                   onTap: () {
-            //                     setState(() {
-            //                       return isButtonLoading
-            //                           ? null
-            //                           : Navigator.of(context).pop();
-            //                     });
-            //                   })
-            //             ],
-            //           ),
-            //           body: UnbanUserBottomsheet(
-            //             controller: _controller,
-            //             isBottomSheetLoading: (isLoad) {
-            //               setState(() {
-            //                 isButtonLoading = isLoad;
-            //               });
-            //             },
-            //           ),
-            //         );
-            //         setState(() {});
-            //       },
-            //     ),
-            //   ),
             ListTile(
               title: Text(
                 Localization.of(context, 'contact_us'),
@@ -1216,6 +972,50 @@ class _MainPageState extends State<MainPage>
                         try {
                           // await FirebaseMessaging.instance.unsubscribeFromTopic(
                           //     'swiftShop_notifications_${FirebaseAuth.instance.currentUser?.phoneNumber.toString().substring(1)}');
+
+                          await FirebaseAuth.instance
+                              .signOut()
+                              .then((value) =>
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (context) => MainPage(),
+                                      ),
+                                      (route) => false))
+                              .catchError((onError) {
+                            showErrorBottomsheet(context, onError.toString());
+                          });
+                        } catch (e) {
+                          // showErrorBottomsheet(context, e.toString());
+                        }
+                      },
+                      cancelMessage: Localization.of(
+                        context,
+                        'cancel',
+                      ),
+                    );
+                  },
+                ),
+              ),
+            if (!phoneNumberIsNull &&
+                (homeScreenController.showDeactivateAccount ?? false))
+              Padding(
+                padding: EdgeInsetsDirectional.only(end: 6),
+                child: ListTile(
+                  title: Text(
+                    Localization.of(context, 'deactivate_account'),
+                    style: TextStyle(fontWeight: FontWeight.w400),
+                  ),
+                  onTap: () {
+                    showConfirmationBottomSheet(
+                      context: context,
+                      flare: 'assets/flare/pending.flr',
+                      title: Localization.of(
+                        context,
+                        'are_you_sure_you_want_to_deactivate_account',
+                      ),
+                      confirmMessage: Localization.of(context, 'deactivate_account'),
+                      confirmAction: () async {
+                        try {
 
                           await FirebaseAuth.instance
                               .signOut()

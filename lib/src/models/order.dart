@@ -243,11 +243,39 @@ String? getShipmentStatusString(BuildContext context, ShipmentStatus status) {
     case ShipmentStatus.completed:
       return Localization.of(context, 'completed');
     case ShipmentStatus.customerRejected:
-      return Localization.of(context, 'customerRejected');
+      return Localization.of(context, 'customerCancelled');
     case ShipmentStatus.unknown:
       return "Unknown";
     default:
       return "null shipment status";
+  }
+}
+
+String? getShipmentStatusForEmployeeStringExcel(
+  BuildContext context,
+  ShipmentStatus? status,
+) {
+  switch (status) {
+    case ShipmentStatus.awaitingCustomer:
+      return "Awaiting customer";
+    case ShipmentStatus.paid:
+      return "Paid";
+    case ShipmentStatus.awaitingPayment:
+      return "Awaiting payment";
+    case ShipmentStatus.awaitingShipment:
+      return "In our warehouse outside Lebanon";
+    case ShipmentStatus.orderOnTheWay:
+      return "Order on the way";
+    case ShipmentStatus.awaitingCustomerPickup:
+      return "Awaiting customer pickup";
+    case ShipmentStatus.completed:
+      return "Completed";
+    case ShipmentStatus.customerRejected:
+      return "Cancelled";
+    case ShipmentStatus.unknown:
+      return "Unknown";
+    default:
+      return "null";
   }
 }
 
@@ -271,7 +299,7 @@ String? getShipmentStatusForEmployeeString(
     case ShipmentStatus.completed:
       return Localization.of(context, 'completed');
     case ShipmentStatus.customerRejected:
-      return Localization.of(context, 'customerRejected');
+      return Localization.of(context, 'customerCancelled');
     case ShipmentStatus.unknown:
       return "Unknown";
     default:

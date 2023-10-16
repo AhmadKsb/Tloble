@@ -103,6 +103,7 @@ class HomeScreenController {
       _checkForOpeningHours,
       _showSellRate,
       _hideContents,
+      _showDeactivateAccount,
       _hideDisclaimer,
       _checkForRoot,
       _checkForMinimumOrder,
@@ -290,6 +291,11 @@ class HomeScreenController {
   bool? get hideContents => _hideContents;
   set hideContents(value) {
     _hideContents = value;
+  }
+
+  bool? get showDeactivateAccount => _showDeactivateAccount;
+  set showDeactivateAccount(value) {
+    _showDeactivateAccount = value;
   }
 
   bool? get hideDisclaimer => _hideDisclaimer;
@@ -1075,6 +1081,7 @@ class HomeScreenController {
     _checkForRoot = appInfoSnapshot?['checkForRoot'] ?? false;
     _showSellRate = appInfoSnapshot?['showSellRate'] ?? false;
     _hideContents = appInfoSnapshot?['hideContents'] ?? false;
+    _showDeactivateAccount = appInfoSnapshot?['showDeactivateAccount'] ?? false;
     _hideDisclaimer = appInfoSnapshot?['hideDisclaimer'] ?? false;
     openMiningItemDetailsScreen =
         appInfoSnapshot?['openMiningItemDetailsScreen'] ?? false;

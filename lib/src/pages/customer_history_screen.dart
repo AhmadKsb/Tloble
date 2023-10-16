@@ -639,10 +639,12 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
               SliverPadding(
-                padding: EdgeInsetsDirectional.only(
-                  top: 16.0,
-                  start: 12,
-                ), // Adjust the padding as needed
+                padding: orders.isNotEmpty
+                    ? EdgeInsets.zero
+                    : EdgeInsetsDirectional.only(
+                        top: 16.0,
+                        start: 12,
+                      ), // Adjust the padding as needed
                 sliver: SliverAppBar(
                   pinned: true,
                   toolbarHeight: 30.0,
@@ -676,16 +678,14 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                   Container(
                     padding: AppTheme.padding,
                     child: (orders.isEmpty)
-                        ? Padding(
-                            padding: const EdgeInsets.only(bottom: 75.0),
-                            child: Center(
-                                child: Text(
+                        ? Center(
+                            child: Text(
                               Localization.of(context, 'no_orders_history'),
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w900,
                               ),
-                            )),
+                            ),
                           )
                         : Column(
                             children: <Widget>[

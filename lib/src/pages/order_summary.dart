@@ -907,7 +907,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
                       : customer.phoneNumber,
-                  locale: (Localizations.localeOf(context).languageCode == 'ar') ? 'ar' : 'en',
+                  locale: (Localizations.localeOf(context).languageCode == 'ar')
+                      ? 'ar'
+                      : 'en',
                   employeeWhoSentTheOrder: (widget
                           .homeScreenController.employees
                           .firstWhere(
@@ -964,7 +966,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
                       : customer.phoneNumber,
-                  locale: (Localizations.localeOf(context).languageCode == 'ar') ? 'ar' : 'en',
+                  locale: (Localizations.localeOf(context).languageCode == 'ar')
+                      ? 'ar'
+                      : 'en',
                   employeeWhoSentTheOrder: (widget
                           .homeScreenController.employees
                           .firstWhere(
@@ -1020,7 +1024,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   phoneNumber: isNotEmpty(_customerNumberController.text)
                       ? _customerNumberController.text
                       : customer.phoneNumber,
-                  locale: (Localizations.localeOf(context).languageCode == 'ar') ? 'ar' : 'en',
+                  locale: (Localizations.localeOf(context).languageCode == 'ar')
+                      ? 'ar'
+                      : 'en',
                   employeeWhoSentTheOrder: (widget
                           .homeScreenController.employees
                           .firstWhere(
@@ -1069,7 +1075,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   "&acceptedBy=" +
                   "&sentByEmployee=${(widget.homeScreenController.employees.firstWhere((element) => element.phoneNumber == FirebaseAuth.instance.currentUser?.phoneNumber, orElse: () => Employee(name: null)).name != null)}" +
                   "&employeeWhoSentTheOrder=${(widget.homeScreenController.employees.firstWhere((element) => element.phoneNumber == FirebaseAuth.instance.currentUser?.phoneNumber, orElse: () => Employee(name: null)).name ?? "")}" +
-                  "&shipmentStatus=${getShipmentStatusForEmployeeString(context, ShipmentStatus.awaitingCustomer)}" +
+                  "&orderDetails=${Uri.encodeComponent(getDetails())}" +
+                  "&customerLink=${Uri.encodeComponent(getLinks())}" +
+                  "&shipmentStatus=${getShipmentStatusForEmployeeStringExcel(context, ShipmentStatus.awaitingCustomer)}" +
                   "&firstPayment=0" +
                   "&secondPayment=0",
             ),
@@ -1103,6 +1111,48 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
         _isSubmittingOrder = false;
       });
     }
+  }
+
+  String getLinks() {
+    String links = "\n";
+    for (int index = 0;
+        index < widget.homeScreenController.productsLinks.length;
+        index++) {
+      links += "Product ${index + 1}: \n" +
+          widget.homeScreenController.productsLinks[index];
+
+      if (index < (widget.homeScreenController.productsSizes.length - 1))
+        links += "\n\n";
+    }
+    links += "\n";
+    return links;
+  }
+
+  String getDetails() {
+    String details = "\n";
+    for (int index = 0;
+        index < widget.homeScreenController.productsLinks.length;
+        index++) {
+      details += "Product ${index + 1}: \n";
+      details += "- Quantity: " +
+          (isNotEmpty(widget.homeScreenController.productsQuantities[index])
+              ? widget.homeScreenController.productsQuantities[index]
+              : "Not specified") +
+          "\n";
+      details += "- Color: " +
+          (isNotEmpty(widget.homeScreenController.productsColors[index])
+              ? widget.homeScreenController.productsColors[index]
+              : "Not specified") +
+          "\n";
+      details += "- Size: " +
+          (isNotEmpty(widget.homeScreenController.productsSizes[index])
+              ? widget.homeScreenController.productsSizes[index]
+              : "Not specified");
+      if (index < (widget.homeScreenController.productsSizes.length - 1))
+        details += "\n\n";
+    }
+    details += "\n";
+    return details;
   }
 
   Widget _appBar() {

@@ -249,7 +249,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                         child: RaisedButtonV2(
                           disabled:
                               _isLoading || isNotEmpty(_order.acceptedTime),
-                              // _isLoading,
+                          // _isLoading,
                           isLoading: _isLoading,
                           onPressed: () async {
                             await showConfirmationBottomSheet(
@@ -291,15 +291,18 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                         ),
                       ),
                       if (_order.shipmentStatus![0] ==
-                          ShipmentStatus.awaitingCustomer)
+                              ShipmentStatus.awaitingCustomer ||
+                          ((widget.homeScreenController.isAdmin ?? false)))
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 62,
                             vertical: 16,
                           ),
                           child: RaisedButtonV2(
-                            disabled:
-                                _isLoading || isEmpty(_order.acceptedTime),
+                            disabled: _isLoading ||
+                                isEmpty(_order.acceptedTime) ||
+                                (_order.shipmentStatus![0] ==
+                                    ShipmentStatus.customerRejected),
                             isLoading: _isLoading,
                             onPressed: () async {
                               await showConfirmationBottomSheet(
