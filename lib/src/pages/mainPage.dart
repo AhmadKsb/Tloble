@@ -742,7 +742,7 @@ class _MainPageState extends State<MainPage>
             ),
 
             /// TODO, to add back we have to fix GET CUSTOMER (order customerName coming null)
-            if (phoneNumberIsNull)
+            if (phoneNumberIsNull && !(homeScreenController.hideLoginFromMainPage ?? true))
               Padding(
                 padding: EdgeInsetsDirectional.only(end: 6),
                 child: ListTile(
@@ -765,8 +765,11 @@ class _MainPageState extends State<MainPage>
                     // Navigator.of(context).pop();
                     var customerNamee = await Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) =>
-                            FirebaseNotification(child: LoginPage()),
+                        builder: (context) => FirebaseNotification(
+                          child: LoginPage(
+                            homeScreenController: homeScreenController,
+                          ),
+                        ),
                       ),
                     );
                     try {
@@ -778,22 +781,22 @@ class _MainPageState extends State<MainPage>
                       if (isNotEmpty(customerNamee)) {
                         await Navigator.of(context).pop;
                         await Navigator.of(context).pop;
+                        String customerName =
+                            customerNamee.toString().split("|1|2|3|")[0];
+                        String customerPhoneNumber =
+                            customerNamee.toString().split("|1|2|3|")[1];
 
                         notificationToken =
                             await FirebaseMessaging.instance.getToken();
                         var result = await FirebaseFirestore.instance
                             .collection('Customers')
-                            .doc(FirebaseAuth
-                                    .instance.currentUser?.phoneNumber ??
-                                '')
+                            .doc(customerPhoneNumber)
                             .snapshots()
                             .first;
                         if (result.data() == null) {
                           var newCustomer = Customer(
-                            name: customerNamee.toString().capitalize,
-                            phoneNumber: FirebaseAuth
-                                    .instance.currentUser?.phoneNumber ??
-                                '',
+                            name: customerName.toString().capitalize,
+                            phoneNumber: customerPhoneNumber,
                             notificationToken: notificationToken,
                             coins: 0,
                           );
@@ -803,22 +806,20 @@ class _MainPageState extends State<MainPage>
 
                           await FirebaseFirestore.instance
                               .collection('Customers')
-                              .doc(FirebaseAuth
-                                      .instance.currentUser?.phoneNumber ??
-                                  '')
+                              .doc(customerPhoneNumber)
                               .set(newCustomer.toJson());
                         } else {
                           customer = Customer.fromJson(
                               result.data() as Map<dynamic, dynamic>);
                           customer = Customer(
-                            name: customerNamee.toString().capitalize,
+                            name: customerName.toString().capitalize,
                             phoneNumber: customer.phoneNumber,
                             notificationToken: notificationToken,
                             coins: customer.coins ?? 0,
                           );
 
                           homeScreenController.customer = Customer(
-                            name: customerNamee.toString().capitalize,
+                            name: customerName.toString().capitalize,
                             phoneNumber: customer.phoneNumber,
                             notificationToken: notificationToken,
                             coins: customer.coins ?? 0,
@@ -828,7 +829,7 @@ class _MainPageState extends State<MainPage>
                               .collection('Customers')
                               .doc(customer.phoneNumber)
                               .set(Customer(
-                                name: customerNamee.toString().capitalize,
+                                name: customerName.toString().capitalize,
                                 phoneNumber: customer.phoneNumber,
                                 notificationToken: notificationToken,
                                 coins: customer.coins ?? 0,
@@ -1013,10 +1014,10 @@ class _MainPageState extends State<MainPage>
                         context,
                         'are_you_sure_you_want_to_deactivate_account',
                       ),
-                      confirmMessage: Localization.of(context, 'deactivate_account'),
+                      confirmMessage:
+                          Localization.of(context, 'deactivate_account'),
                       confirmAction: () async {
                         try {
-
                           await FirebaseAuth.instance
                               .signOut()
                               .then((value) =>

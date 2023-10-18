@@ -104,6 +104,8 @@ class HomeScreenController {
       _showSellRate,
       _hideContents,
       _showDeactivateAccount,
+      _showOTPResendButton,
+      _hideLoginFromMainPage,
       _hideDisclaimer,
       _checkForRoot,
       _checkForMinimumOrder,
@@ -296,6 +298,16 @@ class HomeScreenController {
   bool? get showDeactivateAccount => _showDeactivateAccount;
   set showDeactivateAccount(value) {
     _showDeactivateAccount = value;
+  }
+
+  bool? get showOTPResendButton => _showOTPResendButton;
+  set showOTPResendButton(value) {
+    _showOTPResendButton = value;
+  }
+
+  bool? get hideLoginFromMainPage => _hideLoginFromMainPage;
+  set hideLoginFromMainPage(value) {
+    _hideLoginFromMainPage = value;
   }
 
   bool? get hideDisclaimer => _hideDisclaimer;
@@ -1082,6 +1094,8 @@ class HomeScreenController {
     _showSellRate = appInfoSnapshot?['showSellRate'] ?? false;
     _hideContents = appInfoSnapshot?['hideContents'] ?? false;
     _showDeactivateAccount = appInfoSnapshot?['showDeactivateAccount'] ?? false;
+    _showOTPResendButton = appInfoSnapshot?['showOTPResendButton'] ?? false;
+    _hideLoginFromMainPage = appInfoSnapshot?['hideLoginFromMainPage'] ?? false;
     _hideDisclaimer = appInfoSnapshot?['hideDisclaimer'] ?? false;
     openMiningItemDetailsScreen =
         appInfoSnapshot?['openMiningItemDetailsScreen'] ?? false;

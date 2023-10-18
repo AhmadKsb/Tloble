@@ -1397,5 +1397,6 @@
    "deactivate_account": "Deactivate account",
    "are_you_sure_you_want_to_deactivate_account": "Are you sure you want to deactivate your account?",
    "customerCancelled": "Canceled",
-   "Cancelled": "Canceled"
+   "Cancelled": "Canceled",
+   "resend_otp": "Resend OTP"
 }

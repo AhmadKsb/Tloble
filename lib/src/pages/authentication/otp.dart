@@ -17,6 +17,7 @@ import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_svg/svg.dart';
 
+import '../../controllers/home_screen_controller.dart';
 import '../../firebase_notification.dart';
 
 class Otp extends StatefulWidget {
@@ -26,6 +27,7 @@ class Otp extends StatefulWidget {
   final bool? isGuestCheckOut;
   final String? mobileNumber;
   final countryPickers.Country? country;
+  final HomeScreenController homeScreenController;
 
   const Otp({
     Key? key,
@@ -35,6 +37,7 @@ class Otp extends StatefulWidget {
     this.isGuestCheckOut,
     @required this.country,
     @required this.mobileNumber,
+    required this.homeScreenController,
   })  : assert(mobileNumber != null),
         super(key: key);
 
@@ -58,7 +61,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
   String? _verificationId;
 
   // Constants
-  final int time = 30;
+  final int time = 60;
   late AnimationController _controller;
 
   // Variables
@@ -198,7 +201,8 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
         _getVerificationCodeLabel,
         _getEmailLabel,
         _getInputField,
-        // _hideResendButton ? _getTimerText : _getResendButton,
+        if (widget.homeScreenController.showOTPResendButton ?? true)
+          (_hideResendButton ?? false) ? _getTimerText : _getResendButton,
         _getOtpKeyboard,
         SizedBox(
           height: 12,
@@ -210,21 +214,21 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
   // Returns "Timer" label
   get _getTimerText {
     return Container(
-        // height: 32,
-        // child: new Offstage(
-        //   offstage: !_hideResendButton,
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: <Widget>[
-        //       new Icon(Icons.access_time),
-        //       new SizedBox(
-        //         width: 5.0,
-        //       ),
-        // OtpTimer(_controller, 15.0, Colors.black)
-        // ],
-        // ),
-        // ),
-        );
+      height: 32,
+      child: new Offstage(
+        offstage: !(_hideResendButton ?? true),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Icon(Icons.access_time),
+            new SizedBox(
+              width: 5.0,
+            ),
+            OtpTimer(_controller, 15.0, Colors.black)
+          ],
+        ),
+      ),
+    );
   }
 
   // Returns "Resend" button
@@ -239,12 +243,14 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
             borderRadius: BorderRadius.circular(32)),
         alignment: Alignment.center,
         child: new Text(
-          "Resend OTP",
+          Localization.of(context, 'resend_otp'),
           style:
               new TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
       onTap: () {
+        _onVerifyCode();
+        _startCountdown();
         // Resend you OTP via API or anything
       },
     );
@@ -594,8 +600,14 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
             });
           }
 
-          Navigator.of(context).pop(widget.name);
-          Navigator.of(context).pop(widget.name);
+          Navigator.of(context).pop((widget.name ?? "") +
+              "|1|2|3|+" +
+              (widget.country?.phoneCode ?? "") +
+              (widget.mobileNumber ?? ""));
+          Navigator.of(context).pop((widget.name ?? "") +
+              "|1|2|3|+" +
+              (widget.country?.phoneCode ?? "") +
+              (widget.mobileNumber ?? ""));
         } else {
           showErrorBottomsheet("Error validating OTP, try again");
         }
@@ -714,8 +726,14 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
             _registerCustomerState = PageState.loaded;
           });
         }
-        Navigator.of(context).pop(widget.name);
-        Navigator.of(context).pop(widget.name);
+        Navigator.of(context).pop((widget.name ?? "") +
+            "|1|2|3|+" +
+            (widget.country?.phoneCode ?? "") +
+            (widget.mobileNumber ?? ""));
+        Navigator.of(context).pop((widget.name ?? "") +
+            "|1|2|3|+" +
+            (widget.country?.phoneCode ?? "") +
+            (widget.mobileNumber ?? ""));
       } else {
         showErrorBottomsheet("Error validating OTP, try again");
       }

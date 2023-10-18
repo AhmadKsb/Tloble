@@ -735,7 +735,11 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
       confirmAction: () async {
         var customerNamee = await Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => FirebaseNotification(child: LoginPage()),
+            builder: (context) => FirebaseNotification(
+              child: LoginPage(
+                homeScreenController: widget.homeScreenController,
+              ),
+            ),
           ),
         );
         try {
@@ -746,17 +750,20 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
           if (isNotEmpty(customerNamee)) {
             await Navigator.of(context).pop;
             await Navigator.of(context).pop;
+            String customerName = customerNamee.toString().split("|1|2|3|")[0];
+            String customerPhoneNumber =
+                customerNamee.toString().split("|1|2|3|")[1];
 
             notificationToken = await FirebaseMessaging.instance.getToken();
             var result = await FirebaseFirestore.instance
                 .collection('Customers')
-                .doc(_firebaseAuth.currentUser?.phoneNumber ?? '')
+                .doc(customerPhoneNumber)
                 .snapshots()
                 .first;
             if (result.data() == null) {
               var newCustomer = Customer(
-                name: customerNamee.toString().capitalize,
-                phoneNumber: _firebaseAuth.currentUser?.phoneNumber ?? '',
+                name: customerName.toString().capitalize,
+                phoneNumber: customerPhoneNumber,
                 notificationToken: notificationToken,
                 coins: 0,
               );
@@ -766,20 +773,20 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
 
               await FirebaseFirestore.instance
                   .collection('Customers')
-                  .doc(_firebaseAuth.currentUser?.phoneNumber ?? '')
+                  .doc(customerPhoneNumber)
                   .set(newCustomer.toJson());
             } else {
               customer =
                   Customer.fromJson(result.data() as Map<dynamic, dynamic>);
               customer = Customer(
-                name: customerNamee.toString().capitalize,
+                name: customerName.toString().capitalize,
                 phoneNumber: customer.phoneNumber,
                 notificationToken: notificationToken,
                 coins: customer.coins ?? 0,
               );
 
               widget.homeScreenController.customer = Customer(
-                name: customerNamee.toString().capitalize,
+                name: customerName.toString().capitalize,
                 phoneNumber: customer.phoneNumber,
                 notificationToken: notificationToken,
                 coins: customer.coins ?? 0,
@@ -789,7 +796,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   .collection('Customers')
                   .doc(customer.phoneNumber)
                   .set(Customer(
-                    name: customerNamee.toString().capitalize,
+                    name: customerName.toString().capitalize,
                     phoneNumber: customer.phoneNumber,
                     notificationToken: notificationToken,
                     coins: customer.coins ?? 0,
@@ -866,19 +873,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
       notificationToken = await FirebaseMessaging.instance.getToken();
       DocumentReference orders =
           FirebaseFirestore.instance.collection('Orders').doc("Orders");
-      // print("-" + customer?.phoneNumber + "-");
-      // print("---------");
-      // if (customer == null)
-      //   FirebaseFirestore.instance
-      //       .collection('Customers')
-      //       .doc(widget.user.phoneNumber)
-      //       .set(Customer(
-      //     phoneNumber: widget.user.phoneNumber,
-      //     notificationToken: notificationToken,
-      //     coins: customer?.coins ?? 0,
-      //     totalMoneyIn: customer?.totalMoneyIn ?? 0,
-      //     totalMoneyOut: customer?.totalMoneyOut ?? 0,
-      //   ).toJson()),
+
       await Future.wait(
         [
           FirebaseFirestore.instance

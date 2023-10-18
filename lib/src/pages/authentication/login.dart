@@ -20,8 +20,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'otp.dart';
 
 class LoginPage extends StatefulWidget {
+  final HomeScreenController homeScreenController;
+
   LoginPage({
     Key? key,
+    required this.homeScreenController,
   }) : super(key: key);
 
   @override
@@ -400,6 +403,8 @@ class _LoginPageState extends State<LoginPage> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Otp(
+                                        homeScreenController:
+                                            widget.homeScreenController,
                                         name: _nameController.text,
                                         country: selectedCountry,
                                         mobileNumber: _phoneNumber,

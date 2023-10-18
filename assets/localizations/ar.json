@@ -1396,6 +1396,7 @@
    "us_s": "بنا",
    "deactivate_account": "إلغاء تنشيط الحساب",
    "are_you_sure_you_want_to_deactivate_account": "هل أنت متأكد أنك تريد إلغاء تنشيط حسابك؟",
-   "customerCancelled": "Canceled",
-   "Cancelled": "Canceled"
+   "customerCancelled": "ألغيت",
+   "Cancelled": "ألغيت",
+   "resend_otp": "إعادة إرسال OTP"
 }
