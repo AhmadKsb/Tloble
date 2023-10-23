@@ -1378,7 +1378,7 @@
    "not_specified": "Not specified",
    "login_order_submitted_successfully": "Login was successful and your order was submitted successfully",
    "product_details": "Product details - تفاصيل المنتج",
-   "product_details_description": "Here you add all the details about your product, such as the product's link, the quantity you'd like to order, or any other information related to this product\\n\\nهنا يمكنك إضافة جميع التفاصيل حول منتجك، مثل رابط المنتج أو الكمية التي ترغب في طلبها أو أي معلومات أخرى تتعلق بهذا المنتج",
+   "product_details_description": "In this section, you can input information about your product, including its link, the desired quantity for ordering, and any other relevant details.\\n\\nهنا يمكنك إدخال معلومات حول منتجك، مثل الرابط الخاص بالمنتج، الكمية المطلوبة للشراء، وأية تفاصيل أخرى ذات صلة",
    "add_to_cart_coachmark": "Add to cart - أضف إلى السلة",
    "add_to_cart_coachmark_details": "You then add this product to your cart\\n\\nيمكنك بعد ذلك إضافة هذا المنتج إلى سلة التسوق الخاصة بك",
    "added_to_cart_coachmark": "You can see the items added to your cart here\\n\\nيمكنك رؤية العناصر المضافة إلى سلة التسوق الخاصة بك هنا",

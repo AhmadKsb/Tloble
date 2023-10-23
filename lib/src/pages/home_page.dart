@@ -112,6 +112,8 @@ class _MyHomePageState extends State<MyHomePage>
         );
         createTutorial();
         Future.delayed(Duration.zero, showTutorial);
+
+
       }
     }
   }
@@ -147,11 +149,19 @@ class _MyHomePageState extends State<MyHomePage>
   void createTutorial() {
     tutorialCoachMark = TutorialCoachMark(
       targets: _createTargets(),
-      colorShadow: LightColor.orange,
+      colorShadow: Colors.grey,
       textSkip: isEmpty(selectedTutorialElement) ? "" : "SKIP",
       paddingFocus: 10,
       opacityShadow: 0.6,
-      showSkipInLastTarget: false,
+      skipWidget: Text(
+        Localization.of(context, "next"),
+        style: TextStyle(
+          color: Colors.white,
+          // fontWeight: FontWeight.bold,
+          // fontSize: 20.0,
+        ),
+      ),
+      showSkipInLastTarget: true,
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       onFinish: () {
         if (isEmpty(selectedTutorialElement)) {
@@ -176,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage>
         print('onClickOverlay: $target');
       },
       onSkip: () {
-        return true;
+        return false;
       },
     );
   }
@@ -193,29 +203,29 @@ class _MyHomePageState extends State<MyHomePage>
         contents: [
           TargetContent(
             align: ContentAlign.top,
-            padding: EdgeInsets.only(top: 20, left: 20, right: 20),
+            padding: EdgeInsets.only(top: 0, left: 20, right: 20),
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 20.0),
-                    child: Text(
-                      Localization.of(context, "product_details"),
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: EdgeInsets.only(bottom: 20.0),
+                  //   child: Text(
+                  //     Localization.of(context, "product_details"),
+                  //     style: TextStyle(
+                  //       color: Colors.white,
+                  //       fontWeight: FontWeight.bold,
+                  //       fontSize: 20.0,
+                  //     ),
+                  //   ),
+                  // ),
                   Text(
                     Localization.of(context, "product_details_description"),
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16.0,
+                      fontSize: 14.0,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.3,
                     ),
@@ -246,23 +256,23 @@ class _MyHomePageState extends State<MyHomePage>
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(bottom: 20.0),
-                    child: Text(
-                      Localization.of(context, "add_to_cart_coachmark"),
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20.0),
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: EdgeInsets.only(bottom: 20.0),
+                  //   child: Text(
+                  //     Localization.of(context, "add_to_cart_coachmark"),
+                  //     style: TextStyle(
+                  //         color: Colors.white,
+                  //         fontWeight: FontWeight.bold,
+                  //         fontSize: 20.0),
+                  //   ),
+                  // ),
                   Text(
                     Localization.of(context, "add_to_cart_coachmark_details"),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ],
@@ -296,7 +306,7 @@ class _MyHomePageState extends State<MyHomePage>
                       color: Colors.white,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ],
@@ -328,7 +338,7 @@ class _MyHomePageState extends State<MyHomePage>
                       color: Colors.white,
                       fontSize: 16.0,
                       fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
+                      letterSpacing: 0.3,
                     ),
                   ),
                 ],
