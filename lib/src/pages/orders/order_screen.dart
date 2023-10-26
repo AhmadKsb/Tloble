@@ -247,8 +247,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                           vertical: 16,
                         ),
                         child: RaisedButtonV2(
-                          disabled:
-                              _isLoading || isNotEmpty(_order.acceptedTime),
+                          disabled: _isLoading,
+                          // || isNotEmpty(_order.acceptedTime),
                           // _isLoading,
                           isLoading: _isLoading,
                           onPressed: () async {
@@ -261,13 +261,30 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               confirmMessage:
                                   Localization.of(context, 'confirm'),
                               confirmAction: () async {
-                                bool wasAbleToGetUpdatedOrder =
-                                    await _getUpdatedOrder(popFirst: true);
-                                if (wasAbleToGetUpdatedOrder) {
-                                  await _updateAcceptedTime();
+                                if (isEmpty(_order.acceptedTime)) {
+                                  bool wasAbleToGetUpdatedOrder =
+                                      await _getUpdatedOrder(popFirst: true);
+                                  if (wasAbleToGetUpdatedOrder) {
+                                    await _updateAcceptedTime();
+                                    try {
+                                      openWhatsapp();
+                                      await _getUpdatedOrder();
+                                    } catch (e) {
+                                      print(e);
+                                      showErrorBottomsheet(
+                                        replaceVariable(
+                                              Localization.of(context,
+                                                  'an_error_has_occurred_value'),
+                                              'value',
+                                              e.toString(),
+                                            ) ??
+                                            "",
+                                      );
+                                    }
+                                  }
+                                } else {
                                   try {
                                     openWhatsapp();
-                                    await _getUpdatedOrder();
                                   } catch (e) {
                                     print(e);
                                     showErrorBottomsheet(
@@ -287,7 +304,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                           },
                           label: isEmpty(_order.acceptedTime)
                               ? Localization.of(context, 'contact')
-                              : Localization.of(context, 'contacted'),
+                              : Localization.of(context, 'already_contacted'),
                         ),
                       ),
                       if (_order.shipmentStatus![0] ==
@@ -1709,7 +1726,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
     String animResource;
     animResource = 'assets/flare/success.flr';
     // setState(() {
-    Vibration.vibrate();
+    // Vibration.vibrate();
     // });
 
     await showBottomsheet(

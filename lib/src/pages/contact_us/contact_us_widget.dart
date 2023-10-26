@@ -579,44 +579,47 @@ class ContactUs extends StatelessWidget {
                 ),
               ),
             ),
-            Card(
-              clipBehavior: Clip.antiAlias,
-              margin: EdgeInsets.symmetric(
-                vertical: 10.0,
-                horizontal: 25.0,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(50.0),
-              ),
-              child: TextButton(
-                onPressed: () {
-                  try {
-                    launch('mailto:' + (salesEmail ?? ""));
-                  } catch (e) {
-                    print(e.toString());
-                  }
-                },
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all(
-                    RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15)),
-                  ),
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(LightColor.orange),
+            Visibility(
+              visible: salesEmail != null,
+              child: Card(
+                clipBehavior: Clip.antiAlias,
+                margin: EdgeInsets.symmetric(
+                  vertical: 10.0,
+                  horizontal: 25.0,
                 ),
-                child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 24),
-                  leading: Image.asset(
-                    "assets/images/email.png",
-                    width: 24,
-                    height: 24,
-                    color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50.0),
+                ),
+                child: TextButton(
+                  onPressed: () {
+                    try {
+                      launch('mailto:' + (salesEmail ?? ""));
+                    } catch (e) {
+                      print(e.toString());
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
+                    ),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(LightColor.orange),
                   ),
-                  title: Text(
-                    emailText ?? Localization.of(buildContext, 'email'),
-                    style: TextStyle(
-                      color: textColor,
-                      fontFamily: textFont,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 24),
+                    leading: Image.asset(
+                      "assets/images/email.png",
+                      width: 24,
+                      height: 24,
+                      color: Colors.white,
+                    ),
+                    title: Text(
+                      emailText ?? Localization.of(buildContext, 'email'),
+                      style: TextStyle(
+                        color: textColor,
+                        fontFamily: textFont,
+                      ),
                     ),
                   ),
                 ),

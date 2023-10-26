@@ -180,7 +180,7 @@ class _OrdersListTileState extends State<OrdersListTile> {
                                       ),
                                       'value',
                                       dateTimeTruncated,
-                                    )} by ${widget.controller?.employees.firstWhere((element) => element.phoneNumber == FirebaseAuth.instance.currentUser?.phoneNumber).name}",
+                                    )} by ${widget.controller?.employees.firstWhere((element) => element.name?.toLowerCase() == widget.order?.acceptedBy?.toLowerCase()).name}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1
