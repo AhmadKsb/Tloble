@@ -488,7 +488,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w900,
-                                  color: Colors.deepPurple,
+                                  color: Color.fromARGB(255, 0, 0, 255).withOpacity(0.9),
                                 ),
                               ),
                             ),

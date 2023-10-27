@@ -184,7 +184,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                         : widget.homeScreenController!.productsTitles[index],
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: Colors.deepPurple,
+                    color: Color.fromARGB(255, 0, 0, 255).withOpacity(0.9),
                   ),
                 ),
                 subtitle: Column(

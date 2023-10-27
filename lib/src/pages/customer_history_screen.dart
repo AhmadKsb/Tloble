@@ -551,7 +551,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                             text: order.productsTitles?[index],
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
-                            color: Colors.deepPurple,
+                            color: Color.fromARGB(255, 0, 0, 255).withOpacity(0.9),
                           ),
                         ),
                       ),

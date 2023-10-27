@@ -1392,7 +1392,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                   style: TextStyle(
                                     fontSize: 16,
                                     letterSpacing: 1,
-                                    color: Colors.deepPurple,
+                                    color: Color.fromARGB(255, 0, 0, 255).withOpacity(0.9),
                                   ),
                                 ),
                               );
