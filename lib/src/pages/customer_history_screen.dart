@@ -13,6 +13,9 @@ import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../utils/BottomSheets/bottom_sheet_helper.dart';
 
 class CustomerHistoryScreen extends StatefulWidget {
   final HomeScreenController? homeScreenController;
@@ -419,19 +422,52 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
       // height: 90,
       child: Row(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsetsDirectional.only(end: 16.0),
-            child: WKNetworkImage(
-              order.productsImages?[index],
-              fit: BoxFit.contain,
-              width: 60,
-              height: 60,
-              defaultWidget: Image.asset(
-                "assets/images/login_logo.png",
+          InkWell(
+            onTap: () async {
+              try {
+                bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+                var url = order.productsLinks?[index];
+                if (isIOS) {
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    print('Could not launch $url');
+                    throw Exception('Could not launch $url');
+                  }
+                } else {
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    print('Could not launch $url');
+                    throw Exception('Could not launch $url');
+                  }
+                }
+              } catch (e) {
+                print(e);
+                showErrorBottomsheet(
+                  context,
+                  'An error has occurred: $e',
+                );
+              }
+            },
+            child: Padding(
+              padding: const EdgeInsetsDirectional.only(end: 16.0),
+              child: WKNetworkImage(
+                order.productsImages?[index],
+                fit: BoxFit.contain,
                 width: 60,
                 height: 60,
+                defaultWidget: Image.asset(
+                  "assets/images/login_logo.png",
+                  width: 60,
+                  height: 60,
+                ),
+                placeHolder: AssetImage('assets/images/placeholder.png'),
               ),
-              placeHolder: AssetImage('assets/images/placeholder.png'),
             ),
           ),
           Builder(
@@ -476,12 +512,47 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                         ],
                       ),
                       SizedBox(height: 4),
-                      Padding(
-                        padding: EdgeInsetsDirectional.only(end: 8.0),
-                        child: TitleText(
-                          text: order.productsTitles?[index],
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
+                      InkWell(
+                        onTap: () async {
+                          try {
+                            bool isIOS = Theme.of(context).platform ==
+                                TargetPlatform.iOS;
+                            var url = order.productsLinks?[index];
+                            if (isIOS) {
+                              if (await canLaunch(url)) {
+                                await launch(url);
+                              } else if (await canLaunch(url)) {
+                                await launch(url);
+                              } else {
+                                print('Could not launch $url');
+                                throw Exception('Could not launch $url');
+                              }
+                            } else {
+                              if (await canLaunch(url)) {
+                                await launch(url);
+                              } else if (await canLaunch(url)) {
+                                await launch(url);
+                              } else {
+                                print('Could not launch $url');
+                                throw Exception('Could not launch $url');
+                              }
+                            }
+                          } catch (e) {
+                            print(e);
+                            showErrorBottomsheet(
+                              context,
+                              'An error has occurred: $e',
+                            );
+                          }
+                        },
+                        child: Padding(
+                          padding: EdgeInsetsDirectional.only(end: 8.0),
+                          child: TitleText(
+                            text: order.productsTitles?[index],
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.deepPurple,
+                          ),
                         ),
                       ),
                       SizedBox(height: 4),

@@ -86,7 +86,7 @@ class MyAppState extends State<MyApp> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? language = prefs.getString("swiftShop_language");
-      _locale = (isNotEmpty(language) ? Locale(language!) : Locale('en'));
+      _locale = (isNotEmpty(language) ? Locale(language!) : Locale('ar'));
       setState(() {
         _state = PageState.loaded;
       });
@@ -103,7 +103,7 @@ class MyAppState extends State<MyApp> {
         ? MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Tloble',
-            locale: _locale ?? Locale('en'),
+            locale: _locale ?? Locale('ar'),
             localizationsDelegates: [
               GlobalMaterialLocalizations.delegate,
               GlobalCupertinoLocalizations.delegate,

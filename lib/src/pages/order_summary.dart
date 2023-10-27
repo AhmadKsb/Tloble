@@ -21,6 +21,7 @@ import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/utils/util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_helper_extension.dart';
 
@@ -366,31 +367,66 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Row(
                   children: [
-                    Container(
-                      width: 85,
-                      height: 85,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
-                        // border: Border.all(
-                        //   width: 1.0,
-                        //   color: Colors.grey.withOpacity(0.4),
-                        // ),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: WKNetworkImage(
-                        ((widget.homeScreenController.hideImage ?? true))
-                            ? ""
-                            : widget.homeScreenController.productsImages[index],
-                        fit: BoxFit.contain,
-                        width: 60,
-                        height: 60,
-                        defaultWidget: Image.asset(
-                          "assets/images/login_logo.png",
+                    InkWell(
+                      onTap: () async {
+                        try {
+                          bool isIOS =
+                              Theme.of(context).platform == TargetPlatform.iOS;
+                          var url =
+                              widget.homeScreenController.productsLinks[index];
+                          if (isIOS) {
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            } else if (await canLaunch(url)) {
+                              await launch(url);
+                            } else {
+                              print('Could not launch $url');
+                              throw Exception('Could not launch $url');
+                            }
+                          } else {
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            } else if (await canLaunch(url)) {
+                              await launch(url);
+                            } else {
+                              print('Could not launch $url');
+                              throw Exception('Could not launch $url');
+                            }
+                          }
+                        } catch (e) {
+                          print(e);
+                          showErrorBottomsheet(
+                            'An error has occurred: $e',
+                          );
+                        }
+                      },
+                      child: Container(
+                        width: 85,
+                        height: 85,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          // border: Border.all(
+                          //   width: 1.0,
+                          //   color: Colors.grey.withOpacity(0.4),
+                          // ),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        child: WKNetworkImage(
+                          ((widget.homeScreenController.hideImage ?? true))
+                              ? ""
+                              : widget
+                                  .homeScreenController.productsImages[index],
+                          fit: BoxFit.contain,
                           width: 60,
                           height: 60,
-                        ),
-                        placeHolder: AssetImage(
-                          'assets/images/placeholder.png',
+                          defaultWidget: Image.asset(
+                            "assets/images/login_logo.png",
+                            width: 60,
+                            height: 60,
+                          ),
+                          placeHolder: AssetImage(
+                            'assets/images/placeholder.png',
+                          ),
                         ),
                       ),
                     ),
@@ -406,18 +442,54 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                         false)
                                     ? 100
                                     : 150,
-                            child: Text(
-                              widget.homeScreenController.productsTitles[index]
-                                          .toString()
-                                          .toLowerCase() ==
-                                      "product"
-                                  ? widget
-                                      .homeScreenController.productsLinks[index]
-                                  : widget.homeScreenController
-                                      .productsTitles[index],
-                              maxLines: 2,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
+                            child: InkWell(
+                              onTap: () async {
+                                try {
+                                  bool isIOS = Theme.of(context).platform ==
+                                      TargetPlatform.iOS;
+                                  var url = widget.homeScreenController
+                                      .productsLinks[index];
+                                  if (isIOS) {
+                                    if (await canLaunch(url)) {
+                                      await launch(url);
+                                    } else if (await canLaunch(url)) {
+                                      await launch(url);
+                                    } else {
+                                      print('Could not launch $url');
+                                      throw Exception('Could not launch $url');
+                                    }
+                                  } else {
+                                    if (await canLaunch(url)) {
+                                      await launch(url);
+                                    } else if (await canLaunch(url)) {
+                                      await launch(url);
+                                    } else {
+                                      print('Could not launch $url');
+                                      throw Exception('Could not launch $url');
+                                    }
+                                  }
+                                } catch (e) {
+                                  print(e);
+                                  showErrorBottomsheet(
+                                    'An error has occurred: $e',
+                                  );
+                                }
+                              },
+                              child: Text(
+                                widget.homeScreenController
+                                            .productsTitles[index]
+                                            .toString()
+                                            .toLowerCase() ==
+                                        "product"
+                                    ? widget.homeScreenController
+                                        .productsLinks[index]
+                                    : widget.homeScreenController
+                                        .productsTitles[index],
+                                maxLines: 2,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.deepPurple,
+                                ),
                               ),
                             ),
                           ),

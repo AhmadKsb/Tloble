@@ -44,9 +44,14 @@ import 'feedback/feedback_list_screen.dart';
 import 'feedback/send_us_your_feedbacks_screen.dart';
 import 'orders/all_orders_screen.dart';
 import 'orders/paid_orders_screen.dart';
+import 'dart:ui';
+import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 GlobalKey shoppingCartKey = GlobalObjectKey("shoppingCartKey");
 GlobalKey upcomingOrdersKey = GlobalObjectKey("upcomingOrdersKey");
+GlobalKey hamburgerIconKey = GlobalObjectKey("hamburgerIconKey");
+GlobalKey changeLanguageKey = GlobalObjectKey("changeLanguageKey");
 
 class MainPage extends StatefulWidget {
   MainPage({Key? key, this.title}) : super(key: key);
@@ -149,6 +154,294 @@ class _MainPageState extends State<MainPage>
     }
   }
 
+  Future<void> _showCoachMark() async {
+    createTutorial();
+    Future.delayed(Duration.zero, showTutorial);
+  }
+
+  GlobalKey keyButton = GlobalKey();
+  late TutorialCoachMark tutorialCoachMark;
+
+  void showTutorial() {
+    tutorialCoachMark.show(context: context);
+  }
+
+  var selectedTutorialElement;
+
+  void createTutorial() {
+    tutorialCoachMark = TutorialCoachMark(
+      targets: _createTargets(),
+      colorShadow: Colors.black,
+      textSkip: isEmpty(selectedTutorialElement) ? "" : "SKIP",
+      paddingFocus: 15,
+      opacityShadow: 0.7,
+      skipWidget: Text(
+        Localization.of(context, "next"),
+        style: TextStyle(
+          color: Colors.white,
+          // fontWeight: FontWeight.bold,
+          // fontSize: 20.0,
+        ),
+      ),
+      showSkipInLastTarget: false,
+      imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      onFinish: () {
+        if (isEmpty(selectedTutorialElement)) {
+          tutorialCoachMark.goTo(1);
+          return false;
+        } else {
+          return true;
+        }
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+        // target.identify == "keyBottomNavigation2";
+      },
+      onClickTargetWithTapPosition: (target, tapDetails) {
+        selectedTutorialElement = target.identify;
+        print(selectedTutorialElement);
+        // print("target: $target");
+        // print(
+        //     "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlay: $target');
+      },
+      onSkip: () {
+        return false;
+      },
+    );
+  }
+
+  List<TargetFocus> _createTargets() {
+    List<TargetFocus> targets = [];
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation1",
+        keyTarget: formKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        paddingFocus: 0.5,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            padding: EdgeInsets.only(top: 0, left: 20, right: 20),
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  // Padding(
+                  //   padding: EdgeInsets.only(bottom: 20.0),
+                  //   child: Text(
+                  //     Localization.of(context, "product_details"),
+                  //     style: TextStyle(
+                  //       color: Colors.white,
+                  //       fontWeight: FontWeight.bold,
+                  //       fontSize: 20.0,
+                  //     ),
+                  //   ),
+                  // ),
+                  Text(
+                    Localization.of(context, "product_details_description"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 30,
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation2",
+        keyTarget: addToCart,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        paddingFocus: 0.5,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  // Padding(
+                  //   padding: EdgeInsets.only(bottom: 20.0),
+                  //   child: Text(
+                  //     Localization.of(context, "add_to_cart_coachmark"),
+                  //     style: TextStyle(
+                  //         color: Colors.white,
+                  //         fontWeight: FontWeight.bold,
+                  //         fontSize: 20.0),
+                  //   ),
+                  // ),
+                  Text(
+                    Localization.of(context, "add_to_cart_coachmark_details"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+        shape: ShapeLightFocus.RRect,
+        radius: 30,
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation3",
+        keyTarget: shoppingCartKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "added_to_cart_coachmark"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation4",
+        keyTarget: upcomingOrdersKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "upcoming_orders_coachmark"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation5",
+        keyTarget: changeLanguageKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            padding: EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "languageKey"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation6",
+        keyTarget: hamburgerIconKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "hamburgerIconDetails"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+    return targets;
+  }
+
   void showUpdateBottomSheet(String error) async {
     if (!mounted) return;
     await showActionBottomSheet(
@@ -185,6 +478,7 @@ class _MainPageState extends State<MainPage>
         children: <Widget>[
           if (homeScreenController.admins?.isNotEmpty ?? false)
             RotatedBox(
+              key: hamburgerIconKey,
               quarterTurns: 4,
               child: _icon(Icons.sort, color: Colors.black54),
             ),
@@ -212,6 +506,7 @@ class _MainPageState extends State<MainPage>
                 (Localizations.localeOf(context).languageCode == 'ar')
                     ? "English"
                     : "العربية",
+                key: changeLanguageKey,
                 style: TextStyle(
                     fontSize:
                         (Localizations.localeOf(context).languageCode == 'ar')
@@ -250,11 +545,11 @@ class _MainPageState extends State<MainPage>
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(13)),
-            color: Theme.of(context).backgroundColor,
+            color: LightColor.orange,
             boxShadow: AppTheme.shadow),
         child: Icon(
           icon,
-          color: color,
+          color: Colors.white,
         ),
       ),
     );
@@ -264,32 +559,49 @@ class _MainPageState extends State<MainPage>
     return Container(
         margin: AppTheme.padding,
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TitleText(
-                  text: isHomePageSelected
-                      ? Localization.of(context, "order")
-                      : index == 1
-                          ? Localization.of(context, "upcoming_s")
-                          : Localization.of(context, "shopping"),
-                  fontSize: 27,
-                  fontWeight: FontWeight.w400,
-                ),
-                TitleText(
-                  text: isHomePageSelected
-                      ? Localization.of(context, "now")
-                      : index == 1
-                          ? Localization.of(context, "ordersss")
-                          : Localization.of(context, "cart"),
-                  fontSize: 27,
-                  fontWeight: FontWeight.w700,
-                ),
-              ],
+            Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  TitleText(
+                    text: isHomePageSelected
+                        ? Localization.of(context, "order")
+                        : index == 1
+                            ? Localization.of(context, "upcoming_s")
+                            : Localization.of(context, "shopping"),
+                    fontSize: 27,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  TitleText(
+                    text: isHomePageSelected
+                        ? Localization.of(context, "now")
+                        : index == 1
+                            ? Localization.of(context, "ordersss")
+                            : Localization.of(context, "cart"),
+                    fontSize: 27,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ],
+              ),
             ),
             Spacer(),
+            if ((homeScreenController.showCoachMark ?? false) && isHomePageSelected)
+              Container(
+                // width: 60,
+                child: InkWell(
+                  onTap: () {
+                    _showCoachMark();
+                  },
+                  child: Text(
+                    Localization.of(context, "need_help"),
+                    // fontSize: 27,
+                    // fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
             !isHomePageSelected
                 ? (homeScreenController.productsLinks.isEmpty || index != 2
                     ? SizedBox.shrink()
@@ -742,7 +1054,8 @@ class _MainPageState extends State<MainPage>
             ),
 
             /// TODO, to add back we have to fix GET CUSTOMER (order customerName coming null)
-            if (phoneNumberIsNull && !(homeScreenController.hideLoginFromMainPage ?? true))
+            if (phoneNumberIsNull &&
+                !(homeScreenController.hideLoginFromMainPage ?? true))
               Padding(
                 padding: EdgeInsetsDirectional.only(end: 6),
                 child: ListTile(

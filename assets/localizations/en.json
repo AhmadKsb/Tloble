@@ -1088,7 +1088,7 @@
    "Yemen": "Yemen",
    "Zambia": "Zambia",
    "Zimbabwe": "Zimbabwe",
-   "skip": "SKIP",
+   "skip": "Skip",
    "login": "Login",
    "are_you_sure_you_want_to_proceed_without_logging_in": "Are you sure you want to proceed without logging in?",
    "by_proceeding_you_wont_be_able": "By proceeding you won't be able to submit a buy/sell request",
@@ -1301,7 +1301,7 @@
    "invalid_link": "Please put a valid link",
    "color:": "Color:",
    "size:": "Size:",
-   "order_submitted_successfully": "Your order has been submitted successfully",
+   "Explore more features here, such as your order history\\n\\nاكتشف المزيد من الميزات هنا، مثل مراقبة طلباتك": "Your order has been submitted successfully",
    "add_to_cart": "Add to cart",
    "are_you_sure_you_want_to_add_this_item_to_your_cart": "Are you sure you want to add this item to your cart?",
    "are_you_sure_you_want_to_clear_your_shopping_cart": "Are you sure you want to clear your shopping cart?",
@@ -1378,7 +1378,7 @@
    "not_specified": "Not specified",
    "login_order_submitted_successfully": "Login was successful and your order was submitted successfully",
    "product_details": "Product details - تفاصيل المنتج",
-   "product_details_description": "In this section, you can input information about your product, including its link, the desired quantity for ordering, and any other relevant details.\\n\\nهنا يمكنك إدخال معلومات حول منتجك، مثل الرابط الخاص بالمنتج، الكمية المطلوبة للشراء، وأية تفاصيل أخرى ذات صلة",
+   "product_details_description": "In this section, you can input information about your product, including its link, the desired quantity for ordering, and any other relevant details\\n\\nهنا يمكنك إدخال معلومات حول منتجك، مثل الرابط الخاص بالمنتج، الكمية المطلوبة للشراء، وأية تفاصيل أخرى ذات صلة",
    "add_to_cart_coachmark": "Add to cart - أضف إلى السلة",
    "add_to_cart_coachmark_details": "You then add this product to your cart\\n\\nيمكنك بعد ذلك إضافة هذا المنتج إلى سلة التسوق الخاصة بك",
    "added_to_cart_coachmark": "You can see the items added to your cart here\\n\\nيمكنك رؤية العناصر المضافة إلى سلة التسوق الخاصة بك هنا",
@@ -1399,5 +1399,10 @@
    "customerCancelled": "Canceled",
    "Cancelled": "Canceled",
    "resend_otp": "Resend OTP",
-   "already_contacted": "Already contacted"
+   "already_contacted": "Already contacted",
+   "hamburgerIconDetails": "Explore more features here, such as your order history\\n\\nاكتشف المزيد من الميزات هنا، مثل مراقبة طلباتك السابقة",
+   "languageKey": "You can change the language here\\n\\nيمكنك تغيير اللغة هنا",
+   "continue_ss": "Continue",
+   "by": "by",
+   "added_cart_items": "Items added to your cart can be found here. You can also continue shopping and add more items to it before confirming your order\\n\\nيمكن العثور على المنتج المضاف إلى سلة التسوق الخاصة بك هنا. يمكنك أيضًا متابعة التسوق وإضافة المزيد من العناصر إليها قبل تأكيد طلبك"
 }

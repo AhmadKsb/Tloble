@@ -878,12 +878,12 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
         String text =
             "Welcome to Tloble! We're thrilled to have you as our valued customer. Our goal is to provide you with a seamless and enjoyable experience.\nLet us first confirm your order.\n\n";
 
-        text += "Order Summary for Order *#${_order.referenceID}*";
+        text += "Summary for Order *#${_order.referenceID}*";
         for (int index = 0;
             index < (_order.productsTitles?.length ?? 0);
             index++) {
           text +=
-              "\n\n* *${isEmpty(_order.productsTitles?[index]) || (_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) ? "${_order.productsTitles?[index]} ${index + 1}" : _order.productsTitles?[index]}*\n- Quantity: ${_order.productsQuantities?[index]}${isNotEmpty(_order.productsColors?[index]) ? "\n- Color: ${_order.productsColors?[index]}" : "\n- Color: Not specified"}${isNotEmpty(_order.productsSizes?[index]) ? "\n- Size: ${_order.productsSizes?[index]}" : "\n- Size: Not specified"}${isNotEmpty(_order.productsLinks?[index]) ? "\n- Link: ${_order.productsLinks?[index]}" : ""}\n";
+              "\n\n* *${(isEmpty(_order.productsTitles?[index]) || ((_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) || (_order.productsTitles![index].toString().toLowerCase() == "product") || (_order.productsTitles![index].toString().toLowerCase() == "المنتج"))) ? "${_order.productsTitles?[index]} ${index + 1}" : _order.productsTitles?[index]}*\n- Quantity: ${_order.productsQuantities?[index]}${isNotEmpty(_order.productsColors?[index]) ? "\n- Color: ${_order.productsColors?[index]}" : "\n- Color: Not specified"}${isNotEmpty(_order.productsSizes?[index]) ? "\n- Size: ${_order.productsSizes?[index]}" : "\n- Size: Not specified"}${isNotEmpty(_order.productsLinks?[index]) ? "\n- Link: ${_order.productsLinks?[index]}" : ""}\n";
         }
         text +=
             "\n\nWe will begin processing your order after receiving the payment. You may pay through *OMT*, *Whish*, *USDT* or *cash* at our office.";
@@ -901,7 +901,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
             index < (_order.productsTitles?.length ?? 0);
             index++) {
           text += """\n
-        ${isEmpty(_order.productsTitles?[index]) || (_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) ? "*المنتج ${index + 1}* " : "*" + _order.productsTitles![index].toString().trim() + "*"}
+${(isEmpty(_order.productsTitles?[index]) || ((_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) || (_order.productsTitles![index].toString().toLowerCase() == "product") || (_order.productsTitles![index].toString().toLowerCase() == "المنتج"))) ? "*المنتج ${index + 1}* " : "*" + _order.productsTitles![index].toString().trim() + "*"}
 ${isNotEmpty(_order.productsQuantities?[index]) ? "- الكمية: ${_order.productsQuantities![index]}" : ""}
 ${isNotEmpty(_order.productsColors?[index]) ? "- اللون: ${_order.productsColors![index]}" : "- اللون: غير محدد"}
 ${isNotEmpty(_order.productsSizes?[index]) ? "- الحجم: ${_order.productsSizes![index]}" : "- الحجم: غير محدد"}
@@ -1231,29 +1231,62 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Row(
                   children: [
-                    Container(
-                      width: 85,
-                      height: 85,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
-                        // border: Border.all(
-                        //   width: 1.0,
-                        //   color: Colors.grey.withOpacity(0.4),
-                        // ),
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: WKNetworkImage(
-                        _order.productsImages?[index],
-                        fit: BoxFit.contain,
-                        width: 60,
-                        height: 60,
-                        defaultWidget: Image.asset(
-                          "assets/images/login_logo.png",
+                    InkWell(
+                      onTap: () async {
+                        try {
+                          bool isIOS =
+                              Theme.of(context).platform == TargetPlatform.iOS;
+                          var url = _order.productsLinks?[index];
+                          if (isIOS) {
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            } else if (await canLaunch(url)) {
+                              await launch(url);
+                            } else {
+                              print('Could not launch $url');
+                              throw Exception('Could not launch $url');
+                            }
+                          } else {
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            } else if (await canLaunch(url)) {
+                              await launch(url);
+                            } else {
+                              print('Could not launch $url');
+                              throw Exception('Could not launch $url');
+                            }
+                          }
+                        } catch (e) {
+                          print(e);
+                          showErrorBottomsheet(
+                            'An error has occurred: $e',
+                          );
+                        }
+                      },
+                      child: Container(
+                        width: 85,
+                        height: 85,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.1),
+                          // border: Border.all(
+                          //   width: 1.0,
+                          //   color: Colors.grey.withOpacity(0.4),
+                          // ),
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        child: WKNetworkImage(
+                          _order.productsImages?[index],
+                          fit: BoxFit.contain,
                           width: 60,
                           height: 60,
-                        ),
-                        placeHolder: AssetImage(
-                          'assets/images/placeholder.png',
+                          defaultWidget: Image.asset(
+                            "assets/images/login_logo.png",
+                            width: 60,
+                            height: 60,
+                          ),
+                          placeHolder: AssetImage(
+                            'assets/images/placeholder.png',
+                          ),
                         ),
                       ),
                     ),
@@ -1279,7 +1312,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                               ?.toLowerCase() ==
                                           _order.acceptedBy?.toLowerCase())) {
                                     Clipboard.setData(new ClipboardData(
-                                            text: widget.order.customerName))
+                                            text: _order.productsLinks?[index]))
                                         .then((result) {
                                       final snackBar = SnackBar(
                                         content: Text(

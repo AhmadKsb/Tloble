@@ -180,7 +180,7 @@ class _OrdersListTileState extends State<OrdersListTile> {
                                       ),
                                       'value',
                                       dateTimeTruncated,
-                                    )} by ${widget.controller?.employees.firstWhere((element) => element.name?.toLowerCase() == widget.order?.acceptedBy?.toLowerCase()).name}",
+                                    )} ${Localization.of(context, 'by')} ${widget.controller?.employees.firstWhere((element) => element.name?.toLowerCase() == widget.order?.acceptedBy?.toLowerCase()).name}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1

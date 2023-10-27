@@ -8,6 +8,7 @@ import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'order_summary.dart';
 
@@ -89,28 +90,102 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
         height: 80,
         child: Row(
           children: <Widget>[
-            WKNetworkImage(
-              ((widget.homeScreenController?.hideImage ?? true))
-                  ? ""
-                  : widget.homeScreenController!.productsImages[index],
-              fit: BoxFit.contain,
-              width: 60,
-              height: 60,
-              defaultWidget: Image.asset(
-                "assets/images/login_logo.png",
+            InkWell(
+              onTap: () async {
+                try {
+                  bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+                  var url = widget.homeScreenController!.productsLinks[index];
+                  if (isIOS) {
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      print('Could not launch $url');
+                      throw Exception('Could not launch $url');
+                    }
+                  } else {
+                    if (await canLaunch(url)) {
+                      await launch(url);
+                    } else if (await canLaunch(url)) {
+                      await launch(url);
+                    } else {
+                      print('Could not launch $url');
+                      throw Exception('Could not launch $url');
+                    }
+                  }
+                } catch (e) {
+                  print(e);
+                  showErrorBottomsheet(
+                    context,
+                    'An error has occurred: $e',
+                  );
+                }
+              },
+              child: WKNetworkImage(
+                ((widget.homeScreenController?.hideImage ?? true))
+                    ? ""
+                    : widget.homeScreenController!.productsImages[index],
+                fit: BoxFit.contain,
                 width: 60,
                 height: 60,
-              ),
-              placeHolder: AssetImage(
-                'assets/images/placeholder.png',
+                defaultWidget: Image.asset(
+                  "assets/images/login_logo.png",
+                  width: 60,
+                  height: 60,
+                ),
+                placeHolder: AssetImage(
+                  'assets/images/placeholder.png',
+                ),
               ),
             ),
             Expanded(
               child: ListTile(
-                title: TitleText(
-                  text: widget.homeScreenController!.productsTitles[index].toString().toLowerCase() == "product" ? widget.homeScreenController!.productsLinks[index] : widget.homeScreenController!.productsTitles[index],
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+                title: InkWell(
+                  onTap: () async {
+                    try {
+                      bool isIOS =
+                          Theme.of(context).platform == TargetPlatform.iOS;
+                      var url =
+                          widget.homeScreenController!.productsLinks[index];
+                      if (isIOS) {
+                        if (await canLaunch(url)) {
+                          await launch(url);
+                        } else if (await canLaunch(url)) {
+                          await launch(url);
+                        } else {
+                          print('Could not launch $url');
+                          throw Exception('Could not launch $url');
+                        }
+                      } else {
+                        if (await canLaunch(url)) {
+                          await launch(url);
+                        } else if (await canLaunch(url)) {
+                          await launch(url);
+                        } else {
+                          print('Could not launch $url');
+                          throw Exception('Could not launch $url');
+                        }
+                      }
+                    } catch (e) {
+                      print(e);
+                      showErrorBottomsheet(
+                        context,
+                        'An error has occurred: $e',
+                      );
+                    }
+                  },
+                  child: TitleText(
+                    text: widget.homeScreenController!.productsTitles[index]
+                                .toString()
+                                .toLowerCase() ==
+                            "product"
+                        ? widget.homeScreenController!.productsLinks[index]
+                        : widget.homeScreenController!.productsTitles[index],
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.deepPurple,
+                  ),
                 ),
                 subtitle: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -229,7 +304,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
           padding: EdgeInsets.symmetric(vertical: 4),
           width: AppTheme.fullWidth(context) * .75,
           child: TitleText(
-            text: Localization.of(context, 'checkout'),
+            text: Localization.of(context, 'continue_ss'),
             color: LightColor.background,
             fontWeight: FontWeight.w500,
           ),

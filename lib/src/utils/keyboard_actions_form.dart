@@ -209,7 +209,7 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
                       : CrossFadeState.showSecond,
                   firstChild: Container(
                     height: _kBarSize,
-                    color: widget.keyboardBarColor ?? Colors.grey[200],
+                    color: Colors.black87.withOpacity(0.6),
                     width: MediaQuery.of(context).size.width,
                     child: Row(
                       children: [
@@ -245,7 +245,10 @@ class _KeyboardFormActionsState extends State<KeyboardFormActions>
                                           Localization.of(context, 'done'),
                                           style: TextStyle(
                                             fontSize: 16.0,
-                                            fontWeight: FontWeight.w500,
+                                            color:
+                                                Colors.white.withOpacity(0.9),
+                                            // color:
+                                            //     Color.fromARGB(255, 75, 75, 77),
                                           ),
                                         ),
                                       ),

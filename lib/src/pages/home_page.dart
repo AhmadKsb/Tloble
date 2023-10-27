@@ -9,8 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
 import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/mixins/home_screen_controller_mixin.dart';
-import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
-
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/bottom_sheet_helper.dart';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
 import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
@@ -21,8 +19,10 @@ import 'package:http/http.dart' as http;
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:vibration/vibration.dart';
 // import 'package:highlighter_coachmark/highlighter_coachmark.dart';
-
 import 'mainPage.dart';
+
+final formKey = GlobalKey<FormState>();
+GlobalKey addToCart = GlobalObjectKey("addToCart");
 
 class MyHomePage extends StatefulWidget {
   final User? user;
@@ -76,9 +76,6 @@ class _MyHomePageState extends State<MyHomePage>
   String? amount, errorMessage, notificationToken, newsText = "";
   List<String> adminPanelNames = [];
 
-  final _formKey = GlobalKey<FormState>();
-  GlobalKey _addToCart = GlobalObjectKey("addToCart");
-
   Key key = UniqueKey();
 
   void restartApp() {
@@ -94,6 +91,60 @@ class _MyHomePageState extends State<MyHomePage>
     WidgetsBinding.instance.addObserver(this);
     _load();
     _showCoachMark();
+  }
+
+  Future<void> _showAddToCartCoachMark() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    String coachMark = "showAddToCartCoachMarks";
+    String? showCoachMarkCampaign = sharedPreferences.getString(coachMark);
+
+    if ((showCoachMarkCampaign == null ||
+        showCoachMarkCampaign != 'coachmarkAlreadyShown')) {
+      sharedPreferences.setString(
+        "showAddToCartCoachMarks",
+        "coachmarkAlreadyShown",
+      );
+      createAddToCartTutorial();
+      Future.delayed(Duration.zero, showAddToCartTutorial);
+    }
+  }
+
+  void createAddToCartTutorial() {
+    addToCartCoachMark = TutorialCoachMark(
+      targets: _createAddToCartTargets(),
+      colorShadow: Colors.black,
+      textSkip: isEmpty(selectedTutorialElement) ? "" : "SKIP",
+      paddingFocus: 15,
+      opacityShadow: 0.7,
+      skipWidget: Text(
+        Localization.of(context, "skip"),
+        style: TextStyle(
+          color: Colors.white,
+          // fontWeight: FontWeight.bold,
+          // fontSize: 20.0,
+        ),
+      ),
+      showSkipInLastTarget: false,
+      imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+      onFinish: () {
+        return true;
+      },
+      onClickTarget: (target) {
+        print('onClickTarget: $target');
+        // target.identify == "keyBottomNavigation2";
+      },
+      onClickTargetWithTapPosition: (target, tapDetails) {
+        // print("target: $target");
+        // print(
+        //     "clicked at position local: ${tapDetails.localPosition} - global: ${tapDetails.globalPosition}");
+      },
+      onClickOverlay: (target) {
+        print('onClickOverlsay: $target');
+      },
+      onSkip: () {
+        return false;
+      },
+    );
   }
 
   Future<void> _showCoachMark() async {
@@ -112,8 +163,6 @@ class _MyHomePageState extends State<MyHomePage>
         );
         createTutorial();
         Future.delayed(Duration.zero, showTutorial);
-
-
       }
     }
   }
@@ -139,20 +188,63 @@ class _MyHomePageState extends State<MyHomePage>
 
   GlobalKey keyButton = GlobalKey();
   late TutorialCoachMark tutorialCoachMark;
+  late TutorialCoachMark addToCartCoachMark;
 
   void showTutorial() {
     tutorialCoachMark.show(context: context);
   }
 
+  void showAddToCartTutorial() {
+    addToCartCoachMark.show(context: context);
+  }
+
   var selectedTutorialElement;
+
+  List<TargetFocus> _createAddToCartTargets() {
+    List<TargetFocus> targets = [];
+
+    targets.add(
+      TargetFocus(
+        identify: "addToCartNavigation",
+        keyTarget: shoppingCartKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.top,
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "added_cart_items"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    return targets;
+  }
 
   void createTutorial() {
     tutorialCoachMark = TutorialCoachMark(
       targets: _createTargets(),
-      colorShadow: Colors.grey,
+      colorShadow: Colors.black,
       textSkip: isEmpty(selectedTutorialElement) ? "" : "SKIP",
-      paddingFocus: 10,
-      opacityShadow: 0.6,
+      paddingFocus: 15,
+      opacityShadow: 0.7,
       skipWidget: Text(
         Localization.of(context, "next"),
         style: TextStyle(
@@ -161,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage>
           // fontSize: 20.0,
         ),
       ),
-      showSkipInLastTarget: true,
+      showSkipInLastTarget: false,
       imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
       onFinish: () {
         if (isEmpty(selectedTutorialElement)) {
@@ -196,7 +288,7 @@ class _MyHomePageState extends State<MyHomePage>
     targets.add(
       TargetFocus(
         identify: "keyBottomNavigation1",
-        keyTarget: _formKey,
+        keyTarget: formKey,
         alignSkip: Alignment.topRight,
         enableOverlayTab: true,
         paddingFocus: 0.5,
@@ -243,13 +335,14 @@ class _MyHomePageState extends State<MyHomePage>
     targets.add(
       TargetFocus(
         identify: "keyBottomNavigation2",
-        keyTarget: _addToCart,
+        keyTarget: addToCart,
         alignSkip: Alignment.topRight,
         enableOverlayTab: true,
         paddingFocus: 0.5,
         contents: [
           TargetContent(
             align: ContentAlign.top,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.max,
@@ -270,7 +363,7 @@ class _MyHomePageState extends State<MyHomePage>
                     Localization.of(context, "add_to_cart_coachmark_details"),
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16.0,
+                      fontSize: 19.0,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.3,
                     ),
@@ -294,6 +387,7 @@ class _MyHomePageState extends State<MyHomePage>
         contents: [
           TargetContent(
             align: ContentAlign.top,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.max,
@@ -304,7 +398,7 @@ class _MyHomePageState extends State<MyHomePage>
                     Localization.of(context, "added_to_cart_coachmark"),
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16.0,
+                      fontSize: 19.0,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.3,
                     ),
@@ -326,6 +420,7 @@ class _MyHomePageState extends State<MyHomePage>
         contents: [
           TargetContent(
             align: ContentAlign.top,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
             builder: (context, controller) {
               return Column(
                 mainAxisSize: MainAxisSize.max,
@@ -336,7 +431,73 @@ class _MyHomePageState extends State<MyHomePage>
                     Localization.of(context, "upcoming_orders_coachmark"),
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16.0,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation5",
+        keyTarget: changeLanguageKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            padding: EdgeInsets.symmetric(vertical: 28, horizontal: 24),
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "languageKey"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
+      ),
+    );
+
+    targets.add(
+      TargetFocus(
+        identify: "keyBottomNavigation6",
+        keyTarget: hamburgerIconKey,
+        alignSkip: Alignment.topRight,
+        enableOverlayTab: true,
+        contents: [
+          TargetContent(
+            align: ContentAlign.bottom,
+            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+            builder: (context, controller) {
+              return Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    Localization.of(context, "hamburgerIconDetails"),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 19.0,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.3,
                     ),
@@ -968,7 +1129,7 @@ class _MyHomePageState extends State<MyHomePage>
               padding: const EdgeInsets.only(bottom: 64.0),
               child: SingleChildScrollView(
                 child: Form(
-                  key: _formKey,
+                  key: formKey,
                   child: Padding(
                     padding: EdgeInsets.zero,
                     child: Column(
@@ -1216,7 +1377,7 @@ class _MyHomePageState extends State<MyHomePage>
                         // ),
                         Center(
                           child: Padding(
-                            key: _addToCart,
+                            key: addToCart,
                             padding: EdgeInsets.symmetric(
                               horizontal: 62,
                               vertical: 16,
@@ -1228,7 +1389,7 @@ class _MyHomePageState extends State<MyHomePage>
                               onPressed: () async {
                                 if (!(widget.homeScreenController?.isBanned ??
                                     false)) {
-                                  if (_formKey.currentState!.validate()) {
+                                  if (formKey.currentState!.validate()) {
                                     // if (widget.user?.phoneNumber == null) {
                                     //   showErrorBottomsheet(
                                     //     Localization.of(
@@ -1660,6 +1821,7 @@ class _MyHomePageState extends State<MyHomePage>
               onPressed: () async {
                 if (!mounted) return;
                 Navigator.of(context).pop();
+                _showAddToCartCoachMark();
               },
             ),
           ),
