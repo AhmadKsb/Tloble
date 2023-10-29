@@ -1296,39 +1296,16 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 0.0, bottom: 4.0),
-                            child:
-                                Builder(builder: (BuildContext buildContext) {
+                          Builder(
+                            builder: (BuildContext buildContext) {
                               return InkWell(
                                 onLongPress: () {
-                                  if (isNotEmpty(_order.acceptedTime) &&
-                                      (widget.homeScreenController.employees
-                                              .firstWhere((element) =>
-                                                  element.phoneNumber ==
-                                                  FirebaseAuth.instance
-                                                      .currentUser?.phoneNumber)
-                                              .name
-                                              ?.toLowerCase() ==
-                                          _order.acceptedBy?.toLowerCase())) {
-                                    Clipboard.setData(new ClipboardData(
-                                            text: _order.productsLinks?[index]))
-                                        .then((result) {
-                                      final snackBar = SnackBar(
-                                        content: Text(
-                                            'Copied product link to Clipboard'),
-                                        action: SnackBarAction(
-                                          label: 'Done',
-                                          onPressed: () {},
-                                        ),
-                                      );
-                                      Scaffold.of(buildContext)
-                                          .showSnackBar(snackBar);
-                                    });
-                                  } else {
+                                  Clipboard.setData(new ClipboardData(
+                                          text: _order.productsLinks?[index]))
+                                      .then((result) {
                                     final snackBar = SnackBar(
                                       content: Text(
-                                          'Accept the request to be able to copy the product link.'),
+                                          'Copied product link to Clipboard'),
                                       action: SnackBarAction(
                                         label: 'Done',
                                         onPressed: () {},
@@ -1336,49 +1313,33 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                     );
                                     Scaffold.of(buildContext)
                                         .showSnackBar(snackBar);
-                                  }
+                                  });
                                 },
                                 onTap: () async {
                                   try {
-                                    if (isNotEmpty(_order.acceptedTime) &&
-                                        (widget.homeScreenController.employees
-                                                .firstWhere((element) =>
-                                                    element.phoneNumber ==
-                                                    FirebaseAuth
-                                                        .instance
-                                                        .currentUser
-                                                        ?.phoneNumber)
-                                                .name
-                                                ?.toLowerCase() ==
-                                            _order.acceptedBy?.toLowerCase())) {
-                                      bool isIOS = Theme.of(context).platform ==
-                                          TargetPlatform.iOS;
-                                      var url = _order.productsLinks?[index];
-                                      if (isIOS) {
-                                        if (await canLaunch(url)) {
-                                          await launch(url);
-                                        } else if (await canLaunch(url)) {
-                                          await launch(url);
-                                        } else {
-                                          print('Could not launch $url');
-                                          throw Exception(
-                                              'Could not launch $url');
-                                        }
+                                    bool isIOS = Theme.of(context).platform ==
+                                        TargetPlatform.iOS;
+                                    var url = _order.productsLinks?[index];
+                                    if (isIOS) {
+                                      if (await canLaunch(url)) {
+                                        await launch(url);
+                                      } else if (await canLaunch(url)) {
+                                        await launch(url);
                                       } else {
-                                        if (await canLaunch(url)) {
-                                          await launch(url);
-                                        } else if (await canLaunch(url)) {
-                                          await launch(url);
-                                        } else {
-                                          print('Could not launch $url');
-                                          throw Exception(
-                                              'Could not launch $url');
-                                        }
+                                        print('Could not launch $url');
+                                        throw Exception(
+                                            'Could not launch $url');
                                       }
                                     } else {
-                                      showErrorBottomsheet(
-                                        'Please accept the order.',
-                                      );
+                                      if (await canLaunch(url)) {
+                                        await launch(url);
+                                      } else if (await canLaunch(url)) {
+                                        await launch(url);
+                                      } else {
+                                        print('Could not launch $url');
+                                        throw Exception(
+                                            'Could not launch $url');
+                                      }
                                     }
                                   } catch (e) {
                                     print(e);
@@ -1387,40 +1348,34 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                     );
                                   }
                                 },
-                                child: Text(
-                                  "Product Link",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    letterSpacing: 1,
-                                    color: Color.fromARGB(255, 0, 0, 255).withOpacity(0.9),
+                                child: Container(
+                                  width: (widget.homeScreenController
+                                              .showProductPrice ??
+                                          false)
+                                      ? 100
+                                      : 150,
+                                  child: Text(
+                                    _order.productsTitles?[index],
+                                    maxLines: 2,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      color: Color.fromARGB(255, 0, 0, 255)
+                                          .withOpacity(0.9),
+                                    ),
                                   ),
                                 ),
                               );
-                            }),
-                          ),
-                          Container(
-                            width:
-                                (widget.homeScreenController.showProductPrice ??
-                                        false)
-                                    ? 100
-                                    : 150,
-                            child: Text(
-                              _order.productsTitles?[index],
-                              maxLines: 2,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
+                            },
                           ),
                           Container(
                             width: 150,
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "${Localization.of(context, 'color:')} ${isNotEmpty(_order.productsColors?[index]) ? _order.productsColors![index] : Localization.of(context, 'not_specified')}",
-                              maxLines: 1,
+                              // maxLines: 1,
                               style: TextStyle(
                                 // fontSize: 15,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -1430,10 +1385,10 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "${Localization.of(context, 'size:')} ${isNotEmpty(_order.productsSizes?[index]) ? _order.productsSizes![index] : Localization.of(context, 'not_specified')}",
-                              maxLines: 1,
+                              // maxLines: 1,
                               style: TextStyle(
                                 // fontSize: 15,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

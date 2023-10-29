@@ -561,10 +561,10 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                         margin: EdgeInsets.symmetric(vertical: 2),
                         child: Text(
                           "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
-                          maxLines: 1,
+                          // maxLines: 1,
                           style: TextStyle(
                             // fontSize: 15,
-                            overflow: TextOverflow.ellipsis,
+                            // overflow: TextOverflow.ellipsis,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -574,10 +574,10 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                         margin: EdgeInsets.symmetric(vertical: 2),
                         child: Text(
                           "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",
-                          maxLines: 1,
+                          // maxLines: 1,
                           style: TextStyle(
                             // fontSize: 15,
-                            overflow: TextOverflow.ellipsis,
+                            // overflow: TextOverflow.ellipsis,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

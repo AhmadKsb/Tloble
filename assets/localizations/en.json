@@ -1404,5 +1404,6 @@
    "languageKey": "You can change the language here\\n\\nيمكنك تغيير اللغة هنا",
    "continue_ss": "Continue",
    "by": "by",
-   "added_cart_items": "Items added to your cart can be found here. You can also continue shopping and add more items to it before confirming your order\\n\\nيمكن العثور على المنتج المضاف إلى سلة التسوق الخاصة بك هنا. يمكنك أيضًا متابعة التسوق وإضافة المزيد من العناصر إليها قبل تأكيد طلبك"
+   "added_cart_items": "Items added to your cart can be found here. You can also continue shopping and add more items to it before confirming your order\\n\\nيمكن العثور على المنتج المضاف إلى سلة التسوق الخاصة بك هنا. يمكنك أيضًا متابعة التسوق وإضافة المزيد من العناصر إليها قبل تأكيد طلبك",
+   "order_submitted_successfully": "Your order has been submitted successfully"
 }

@@ -588,7 +588,8 @@ class _MainPageState extends State<MainPage>
               ),
             ),
             Spacer(),
-            if ((homeScreenController.showCoachMark ?? false) && isHomePageSelected)
+            if ((homeScreenController.showCoachMark ?? false) &&
+                isHomePageSelected)
               Container(
                 // width: 60,
                 child: InkWell(
@@ -620,15 +621,24 @@ class _MainPageState extends State<MainPage>
                               confirmMessage:
                                   Localization.of(context, 'confirm'),
                               confirmAction: () async {
-                                homeScreenController.productsTitles = [];
-                                homeScreenController.productsLinks = [];
-                                homeScreenController.productsQuantities = [];
-                                homeScreenController.productsColors = [];
-                                homeScreenController.productsSizes = [];
-                                homeScreenController.productsPrices = [];
-                                homeScreenController.productsImages = [];
+                                try {
+                                  // setState(() {
+                                  //   isLoading = true;
+                                  // });
 
-                                homeScreenController.refreshView();
+                                  await homeScreenController.resetCart();
+
+                                  homeScreenController.refreshView();
+
+                                  // setState(() {
+                                  //   isLoading = false;
+                                  // });
+                                } catch (e) {
+                                  print("error deleting cart");
+                                  // setState(() {
+                                  //   isLoading = false;
+                                  // });
+                                }
 
                                 setState(() {});
                               },

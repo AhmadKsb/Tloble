@@ -1648,47 +1648,75 @@ class _MyHomePageState extends State<MyHomePage>
                                           Localization.of(context, 'continue'),
                                       confirmAction: () async {
                                         // Navigator.of(context).pop();
-                                        widget.homeScreenController
-                                            ?.productsTitles
-                                            .add(itemDescription ??
+                                        try {
+                                          setState(() {
+                                            isLoading = true;
+                                          });
+                                          await widget.homeScreenController
+                                              ?.getSharedPreferences();
+
+                                          await widget.homeScreenController
+                                              ?.addProductsTitle(
+                                            itemDescription ??
                                                 Localization.of(
-                                                    context, "product"));
-                                        widget
-                                            .homeScreenController?.productsLinks
-                                            .add(_productLinkController.text);
-                                        widget.homeScreenController
-                                            ?.productsQuantities
-                                            .add(_quantityController.text);
-                                        widget.homeScreenController
-                                            ?.productsColors
-                                            .add(_colorController.text);
-                                        widget
-                                            .homeScreenController?.productsSizes
-                                            .add(_sizeController.text);
-                                        widget.homeScreenController
-                                            ?.productsPrices
-                                            .add(price ?? "0");
-                                        widget.homeScreenController
-                                            ?.productsImages
-                                            .add(imageLink ?? "");
+                                                    context, "product"),
+                                          );
 
-                                        _quantityController.text = "";
-                                        _productLinkController.text = "";
-                                        _moreDetailsController.text = "";
-                                        _colorController.text = "";
-                                        _sizeController.text = "";
-                                        image = null;
-                                        imageLink = null;
-                                        price = null;
-                                        itemDescription = null;
+                                          await widget.homeScreenController
+                                              ?.addProductsLinks(
+                                                  _productLinkController.text);
 
-                                        widget.homeScreenController
-                                            ?.refreshView();
+                                          await widget.homeScreenController
+                                              ?.addProductsQuantities(
+                                                  _quantityController.text);
 
-                                        FocusManager.instance.primaryFocus
-                                            ?.unfocus();
+                                          await widget.homeScreenController
+                                              ?.addProductsColors(
+                                                  _colorController.text);
 
-                                        showSuccessBottomsheet();
+                                          await widget.homeScreenController
+                                              ?.addProductsSizes(
+                                                  _sizeController.text);
+
+                                          await widget.homeScreenController
+                                              ?.addProductsPrices(price ?? "0");
+
+                                          await widget.homeScreenController
+                                              ?.addProductsImages(
+                                                  imageLink ?? "");
+
+                                          _quantityController.text = "";
+                                          _productLinkController.text = "";
+                                          _moreDetailsController.text = "";
+                                          _colorController.text = "";
+                                          _sizeController.text = "";
+                                          image = null;
+                                          imageLink = null;
+                                          price = null;
+                                          itemDescription = null;
+
+                                          widget.homeScreenController
+                                              ?.refreshView();
+
+                                          FocusManager.instance.primaryFocus
+                                              ?.unfocus();
+
+                                          showSuccessBottomsheet();
+
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+
+                                          try {
+                                            Vibration.vibrate();
+                                          } catch (e) {}
+
+                                          setState(() {});
+                                        } catch (e) {
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                        }
 
                                         // if (widget.homeScreenController
                                         //         .productsTitles.length ==
@@ -1696,12 +1724,6 @@ class _MyHomePageState extends State<MyHomePage>
                                         //   widget.homeScreenController
                                         //       .jumpToCartScreen();
                                         // }
-
-                                        try {
-                                          Vibration.vibrate();
-                                        } catch (e) {}
-
-                                        setState(() {});
                                       },
                                       cancelMessage:
                                           Localization.of(context, 'cancel'),

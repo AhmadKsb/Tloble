@@ -105,11 +105,9 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
         i < widget.homeScreenController.productsPrices.length;
         i++) {
       price += num.tryParse(widget.homeScreenController.productsPrices[i]
-                  .replaceAll(',', '') ??
-              "0")! *
+              .replaceAll(',', ''))! *
           num.tryParse(widget.homeScreenController.productsQuantities[i]
-                  .replaceAll(',', '') ??
-              "0")!;
+              .replaceAll(',', ''))!;
     }
 
     return price;
@@ -488,7 +486,8 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                                 maxLines: 2,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w900,
-                                  color: Color.fromARGB(255, 0, 0, 255).withOpacity(0.9),
+                                  color: Color.fromARGB(255, 0, 0, 255)
+                                      .withOpacity(0.9),
                                 ),
                               ),
                             ),
@@ -498,10 +497,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController.productsColors[index]) ? widget.homeScreenController.productsColors[index] : Localization.of(context, 'not_specified')}",
-                              maxLines: 1,
+                              // maxLines: 1,
                               style: TextStyle(
                                 // fontSize: 15,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -511,10 +510,10 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController.productsSizes[index]) ? widget.homeScreenController.productsSizes[index] : Localization.of(context, 'not_specified')}",
-                              maxLines: 1,
+                              // maxLines: 1,
                               style: TextStyle(
                                 // fontSize: 15,
-                                overflow: TextOverflow.ellipsis,
+                                // overflow: TextOverflow.ellipsis,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -1151,13 +1150,15 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
           ),
         ],
       );
-      widget.homeScreenController.productsTitles = [];
-      widget.homeScreenController.productsLinks = [];
-      widget.homeScreenController.productsQuantities = [];
-      widget.homeScreenController.productsColors = [];
-      widget.homeScreenController.productsSizes = [];
-      widget.homeScreenController.productsPrices = [];
-      widget.homeScreenController.productsImages = [];
+
+      await widget.homeScreenController.resetCart();
+      // widget.homeScreenController.productsTitles = [];
+      // widget.homeScreenController.productsLinks = [];
+      // widget.homeScreenController.productsQuantities = [];
+      // widget.homeScreenController.productsColors = [];
+      // widget.homeScreenController.productsSizes = [];
+      // widget.homeScreenController.productsPrices = [];
+      // widget.homeScreenController.productsImages = [];
 
       widget.homeScreenController.refreshView();
 

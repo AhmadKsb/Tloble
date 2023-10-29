@@ -32,6 +32,10 @@ mixin HomeScreenControllerMixin {
     homeScreenController.refreshView();
 
     prefs = await SharedPreferences.getInstance();
+    await homeScreenController.getSharedPreferences();
+
+    homeScreenController.getUpdatedCart();
+
     String? activateNotification = prefs?.getString('swiftShop_notification');
 
     if (activateNotification == null || activateNotification != 'activate') {

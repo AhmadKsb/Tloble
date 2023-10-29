@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_ecommerce_app/src/models/customer.dart';
 import 'package:flutter_ecommerce_app/src/models/employee.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreenController {
   final Map<String, dynamic>? ratesAppInfoSnapshot;
@@ -12,6 +13,7 @@ class HomeScreenController {
     this.appInfoSnapshot,
     this.sellRatesAppInfoSnapshot,
   ) {
+    getSharedPreferences();
     if (appInfoSnapshot != null)
       fillFieldsFromData(appInfoSnapshott: appInfoSnapshot);
   }
@@ -186,19 +188,175 @@ class HomeScreenController {
   List<dynamic>? _feedbackReceiversList;
   List<dynamic>? _allowedPeopleToAddOrRemoveMiningItems;
   List<dynamic>? _allowedPeopleToAddOrRemoveRewardItems;
-  List<dynamic> productsTitles = [];
-  List<dynamic> productsQuantities = [];
-  List<dynamic> productsLinks = [];
-  List<dynamic> productsColors = [];
-  List<dynamic> productsSizes = [];
-  List<dynamic> productsPrices = [];
-  List<dynamic> productsImages = [];
+  List<String> _productsTitles = [];
+  List<String> _productsQuantities = [];
+  List<String> _productsLinks = [];
+  List<String> _productsColors = [];
+  List<String> _productsSizes = [];
+  List<String> _productsPrices = [];
+  List<String> _productsImages = [];
   List<Employee> _employees = [];
   String _cryptoCurrencies = "";
+  late SharedPreferences sharedPreferences;
 
   int? get cashOut => _cashOut;
   set cashOut(value) {
     _cashOut = value;
+  }
+
+  List<String> get productsImages {
+    // getUpdatedCart();
+    return _productsImages;
+  }
+
+  set productsImages(List<String> value) {
+    _productsImages = value;
+  }
+
+  List<String> get productsPrices {
+    // getUpdatedCart();
+    return _productsPrices;
+  }
+
+  set productsPrices(List<String> value) {
+    _productsPrices = value;
+  }
+
+  List<String> get productsSizes {
+    // getUpdatedCart();
+    return _productsSizes;
+  }
+
+  set productsSizes(List<String> value) {
+    _productsSizes = value;
+  }
+
+  List<String> get productsColors {
+    // getUpdatedCart();
+    return _productsColors;
+  }
+
+  set productsColors(List<String> value) {
+    _productsColors = value;
+  }
+
+  List<String> get productsLinks {
+    // getUpdatedCart();
+    return _productsLinks;
+  }
+
+  set productsLinks(List<String> value) {
+    _productsLinks = value;
+  }
+
+  List<String> get productsTitles {
+    // getUpdatedCart();
+    return _productsTitles;
+  }
+
+  set productsTitles(List<String> value) {
+    _productsTitles = value;
+  }
+
+  List<String> get productsQuantities {
+    // getUpdatedCart();
+    return _productsQuantities;
+  }
+
+  set productsQuantities(List<String> value) {
+    _productsQuantities = value;
+  }
+
+  Future<void> getSharedPreferences() async {
+    sharedPreferences = await SharedPreferences.getInstance();
+  }
+
+  void getUpdatedCart() {
+
+    _productsTitles =
+        sharedPreferences.getStringList("tloble_productsTitles") ?? [];
+    print(_productsTitles);
+
+    // print("TITLE " + productsTitles.toString());
+    _productsQuantities =
+        sharedPreferences.getStringList("tloble_productsQuantities") ?? [];
+    _productsLinks =
+        sharedPreferences.getStringList("tloble_productsLinks") ?? [];
+    _productsColors =
+        sharedPreferences.getStringList("tloble_productsColors") ?? [];
+    _productsSizes =
+        sharedPreferences.getStringList("tloble_productsSizes") ?? [];
+    _productsPrices =
+        sharedPreferences.getStringList("tloble_productsPrices") ?? [];
+    _productsImages =
+        sharedPreferences.getStringList("tloble_productsImages") ?? [];
+  }
+
+  Future<void> updateCart() async {
+    await sharedPreferences.setStringList(
+        "tloble_productsTitles", _productsTitles);
+    await sharedPreferences.setStringList(
+        "tloble_productsQuantities", _productsQuantities);
+    await sharedPreferences.setStringList(
+        "tloble_productsLinks", _productsLinks);
+    await sharedPreferences.setStringList(
+        "tloble_productsColors", _productsColors);
+    await sharedPreferences.setStringList(
+        "tloble_productsSizes", _productsSizes);
+    await sharedPreferences.setStringList(
+        "tloble_productsPrices", _productsPrices);
+    await sharedPreferences.setStringList(
+        "tloble_productsImages", _productsImages);
+
+    getUpdatedCart();
+  }
+
+  Future<void> resetCart() async {
+    _productsTitles = [];
+    _productsLinks = [];
+    _productsQuantities = [];
+    _productsColors = [];
+    _productsSizes = [];
+    _productsPrices = [];
+    _productsImages = [];
+
+    await updateCart();
+  }
+
+  Future<void> addProductsTitle(String title) async {
+    _productsTitles.add(title);
+    sharedPreferences.setStringList("tloble_productsTitles", productsTitles);
+  }
+
+  Future<void> addProductsQuantities(String title) async {
+    _productsQuantities.add(title);
+    sharedPreferences.setStringList(
+        "tloble_productsQuantities", _productsQuantities);
+  }
+
+  Future<void> addProductsLinks(String title) async {
+    _productsLinks.add(title);
+    sharedPreferences.setStringList("tloble_productsLinks", _productsLinks);
+  }
+
+  Future<void> addProductsColors(String title) async {
+    _productsColors.add(title);
+    sharedPreferences.setStringList("tloble_productsColors", _productsColors);
+  }
+
+  Future<void> addProductsSizes(String title) async {
+    _productsSizes.add(title);
+    sharedPreferences.setStringList("tloble_productsSizes", _productsSizes);
+  }
+
+  Future<void> addProductsPrices(String title) async {
+    _productsPrices.add(title);
+    sharedPreferences.setStringList("tloble_productsPrices", _productsPrices);
+  }
+
+  Future<void> addProductsImages(String title) async {
+    _productsImages.add(title);
+    sharedPreferences.setStringList("tloble_productsImages", _productsImages);
   }
 
   void setView(HomeScreenControllerView view) {

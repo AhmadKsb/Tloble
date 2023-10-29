@@ -29,7 +29,7 @@
    "share_your_location_or_select_your_city": "شارك موقعك أو حدد مدينتك",
    "search": "بحث",
    "city": "مدينة",
-   "are_you_sure_you_want_to_clear_your_selection": "هل أنت متأكد أنك تريد مسح اختيارك؟",
+   "are_you_sure_you_want_to_clear_your_selection": "هل أنت متأكد من أنك تريد مسح اختيارك؟",
    "jailbreak_info": "هاتفك متجذر. لا يمكنك المتابعة. إذا كنت ترغب في إرسال طلب شراء/بيع ، يرجى الاتصال بنا على {value}",
    "ok": "حسناً",
    "please_login_to_use_this_feature": "يرجى تسجيل الدخول لتقديم طلبك",
@@ -771,7 +771,7 @@
    "send_notification": "إرسال إشعار",
    "ban_user": "حظر مستخدم",
    "unban_user": "إلغاء الحظر عن مستخدم",
-   "add_driver": "أضف سائق",
+   "add_driver": "إضافة سائق",
    "kick_driver": "شحط سائق",
    "rates": "النسبة",
    "map": "الخريطة",
@@ -827,7 +827,7 @@
    "whatsapp": "واتساب",
    "email": "البريد الإلكتروني",
    "delete_item": "حذف {value}",
-   "are_you_sure_you_want_to_delete_item": "هل أنت متأكد أنك تريد حذف هذا {valueone}: {valuetwo}",
+   "are_you_sure_you_want_to_delete_item": "هل أنت متأكد من أنك تريد حذف هذا {valueone}: {valuetwo}",
    "image_deleted_successfully": "تم حذف الصورة بنجاح!",
    "balance": "توازن",
    "no_rewards_available_yet": "لا توجد مكافآت متاحة حتى الآن!",
@@ -897,7 +897,7 @@
    "Republic of Congo": "جمهورية الكونغو",
    "Cook Islands": "جزر كوك",
    "Costa Rica": "كوستا ريكا",
-   "Côte d'Ivoire": "كوت ديفوار",
+   "Côte d'Ivoire": "كوت دي إيفوار",
    "Croatia": "كرواتيا",
    "Cuba": "كوبا",
    "Curaçao": "كوراساو",
@@ -1404,5 +1404,6 @@
    "languageKey": "You can change the language here\\n\\nيمكنك تغيير اللغة هنا",
    "continue_ss": "تابع",
    "by": "من",
-   "added_cart_items": "Items added to your cart can be found here. You can also continue shopping and add more items to it before confirming your order\\n\\nيمكن العثور على المنتج المضاف إلى سلة التسوق الخاصة بك هنا. يمكنك أيضًا متابعة التسوق وإضافة المزيد من العناصر إليها قبل تأكيد طلبك"
+   "added_cart_items": "Items added to your cart can be found here. You can also continue shopping and add more items to it before confirming your order\\n\\nيمكن العثور على المنتج المضاف إلى سلة التسوق الخاصة بك هنا. يمكنك أيضًا متابعة التسوق وإضافة المزيد من العناصر إليها قبل تأكيد طلبك",
+   "order_submitted_successfully": "تم تقديم طلبك بنجاح"
 }

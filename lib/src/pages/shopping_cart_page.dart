@@ -68,6 +68,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
               ),
               confirmMessage: Localization.of(context, 'confirm'),
               confirmAction: () async {
+                widget.homeScreenController!.getUpdatedCart();
                 widget.homeScreenController!.productsTitles.removeAt(index);
                 widget.homeScreenController!.productsLinks.removeAt(index);
                 widget.homeScreenController!.productsQuantities.removeAt(index);
@@ -75,6 +76,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                 widget.homeScreenController!.productsSizes.removeAt(index);
                 widget.homeScreenController!.productsPrices.removeAt(index);
                 widget.homeScreenController!.productsImages.removeAt(index);
+                await widget.homeScreenController!.updateCart();
 
                 widget.homeScreenController!.refreshView();
 
@@ -87,7 +89,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
       ],
       child: Container(
         margin: EdgeInsets.only(bottom: isLastIndex ? 0 : 36),
-        height: 80,
+        // height: 80,
         child: Row(
           children: <Widget>[
             InkWell(
@@ -197,10 +199,10 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                       margin: EdgeInsets.symmetric(vertical: 2),
                       child: Text(
                         "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController?.productsColors[index]) ? widget.homeScreenController?.productsColors[index] : Localization.of(context, 'not_specified')}",
-                        maxLines: 1,
+                        // maxLines: 1,
                         style: TextStyle(
                           // fontSize: 15,
-                          overflow: TextOverflow.ellipsis,
+                          // overflow: TextOverflow.ellipsis,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -211,10 +213,10 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                       margin: EdgeInsets.symmetric(vertical: 2),
                       child: Text(
                         "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController?.productsSizes[index]) ? widget.homeScreenController?.productsSizes[index] : Localization.of(context, 'not_specified')}",
-                        maxLines: 1,
+                        // maxLines: 1,
                         style: TextStyle(
                           // fontSize: 15,
-                          overflow: TextOverflow.ellipsis,
+                          // overflow: TextOverflow.ellipsis,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
