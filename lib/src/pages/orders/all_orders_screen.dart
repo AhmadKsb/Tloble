@@ -69,6 +69,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
       dateSelected = selectedDateFormatted ?? DateTime.now();
     });
 
+
     try {
       prefss = await SharedPreferences.getInstance();
       selectedDateAsString = selectedDate ??
@@ -87,6 +88,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
       orders.sort((a, b) => -(getDateTime(a.id)).compareTo(getDateTime(b.id)));
 
       setState(() {
+        getBalance();
         _state = PageState.loaded;
       });
     } catch (e) {
@@ -435,7 +437,8 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
   }
 
   String getBalance() {
-    if (balance == 0) {
+    balance = 0;
+    // if (balance == 0) {
       orders.forEach((element) {
         if (balance == null) balance = 0;
         balance += Order.fromJson(element.data() as Map<dynamic, dynamic>)
@@ -443,7 +446,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
             Order.fromJson(element.data() as Map<dynamic, dynamic>)
                 .secondPayment!;
       });
-    }
+    // }
     return balance.toString();
   }
 }

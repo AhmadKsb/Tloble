@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
 import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/models/order.dart';
@@ -9,6 +10,9 @@ import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/WKNetworkImage.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:flutter_ecommerce_app/src/widgets/title_text.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../utils/BottomSheets/bottom_sheet_helper.dart';
 
 class UpcomingOrdersScreen extends StatefulWidget {
   final HomeScreenController homeScreenController;
@@ -104,35 +108,146 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
       height: 80,
       child: Row(
         children: <Widget>[
-          WKNetworkImage(
-            ((widget.homeScreenController.hideImage ?? true))
-                ? ""
-                : order.productsImages?[index],
-            fit: BoxFit.contain,
-            width: 60,
-            height: 60,
-            defaultWidget: Image.asset(
-              "assets/images/login_logo.png",
-              width: 60,
-              height: 60,
-            ),
-            placeHolder: AssetImage(
-              'assets/images/placeholder.png',
+          InkWell(
+            onTap: () async {
+              try {
+                bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+                var url = order.productsLinks?[index];
+                if (isIOS) {
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    print('Could not launch $url');
+                    throw Exception('Could not launch $url');
+                  }
+                } else {
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    print('Could not launch $url');
+                    throw Exception('Could not launch $url');
+                  }
+                }
+              } catch (e) {
+                print(e);
+                showErrorBottomsheet(
+                  context,
+                  'An error has occurred: $e',
+                );
+              }
+            },
+            child: Container(
+              width: 85,
+              height: 85,
+              decoration: BoxDecoration(
+                color: Colors.grey.withOpacity(0),
+                // border: Border.all(
+                //   width: 1.0,
+                //   color: Colors.grey.withOpacity(0.4),
+                // ),
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: WKNetworkImage(
+                ((widget.homeScreenController.hideImage ?? true))
+                    ? ""
+                    : order.productsImages?[index],
+                fit: BoxFit.contain,
+                width: 60,
+                height: 60,
+                defaultWidget: Image.asset(
+                  "assets/images/login_logo.png",
+                  width: 60,
+                  height: 60,
+                ),
+                placeHolder: AssetImage(
+                  'assets/images/placeholder.png',
+                ),
+              ),
             ),
           ),
           Expanded(
             child: ListTile(
-              title: TitleText(
-                text: order.productsTitles?[index],
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
+              title: GestureDetector(
+                onLongPress: () {
+                  Clipboard.setData(new ClipboardData(
+                      text: order.productsLinks?[index]))
+                      .then((result) {
+                    final snackBar = SnackBar(
+                      content: Text('Copied product link to Clipboard'),
+                      action: SnackBarAction(
+                        label: 'Done',
+                        onPressed: () {},
+                      ),
+                    );
+                    Scaffold.of(context).showSnackBar(snackBar);
+                  });
+                },
+                onTap: () async {
+                  // print("ASD");
+                  try {
+                    bool isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+                    var url = order.productsLinks?[index];
+                    if (isIOS) {
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        print('Could not launch $url');
+                        throw Exception('Could not launch $url');
+                      }
+                    } else {
+                      if (await canLaunch(url)) {
+                        await launch(url);
+                      } else if (await canLaunch(url)) {
+                        await launch(url);
+                      } else {
+                        print('Could not launch $url');
+                        throw Exception('Could not launch $url');
+                      }
+                    }
+                  } catch (e) {
+                    print(e);
+                    showErrorBottomsheet(
+                      context,
+                      'An error has occurred: $e',
+                    );
+                  }
+                },
+                child: TitleText(
+                  text: order.productsTitles?[index],
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    color:
+                    Color.fromARGB(255, 0, 0, 255).withOpacity(0.9),
+                  ),
+                ),
               ),
               subtitle: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Container(
-                    width: 150,
+                    width: MediaQuery.of(context).size.width - 200,
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    child: Text(
+                      "${Localization.of(context, 'quantity:')} ${isNotEmpty(order.productsQuantities?[index]) ? order.productsQuantities![index] : Localization.of(context, 'not_specified')}",
+                      maxLines: 1,
+                      style: TextStyle(
+                        // fontSize: 15,
+                        overflow: TextOverflow.ellipsis,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width - 200,
                     margin: EdgeInsets.symmetric(vertical: 2),
                     child: Text(
                       "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
@@ -145,7 +260,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
                     ),
                   ),
                   Container(
-                    width: 150,
+                    width: MediaQuery.of(context).size.width - 200,
                     margin: EdgeInsets.symmetric(vertical: 2),
                     child: Text(
                       "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",

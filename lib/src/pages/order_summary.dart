@@ -361,6 +361,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                     ),
                   ],
                 ),
+
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Row(
@@ -402,7 +403,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                         width: 85,
                         height: 85,
                         decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.grey.withOpacity(0),
                           // border: Border.all(
                           //   width: 1.0,
                           //   color: Colors.grey.withOpacity(0.4),
@@ -435,11 +436,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            width:
-                                (widget.homeScreenController.showProductPrice ??
-                                        false)
-                                    ? 100
-                                    : 150,
+                            width: MediaQuery.of(context).size.width - 200,
                             child: InkWell(
                               onTap: () async {
                                 try {
@@ -493,7 +490,20 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                             ),
                           ),
                           Container(
-                            width: 150,
+                            width: MediaQuery.of(context).size.width - 200,
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            child: Text(
+                              "${Localization.of(context, 'quantity:')} ${isNotEmpty(widget.homeScreenController.productsQuantities[index]) ? widget.homeScreenController.productsQuantities[index] : Localization.of(context, 'not_specified')}",
+                              // maxLines: 1,
+                              style: TextStyle(
+                                // fontSize: 15,
+                                // overflow: TextOverflow.ellipsis,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width - 200,
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController.productsColors[index]) ? widget.homeScreenController.productsColors[index] : Localization.of(context, 'not_specified')}",
@@ -506,7 +516,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                             ),
                           ),
                           Container(
-                            width: 150,
+                            width: MediaQuery.of(context).size.width - 200,
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController.productsSizes[index]) ? widget.homeScreenController.productsSizes[index] : Localization.of(context, 'not_specified')}",
@@ -543,41 +553,6 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                         ],
                       ),
                     ),
-                    Spacer(),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 8,
-                      ),
-                      height: 40,
-                      width: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.black.withOpacity(0.3),
-                        ),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(13),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsetsDirectional.only(
-                            start: 12,
-                            end: 12,
-                            top: num.tryParse(widget.homeScreenController
-                                        .productsQuantities[index])! >
-                                    1000
-                                ? 0
-                                : 10),
-                        child: Text(
-                          " ${(num.tryParse(widget.homeScreenController.productsQuantities[index])! < 100) && (num.tryParse(widget.homeScreenController.productsQuantities[index])! > 10) ? " " : ""}${num.tryParse(widget.homeScreenController.productsQuantities[index])! < 10 ? "  " : ""}${num.tryParse(widget.homeScreenController.productsQuantities[index])! > 100 && num.tryParse(widget.homeScreenController.productsQuantities[index])! < 1000 ? "" : ""}" +
-                              widget.homeScreenController
-                                  .productsQuantities[index],
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),
-                    ),
-                    Spacer(),
                     if ((widget.homeScreenController.showProductPrice ??
                             false) &&
                         (num.tryParse(widget

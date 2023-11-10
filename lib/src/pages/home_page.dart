@@ -1328,10 +1328,11 @@ class _MyHomePageState extends State<MyHomePage>
                             controller: _quantityController,
                             // enabled: !isLoading,
                             focusNode: quantityNode,
-                            keyboardType: TextInputType.number,
+                            keyboardType: TextInputType.text,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
-                                RegExp(r"[0-9]"),
+                                RegExp(
+                                    r"[a-zA-Z0-9 .,()-_!?@+=;:$')*+-./<>[\]_{|}«»ÇÈÊÒÓÖ×÷،؛؟ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىيًٌٍَُِّْٕٓٔ٠١٢٣٤٥٦٧٨٩٪٫٬٭ٰٱپچژڤ۰۱۲۳۴۵۶۷۸۹‌‍‐“”␡ﭐﭑﭖﭗﭘﭙﭪﭫﭬﭭﭺﭻﭼﭽﮊﮋﯾﯿﱞﱟﱠﱡﱢﴼﴽ﴾﴿ﷲﹰﹲﹴﹶﹸﹺﹼﹾﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾ]"),
                               ),
                             ],
                             onChanged: (value) {
@@ -1348,7 +1349,7 @@ class _MyHomePageState extends State<MyHomePage>
                               }
                               return null;
                             },
-                            maxLength: 8,
+                            // maxLength: 8,
                             decoration: inputDecoration(
                               Localization.of(context, 'quantity_s'),
                             ),

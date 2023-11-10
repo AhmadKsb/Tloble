@@ -22,6 +22,7 @@ class HomeScreenController {
 
   num? _newsUpdateDuration,
       _loadUpdateDuration,
+      _yuanRate,
       _fiftyToHundred,
       _hundredToThousand,
       _thousandToThreeThousand,
@@ -44,6 +45,7 @@ class HomeScreenController {
 
   String? _weekdayOpeningHours,
       _lastResetDate,
+      _defaultTransportation,
       _orderSummaryDisclaimer,
       _orderSummaryDisclaimerAR,
       _feedbackSuccessMessage,
@@ -67,6 +69,7 @@ class HomeScreenController {
       _coachMarkTextAR,
       _coachMarkCampaign,
       _aedConversion,
+      _defaultCountry,
       _miningDisabledMessage,
       _miningDisabledMessageAR,
       _rewardsDisabledMessage,
@@ -172,6 +175,8 @@ class HomeScreenController {
   int? _usdtOut;
   String? smallAmountsGoogleSheetURL;
   String? spreadSheetScriptURL;
+  String? UAESpreadSheetScriptURL;
+  String? ChinaSpreadSheetScriptURL;
   HomeScreenControllerView? homeScreenControllerView;
 
   String? spreadSheetID;
@@ -188,6 +193,8 @@ class HomeScreenController {
   List<dynamic>? _feedbackReceiversList;
   List<dynamic>? _allowedPeopleToAddOrRemoveMiningItems;
   List<dynamic>? _allowedPeopleToAddOrRemoveRewardItems;
+  List<dynamic> _countries = [];
+  List<dynamic> _transportation = [];
   List<String> _productsTitles = [];
   List<String> _productsQuantities = [];
   List<String> _productsLinks = [];
@@ -272,7 +279,6 @@ class HomeScreenController {
   }
 
   void getUpdatedCart() {
-
     _productsTitles =
         sharedPreferences.getStringList("tloble_productsTitles") ?? [];
     print(_productsTitles);
@@ -508,6 +514,11 @@ class HomeScreenController {
     _lastResetDate = value;
   }
 
+  String? get defaultTransportation => _defaultTransportation;
+  set defaultTransportation(value) {
+    _defaultTransportation = value;
+  }
+
   String? get coachMarkTextAR => _coachMarkTextAR;
   set coachMarkTextAR(value) {
     _coachMarkTextAR = value;
@@ -643,6 +654,11 @@ class HomeScreenController {
   String? get miningDisabledMessage => _miningDisabledMessage;
   set miningDisabledMessage(value) {
     _miningDisabledMessage = value;
+  }
+
+  String? get defaultCountry => _defaultCountry;
+  set defaultCountry(value) {
+    _defaultCountry = value;
   }
 
   String? get miningDisabledMessageAR => _miningDisabledMessageAR;
@@ -806,6 +822,11 @@ class HomeScreenController {
   num? get loadUpdateDuration => _loadUpdateDuration;
   set loadUpdateDuration(value) {
     _loadUpdateDuration = value;
+  }
+
+  num? get yuanRate => _yuanRate;
+  set yuanRate(value) {
+    _yuanRate = value;
   }
 
   num? get myProfitFromSignals => _myProfitFromSignals;
@@ -1053,6 +1074,16 @@ class HomeScreenController {
     _allowedPeopleToAddOrRemoveMiningItems = value;
   }
 
+  List<dynamic>? get countries => _countries;
+  set countries(value) {
+    _countries = value;
+  }
+
+  List<dynamic>? get transportation => _transportation;
+  set transportation(value) {
+    _transportation = value;
+  }
+
   List<dynamic>? get allowedPeopleToAddOrRemoveRewardItems =>
       _allowedPeopleToAddOrRemoveRewardItems;
   set allowedPeopleToAddOrRemoveRewardItems(value) {
@@ -1066,6 +1097,7 @@ class HomeScreenController {
         appInfoSnapshot?['signalsSubscriptionPrice'] ?? 30;
     _newsUpdateDuration = appInfoSnapshot?['newsUpdateDuration'] ?? 5;
     _loadUpdateDuration = appInfoSnapshot?['loadUpdateDuration'] ?? 5;
+    _yuanRate = appInfoSnapshot?['yuanRate'] ?? 1;
     _myPercentageFromSignals = appInfoSnapshot?['myPercentageFromSignals'] ?? 2;
     _coinsToJoinTelegram = appInfoSnapshot?['coinsToJoinTelegram'] ?? 61;
     _myProfitFromSignals = appInfoSnapshot?['myProfitFromSignals'] ?? 0;
@@ -1144,6 +1176,7 @@ class HomeScreenController {
         appInfoSnapshot?['rewardInformationDialogTextAR'] ?? "";
     _profitabilityHintText = appInfoSnapshot?['profitabilityHintText'] ?? "";
     _lastResetDate = appInfoSnapshot?['lastResetDate'] ?? "";
+    _defaultTransportation = appInfoSnapshot?['defaultTransportation'] ?? "";
     _coachMarkText = appInfoSnapshot?['coachMarkText'] ?? "";
     _coachMarkTextAR = appInfoSnapshot?['coachMarkTextAR'] ?? "";
     _coachMarkCampaign = appInfoSnapshot?['coachMarkCampaign'] ?? "";
@@ -1195,10 +1228,17 @@ class HomeScreenController {
     _allowedPeopleToAddOrRemoveMiningItems =
         appInfoSnapshot?['allowedPeopleToAddOrRemoveMiningItems'];
 
+    _countries = appInfoSnapshot?['countries'];
+
+    _transportation = appInfoSnapshot?['transportation'];
+
     _allowedPeopleToAddOrRemoveRewardItems =
         appInfoSnapshot?['allowedPeopleToAddOrRemoveRewardItems'];
 
     salesNumber = appInfoSnapshot?['salesNumber'];
+
+    _defaultCountry = appInfoSnapshot?['defaultCountry'] ?? "Coming Soon!";
+
     _miningDisabledMessage =
         appInfoSnapshot?['miningDisabledMessage'] ?? "Coming Soon!";
     _miningDisabledMessageAR =
@@ -1209,6 +1249,12 @@ class HomeScreenController {
         appInfoSnapshot?['rewardsDisabledMessageAR'] ?? "Coming Soon!";
 
     spreadSheetScriptURL = appInfoSnapshot?['spreadSheetScriptURL'] ??
+        'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
+
+    UAESpreadSheetScriptURL = appInfoSnapshot?['UAESpreadSheetScriptURL'] ??
+        'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
+
+    ChinaSpreadSheetScriptURL = appInfoSnapshot?['ChinaSpreadSheetScriptURL'] ??
         'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
 
     spreadSheetID = appInfoSnapshot?['spreadSheetID'] ??

@@ -255,7 +255,21 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                   children: <Widget>[
                     SizedBox(height: 2),
                     Container(
-                      width: 150,
+                      width: MediaQuery.of(context).size.width - 200,
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      child: Text(
+                        "${Localization.of(context, 'quantity:')} ${isNotEmpty(widget.homeScreenController?.productsQuantities[index]) ? widget.homeScreenController?.productsQuantities[index] : Localization.of(context, 'not_specified')}",
+                        // maxLines: 1,
+                        style: TextStyle(
+                          // fontSize: 15,
+                          // overflow: TextOverflow.ellipsis,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Container(
+                      width: MediaQuery.of(context).size.width - 200,
                       margin: EdgeInsets.symmetric(vertical: 2),
                       child: Text(
                         "${Localization.of(context, 'color:')} ${isNotEmpty(widget.homeScreenController?.productsColors[index]) ? widget.homeScreenController?.productsColors[index] : Localization.of(context, 'not_specified')}",
@@ -269,7 +283,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                     ),
                     SizedBox(height: 2),
                     Container(
-                      width: 150,
+                      width: MediaQuery.of(context).size.width - 200,
                       margin: EdgeInsets.symmetric(vertical: 2),
                       child: Text(
                         "${Localization.of(context, 'size:')} ${isNotEmpty(widget.homeScreenController?.productsSizes[index]) ? widget.homeScreenController?.productsSizes[index] : Localization.of(context, 'not_specified')}",
@@ -300,19 +314,6 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                         ],
                       ),
                   ],
-                ),
-                trailing: Container(
-                  width: 45,
-                  height: 35,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      color: LightColor.lightGrey.withAlpha(150),
-                      borderRadius: BorderRadius.circular(10)),
-                  child: TitleText(
-                    text:
-                        'x${widget.homeScreenController?.productsQuantities[index]}',
-                    fontSize: 12,
-                  ),
                 ),
               ),
             )

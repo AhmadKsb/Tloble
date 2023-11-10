@@ -45,11 +45,13 @@ var _credentials = r'''
 class OrderScreen extends StatefulWidget {
   final HomeScreenController homeScreenController;
   final Order order;
+  final bool isCustomer;
 
   OrderScreen({
     Key? key,
     required this.homeScreenController,
     required this.order,
+    this.isCustomer = false,
   }) : super(key: key);
   static const String route = '/home';
 
@@ -151,7 +153,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                     ),
                     child: Column(
                       children: [
-                        if (_order.sentByEmployee ?? false)
+                        if ((_order.sentByEmployee ?? false) &&
+                            !widget.isCustomer)
                           Row(
                             children: [
                               Text(
@@ -170,7 +173,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               ),
                             ],
                           ),
-                        if (isNotEmpty(_order.acceptedBy))
+                        if (isNotEmpty(_order.acceptedBy) && !widget.isCustomer)
                           Row(
                             children: [
                               Text(
@@ -189,7 +192,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               ),
                             ],
                           ),
-                        if (_order.firstPayment.toString() != "0")
+                        if ((_order.firstPayment.toString() != "0") &&
+                            !widget.isCustomer)
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
                             child: Row(
@@ -211,7 +215,8 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                               ],
                             ),
                           ),
-                        if (_order.secondPayment.toString() != "0")
+                        if ((_order.secondPayment.toString() != "0") &&
+                            !widget.isCustomer)
                           Padding(
                             padding: const EdgeInsets.only(top: 12.0),
                             child: Row(
@@ -237,115 +242,55 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                       ],
                     ),
                   ),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 62,
-                          vertical: 16,
-                        ),
-                        child: RaisedButtonV2(
-                          disabled: _isLoading,
-                          // || isNotEmpty(_order.acceptedTime),
-                          // _isLoading,
-                          isLoading: _isLoading,
-                          onPressed: () async {
-                            await showConfirmationBottomSheet(
-                              context: context,
-                              title: Localization.of(
-                                context,
-                                'are_you_sure_you_want_to_contact_this_customer',
-                              ),
-                              confirmMessage:
-                                  Localization.of(context, 'confirm'),
-                              confirmAction: () async {
-                                if (isEmpty(_order.acceptedTime)) {
-                                  bool wasAbleToGetUpdatedOrder =
-                                      await _getUpdatedOrder(popFirst: true);
-                                  if (wasAbleToGetUpdatedOrder) {
-                                    await _updateAcceptedTime();
-                                    try {
-                                      openWhatsapp();
-                                      await _getUpdatedOrder();
-                                    } catch (e) {
-                                      print(e);
-                                      showErrorBottomsheet(
-                                        replaceVariable(
-                                              Localization.of(context,
-                                                  'an_error_has_occurred_value'),
-                                              'value',
-                                              e.toString(),
-                                            ) ??
-                                            "",
-                                      );
-                                    }
-                                  }
-                                } else {
-                                  try {
-                                    openWhatsapp();
-                                  } catch (e) {
-                                    print(e);
-                                    showErrorBottomsheet(
-                                      replaceVariable(
-                                            Localization.of(context,
-                                                'an_error_has_occurred_value'),
-                                            'value',
-                                            e.toString(),
-                                          ) ??
-                                          "",
-                                    );
-                                  }
-                                }
-                              },
-                              cancelMessage: Localization.of(context, 'cancel'),
-                            );
-                          },
-                          label: isEmpty(_order.acceptedTime)
-                              ? Localization.of(context, 'contact')
-                              : Localization.of(context, 'already_contacted'),
-                        ),
-                      ),
-                      if (_order.shipmentStatus![0] ==
-                              ShipmentStatus.awaitingCustomer ||
-                          ((widget.homeScreenController.isAdmin ?? false)))
+                  if (!widget.isCustomer)
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 4.0,
+                      children: <Widget>[
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 62,
                             vertical: 16,
                           ),
                           child: RaisedButtonV2(
-                            disabled: _isLoading ||
-                                isEmpty(_order.acceptedTime) ||
-                                (_order.shipmentStatus![0] ==
-                                    ShipmentStatus.customerRejected),
+                            disabled: _isLoading,
+                            // || isNotEmpty(_order.acceptedTime),
+                            // _isLoading,
                             isLoading: _isLoading,
                             onPressed: () async {
                               await showConfirmationBottomSheet(
                                 context: context,
                                 title: Localization.of(
                                   context,
-                                  'are_you_sure_the_customer_rejected',
+                                  'are_you_sure_you_want_to_contact_this_customer',
                                 ),
                                 confirmMessage:
                                     Localization.of(context, 'confirm'),
                                 confirmAction: () async {
-                                  // await Navigator.of(context).pop;
-                                  bool wasAbleToGetUpdatedOrder =
-                                      await _getUpdatedOrder();
-                                  if (wasAbleToGetUpdatedOrder) {
+                                  if (isEmpty(_order.acceptedTime)) {
+                                    bool wasAbleToGetUpdatedOrder =
+                                        await _getUpdatedOrder(popFirst: true);
+                                    if (wasAbleToGetUpdatedOrder) {
+                                      await _updateAcceptedTime();
+                                      try {
+                                        openWhatsapp();
+                                        await _getUpdatedOrder();
+                                      } catch (e) {
+                                        print(e);
+                                        showErrorBottomsheet(
+                                          replaceVariable(
+                                                Localization.of(context,
+                                                    'an_error_has_occurred_value'),
+                                                'value',
+                                                e.toString(),
+                                              ) ??
+                                              "",
+                                        );
+                                      }
+                                    }
+                                  } else {
                                     try {
-                                      await _updateOrder(
-                                        ShipmentStatus.customerRejected,
-                                      );
-
-                                      await _getUpdatedOrder();
-                                      showSuccessBottomsheet(
-                                        Localization.of(context,
-                                            "order_status_updated_successfully"),
-                                        closeOnTapOutside: true,
-                                      );
+                                      openWhatsapp();
                                     } catch (e) {
                                       print(e);
                                       showErrorBottomsheet(
@@ -364,326 +309,397 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                     Localization.of(context, 'cancel'),
                               );
                             },
-                            label: Localization.of(context, 'customerRejected'),
+                            label: isEmpty(_order.acceptedTime)
+                                ? Localization.of(context, 'contact')
+                                : Localization.of(context, 'already_contacted'),
                           ),
                         ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 62,
-                          vertical: 16,
-                        ),
-                        child: RaisedButtonV2(
-                          disabled: _isLoading ||
-                              isEmpty(_order.acceptedTime) ||
-                              (_order.firstPayment != 0) ||
-                              (_order.shipmentStatus![0] ==
-                                      ShipmentStatus.completed ||
-                                  _order.shipmentStatus![0] ==
+                        if (_order.shipmentStatus![0] ==
+                                ShipmentStatus.awaitingCustomer ||
+                            ((widget.homeScreenController.isAdmin ?? false)))
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 62,
+                              vertical: 16,
+                            ),
+                            child: RaisedButtonV2(
+                              disabled: _isLoading ||
+                                  isEmpty(_order.acceptedTime) ||
+                                  (_order.shipmentStatus![0] ==
                                       ShipmentStatus.customerRejected),
-                          isLoading: _isLoading,
-                          onPressed: () async {
-                            bool wasAbleToGetUpdatedOrder =
-                                await _getUpdatedOrder();
-                            if (wasAbleToGetUpdatedOrder) {
-                              if (isNotEmpty(_order.acceptedTime)) {
-                                try {
-                                  await showBottomsheet(
-                                    context: context,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.4,
-                                    dismissOnTouchOutside: false,
-                                    isScrollControlled: true,
-                                    upperWidget: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: <Widget>[
-                                        GestureDetector(
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 16.0,
-                                                vertical: 16.0,
-                                              ),
-                                              child: Icon(
-                                                Icons.close,
-                                                color: Colors.black,
-                                                size: 30,
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              setState(() {
-                                                return _isLoading
-                                                    ? null
-                                                    : Navigator.of(context)
-                                                        .pop();
-                                              });
-                                            })
-                                      ],
-                                    ),
-                                    body: FirstPaymentBottomsheet(
-                                      homeScreenController:
-                                          widget.homeScreenController,
-                                      order: _order,
-                                      isBottomSheetLoading: (isLoad) {
-                                        setState(() {
-                                          _isLoading = isLoad;
-                                        });
-                                      },
-                                    ),
-                                  );
-
-                                  await _getUpdatedOrder();
-                                } catch (e) {
-                                  print(e);
-                                  showErrorBottomsheet(
-                                    replaceVariable(
-                                          Localization.of(context,
-                                              'an_error_has_occurred_value'),
-                                          'value',
-                                          e.toString(),
-                                        ) ??
-                                        "",
-                                  );
-                                }
-                              } else {
-                                showErrorBottomsheet(
-                                  Localization.of(context,
-                                      'you_should_first_contact_this_customer'),
-                                );
-                              }
-                            }
-                          },
-                          label: Localization.of(context, 'first_payment'),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 62,
-                          vertical: 16,
-                        ),
-                        child: RaisedButtonV2(
-                          disabled: _isLoading ||
-                              isEmpty(_order.acceptedTime) ||
-                              _order.firstPayment == 0 ||
-                              (_order.shipmentStatus![0] ==
-                                      ShipmentStatus.completed ||
-                                  _order.shipmentStatus![0] ==
-                                      ShipmentStatus.customerRejected) ||
-                              _order.shipmentStatus![0] ==
-                                  ShipmentStatus.awaitingCustomerPickup,
-                          isLoading: _isLoading,
-                          onPressed: () async {
-                            showBottomSheetList<String>(
-                              context: context,
-                              title:
-                                  Localization.of(context, 'select_a_status'),
-                              items: [
-                                if (_order.shipmentStatus![0] !=
-                                        ShipmentStatus.paid &&
-                                    num.tryParse(
-                                            _order.shipmentStatus![0].value)! <
-                                        num.tryParse(
-                                            ShipmentStatus.paid.value)!)
-                                  Localization.of(context, 'paid'),
-                                if (_order.shipmentStatus![0] !=
-                                        ShipmentStatus.awaitingShipment &&
-                                    num.tryParse(
-                                            _order.shipmentStatus![0].value)! <
-                                        num.tryParse(ShipmentStatus
-                                            .awaitingShipment.value)!)
-                                  Localization.of(context,
-                                      'in_our_warehouse_outside_lebanon'),
-                                if (_order.shipmentStatus![0] !=
-                                        ShipmentStatus.orderOnTheWay &&
-                                    num.tryParse(
-                                            _order.shipmentStatus![0].value)! <
-                                        num.tryParse(ShipmentStatus
-                                            .orderOnTheWay.value)!)
-                                  Localization.of(context, 'orderOnTheWay'),
-                                if (_order.shipmentStatus![0] !=
-                                        ShipmentStatus.awaitingCustomerPickup &&
-                                    num.tryParse(
-                                            _order.shipmentStatus![0].value)! <
-                                        num.tryParse(ShipmentStatus
-                                            .awaitingCustomerPickup.value)!)
-                                  Localization.of(
-                                      context, 'awaitingCustomerPickup'),
-                                // if (_order?.shipmentStatus![0] !=
-                                //         ShipmentStatus.customerRejected &&
-                                //     num.tryParse(
-                                //             _order?.shipmentStatus![0].value) <
-                                //         num.tryParse(ShipmentStatus
-                                //             .customerRejected.value))
-                                //   Localization.of(context, 'customerRejected'),
-                              ],
-                              itemBuilder: (listTileName) {
-                                return ListTile(
-                                  title: Text(
-                                    "${listTileName}",
+                              isLoading: _isLoading,
+                              onPressed: () async {
+                                await showConfirmationBottomSheet(
+                                  context: context,
+                                  title: Localization.of(
+                                    context,
+                                    'are_you_sure_the_customer_rejected',
                                   ),
+                                  confirmMessage:
+                                      Localization.of(context, 'confirm'),
+                                  confirmAction: () async {
+                                    // await Navigator.of(context).pop;
+                                    bool wasAbleToGetUpdatedOrder =
+                                        await _getUpdatedOrder();
+                                    if (wasAbleToGetUpdatedOrder) {
+                                      try {
+                                        await _updateOrder(
+                                          ShipmentStatus.customerRejected,
+                                        );
+
+                                        await _getUpdatedOrder();
+                                        showSuccessBottomsheet(
+                                          Localization.of(context,
+                                              "order_status_updated_successfully"),
+                                          closeOnTapOutside: true,
+                                        );
+                                      } catch (e) {
+                                        print(e);
+                                        showErrorBottomsheet(
+                                          replaceVariable(
+                                                Localization.of(context,
+                                                    'an_error_has_occurred_value'),
+                                                'value',
+                                                e.toString(),
+                                              ) ??
+                                              "",
+                                        );
+                                      }
+                                    }
+                                  },
+                                  cancelMessage:
+                                      Localization.of(context, 'cancel'),
                                 );
                               },
-                              itemHeight: 60,
-                              onItemSelected: (listTileName) async {
-                                bool wasAbleToGetUpdatedOrder =
-                                    await _getUpdatedOrder();
-                                if (wasAbleToGetUpdatedOrder) {
-                                  if (isNotEmpty(_order.acceptedTime) &&
-                                      _order.firstPayment != 0) {
-                                    try {
-                                      await _updateOrder(
-                                        (listTileName.toLowerCase() ==
-                                                Localization.of(context, 'paid')
-                                                    .toLowerCase())
-                                            ? ShipmentStatus.paid
-                                            : (listTileName.toLowerCase() ==
-                                                    Localization.of(context,
-                                                            'in_our_warehouse_outside_lebanon')
-                                                        .toLowerCase())
-                                                ? ShipmentStatus
-                                                    .awaitingShipment
-                                                : (listTileName.toLowerCase() ==
-                                                        Localization.of(context,
-                                                                'orderOnTheWay')
-                                                            .toLowerCase())
-                                                    ? ShipmentStatus
-                                                        .orderOnTheWay
-                                                    :
-                                                    // (listTileName
-                                                    //                         .toLowerCase() ==
-                                                    //                     Localization.of(
-                                                    //                             context,
-                                                    //                             'customerRejected')
-                                                    //                         .toLowerCase())
-                                                    //                 ? ShipmentStatus
-                                                    //                     .customerRejected
-                                                    //                 :
-                                                    ShipmentStatus
-                                                        .awaitingCustomerPickup,
-                                      );
+                              label:
+                                  Localization.of(context, 'customerRejected'),
+                            ),
+                          ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 62,
+                            vertical: 16,
+                          ),
+                          child: RaisedButtonV2(
+                            disabled: _isLoading ||
+                                isEmpty(_order.acceptedTime) ||
+                                (_order.firstPayment != 0) ||
+                                (_order.shipmentStatus![0] ==
+                                        ShipmentStatus.completed ||
+                                    _order.shipmentStatus![0] ==
+                                        ShipmentStatus.customerRejected),
+                            isLoading: _isLoading,
+                            onPressed: () async {
+                              bool wasAbleToGetUpdatedOrder =
+                                  await _getUpdatedOrder();
+                              if (wasAbleToGetUpdatedOrder) {
+                                if (isNotEmpty(_order.acceptedTime)) {
+                                  try {
+                                    await showBottomsheet(
+                                      context: context,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.5,
+                                      dismissOnTouchOutside: false,
+                                      isScrollControlled: true,
+                                      upperWidget: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: <Widget>[
+                                          GestureDetector(
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 16.0,
+                                                  vertical: 16.0,
+                                                ),
+                                                child: Icon(
+                                                  Icons.close,
+                                                  color: Colors.black,
+                                                  size: 30,
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  return _isLoading
+                                                      ? null
+                                                      : Navigator.of(context)
+                                                          .pop();
+                                                });
+                                              })
+                                        ],
+                                      ),
+                                      body: FirstPaymentBottomsheet(
+                                        homeScreenController:
+                                            widget.homeScreenController,
+                                        order: _order,
+                                        isBottomSheetLoading: (isLoad) {
+                                          setState(() {
+                                            _isLoading = isLoad;
+                                          });
+                                        },
+                                      ),
+                                    );
 
-                                      await _getUpdatedOrder();
-                                      showSuccessBottomsheet(
-                                        Localization.of(context,
-                                            "order_status_updated_successfully"),
-                                        closeOnTapOutside: true,
-                                      );
-                                    } catch (e) {
-                                      print(e);
-                                      showErrorBottomsheet(
-                                        replaceVariable(
-                                              Localization.of(context,
-                                                  'an_error_has_occurred_value'),
-                                              'value',
-                                              e.toString(),
-                                            ) ??
-                                            "",
-                                      );
-                                    }
-                                  } else {
+                                    await _getUpdatedOrder();
+                                  } catch (e) {
+                                    print(e);
                                     showErrorBottomsheet(
-                                      Localization.of(
-                                          context,
-                                          _order.firstPayment == 0
-                                              ? 'the_customer_did_not_pay_yet'
-                                              : 'you_should_first_contact_this_customer'),
+                                      replaceVariable(
+                                            Localization.of(context,
+                                                'an_error_has_occurred_value'),
+                                            'value',
+                                            e.toString(),
+                                          ) ??
+                                          "",
                                     );
                                   }
-                                }
-                              },
-                            );
-                          },
-                          label: Localization.of(context, 'update_status'),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 62,
-                          vertical: 16,
-                        ),
-                        child: RaisedButtonV2(
-                          disabled: _isLoading ||
-                              isEmpty(_order.acceptedTime) ||
-                              (_order.firstPayment == 0) ||
-                              (_order.shipmentStatus![0] ==
-                                      ShipmentStatus.completed ||
-                                  _order.shipmentStatus![0] ==
-                                      ShipmentStatus.customerRejected),
-                          isLoading: _isLoading,
-                          onPressed: () async {
-                            bool wasAbleToGetUpdatedOrder =
-                                await _getUpdatedOrder();
-                            if (wasAbleToGetUpdatedOrder) {
-                              if (isNotEmpty(_order.acceptedTime)) {
-                                try {
-                                  await showBottomsheet(
-                                    context: context,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.4,
-                                    dismissOnTouchOutside: false,
-                                    isScrollControlled: true,
-                                    upperWidget: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: <Widget>[
-                                        GestureDetector(
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 16.0,
-                                                vertical: 16.0,
-                                              ),
-                                              child: Icon(
-                                                Icons.close,
-                                                color: Colors.black,
-                                                size: 30,
-                                              ),
-                                            ),
-                                            onTap: () {
-                                              setState(() {
-                                                return _isLoading
-                                                    ? null
-                                                    : Navigator.of(context)
-                                                        .pop();
-                                              });
-                                            })
-                                      ],
-                                    ),
-                                    body: SecondPaymentBottomsheet(
-                                      homeScreenController:
-                                          widget.homeScreenController,
-                                      order: _order,
-                                      isBottomSheetLoading: (isLoad) {
-                                        setState(() {
-                                          _isLoading = isLoad;
-                                        });
-                                      },
-                                    ),
-                                  );
-
-                                  await _getUpdatedOrder();
-                                } catch (e) {
-                                  print(e);
+                                } else {
                                   showErrorBottomsheet(
-                                    replaceVariable(
-                                          Localization.of(context,
-                                              'an_error_has_occurred_value'),
-                                          'value',
-                                          e.toString(),
-                                        ) ??
-                                        "",
+                                    Localization.of(context,
+                                        'you_should_first_contact_this_customer'),
                                   );
                                 }
-                              } else {
-                                showErrorBottomsheet(
-                                  Localization.of(context,
-                                      'you_should_first_contact_this_customer'),
-                                );
                               }
-                            }
-                          },
-                          label: Localization.of(context, 'second_payment'),
+                            },
+                            label: Localization.of(context, 'first_payment'),
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 36),
-                    ],
-                  ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 62,
+                            vertical: 16,
+                          ),
+                          child: RaisedButtonV2(
+                            disabled: _isLoading ||
+                                isEmpty(_order.acceptedTime) ||
+                                _order.firstPayment == 0 ||
+                                (_order.shipmentStatus![0] ==
+                                        ShipmentStatus.completed ||
+                                    _order.shipmentStatus![0] ==
+                                        ShipmentStatus.customerRejected) ||
+                                _order.shipmentStatus![0] ==
+                                    ShipmentStatus.awaitingCustomerPickup,
+                            isLoading: _isLoading,
+                            onPressed: () async {
+                              showBottomSheetList<String>(
+                                context: context,
+                                title:
+                                    Localization.of(context, 'select_a_status'),
+                                items: [
+                                  if (_order.shipmentStatus![0] !=
+                                          ShipmentStatus.paid &&
+                                      num.tryParse(_order
+                                              .shipmentStatus![0].value)! <
+                                          num.tryParse(
+                                              ShipmentStatus.paid.value)!)
+                                    Localization.of(context, 'paid'),
+                                  if (_order.shipmentStatus![0] !=
+                                          ShipmentStatus.awaitingShipment &&
+                                      num.tryParse(_order
+                                              .shipmentStatus![0].value)! <
+                                          num.tryParse(ShipmentStatus
+                                              .awaitingShipment.value)!)
+                                    Localization.of(context,
+                                        'in_our_warehouse_outside_lebanon'),
+                                  if (_order.shipmentStatus![0] !=
+                                          ShipmentStatus.orderOnTheWay &&
+                                      num.tryParse(_order
+                                              .shipmentStatus![0].value)! <
+                                          num.tryParse(ShipmentStatus
+                                              .orderOnTheWay.value)!)
+                                    Localization.of(context, 'orderOnTheWay'),
+                                  if (_order.shipmentStatus![0] !=
+                                          ShipmentStatus
+                                              .awaitingCustomerPickup &&
+                                      num.tryParse(_order
+                                              .shipmentStatus![0].value)! <
+                                          num.tryParse(ShipmentStatus
+                                              .awaitingCustomerPickup.value)!)
+                                    Localization.of(
+                                        context, 'awaitingCustomerPickup'),
+                                  // if (_order?.shipmentStatus![0] !=
+                                  //         ShipmentStatus.customerRejected &&
+                                  //     num.tryParse(
+                                  //             _order?.shipmentStatus![0].value) <
+                                  //         num.tryParse(ShipmentStatus
+                                  //             .customerRejected.value))
+                                  //   Localization.of(context, 'customerRejected'),
+                                ],
+                                itemBuilder: (listTileName) {
+                                  return ListTile(
+                                    title: Text(
+                                      "${listTileName}",
+                                    ),
+                                  );
+                                },
+                                itemHeight: 60,
+                                onItemSelected: (listTileName) async {
+                                  bool wasAbleToGetUpdatedOrder =
+                                      await _getUpdatedOrder();
+                                  if (wasAbleToGetUpdatedOrder) {
+                                    if (isNotEmpty(_order.acceptedTime) &&
+                                        _order.firstPayment != 0) {
+                                      try {
+                                        await _updateOrder(
+                                          (listTileName.toLowerCase() ==
+                                                  Localization.of(
+                                                          context, 'paid')
+                                                      .toLowerCase())
+                                              ? ShipmentStatus.paid
+                                              : (listTileName.toLowerCase() ==
+                                                      Localization.of(context,
+                                                              'in_our_warehouse_outside_lebanon')
+                                                          .toLowerCase())
+                                                  ? ShipmentStatus
+                                                      .awaitingShipment
+                                                  : (listTileName
+                                                              .toLowerCase() ==
+                                                          Localization.of(
+                                                                  context,
+                                                                  'orderOnTheWay')
+                                                              .toLowerCase())
+                                                      ? ShipmentStatus
+                                                          .orderOnTheWay
+                                                      :
+                                                      // (listTileName
+                                                      //                         .toLowerCase() ==
+                                                      //                     Localization.of(
+                                                      //                             context,
+                                                      //                             'customerRejected')
+                                                      //                         .toLowerCase())
+                                                      //                 ? ShipmentStatus
+                                                      //                     .customerRejected
+                                                      //                 :
+                                                      ShipmentStatus
+                                                          .awaitingCustomerPickup,
+                                        );
+
+                                        await _getUpdatedOrder();
+                                        showSuccessBottomsheet(
+                                          Localization.of(context,
+                                              "order_status_updated_successfully"),
+                                          closeOnTapOutside: true,
+                                        );
+                                      } catch (e) {
+                                        print(e);
+                                        showErrorBottomsheet(
+                                          replaceVariable(
+                                                Localization.of(context,
+                                                    'an_error_has_occurred_value'),
+                                                'value',
+                                                e.toString(),
+                                              ) ??
+                                              "",
+                                        );
+                                      }
+                                    } else {
+                                      showErrorBottomsheet(
+                                        Localization.of(
+                                            context,
+                                            _order.firstPayment == 0
+                                                ? 'the_customer_did_not_pay_yet'
+                                                : 'you_should_first_contact_this_customer'),
+                                      );
+                                    }
+                                  }
+                                },
+                              );
+                            },
+                            label: Localization.of(context, 'update_status'),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 62,
+                            vertical: 16,
+                          ),
+                          child: RaisedButtonV2(
+                            disabled: _isLoading ||
+                                isEmpty(_order.acceptedTime) ||
+                                (_order.firstPayment == 0) ||
+                                (_order.shipmentStatus![0] ==
+                                        ShipmentStatus.completed ||
+                                    _order.shipmentStatus![0] ==
+                                        ShipmentStatus.customerRejected),
+                            isLoading: _isLoading,
+                            onPressed: () async {
+                              bool wasAbleToGetUpdatedOrder =
+                                  await _getUpdatedOrder();
+                              if (wasAbleToGetUpdatedOrder) {
+                                if (isNotEmpty(_order.acceptedTime)) {
+                                  try {
+                                    await showBottomsheet(
+                                      context: context,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.4,
+                                      dismissOnTouchOutside: false,
+                                      isScrollControlled: true,
+                                      upperWidget: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: <Widget>[
+                                          GestureDetector(
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 16.0,
+                                                  vertical: 16.0,
+                                                ),
+                                                child: Icon(
+                                                  Icons.close,
+                                                  color: Colors.black,
+                                                  size: 30,
+                                                ),
+                                              ),
+                                              onTap: () {
+                                                setState(() {
+                                                  return _isLoading
+                                                      ? null
+                                                      : Navigator.of(context)
+                                                          .pop();
+                                                });
+                                              })
+                                        ],
+                                      ),
+                                      body: SecondPaymentBottomsheet(
+                                        homeScreenController:
+                                            widget.homeScreenController,
+                                        order: _order,
+                                        isBottomSheetLoading: (isLoad) {
+                                          setState(() {
+                                            _isLoading = isLoad;
+                                          });
+                                        },
+                                      ),
+                                    );
+
+                                    await _getUpdatedOrder();
+                                  } catch (e) {
+                                    print(e);
+                                    showErrorBottomsheet(
+                                      replaceVariable(
+                                            Localization.of(context,
+                                                'an_error_has_occurred_value'),
+                                            'value',
+                                            e.toString(),
+                                          ) ??
+                                          "",
+                                    );
+                                  }
+                                } else {
+                                  showErrorBottomsheet(
+                                    Localization.of(context,
+                                        'you_should_first_contact_this_customer'),
+                                  );
+                                }
+                              }
+                            },
+                            label: Localization.of(context, 'second_payment'),
+                          ),
+                        ),
+                        SizedBox(height: 36),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -888,8 +904,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
         text +=
             "\n\nWe will begin processing your order after receiving the payment. You may pay through *OMT*, *Whish*, *USDT* or *cash* at our office.";
         String encodedText = Uri.encodeComponent(text);
-        launch(
-            'https://wa.me/${_order.orderSenderPhoneNumber}?text=$encodedText');
+        launch('https://wa.me/${_order.phoneNumber}?text=$encodedText');
       } else {
         String text =
             "مرحبا بكم في Tloble! نحن سعداء بوجودك كعميل لدينا. هدفنا هو أن نقدم لك تجربة سلسة وممتعة.\n";
@@ -917,7 +932,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
 
         launch(
           // 'https://wa.me/${widget.order?.phoneNumber}?text=مرحبًا، لقد تلقينا طلبك ${(widget.order.action.toLowerCase() == 'buy') ? Localization.of(context, 'for_buy_ar').toLowerCase() : Localization.of(context, 'for_sell_ar').toLowerCase()} بقيمة \$ ${widget.order.amount}.'),
-          'https://wa.me/${_order.orderSenderPhoneNumber}?text=$encodedText',
+          'https://wa.me/${_order.phoneNumber}?text=$encodedText',
         );
       }
     } catch (e) {
@@ -1016,41 +1031,47 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                   children: [
                     Builder(builder: (BuildContext buildContext) {
                       return InkWell(
-                        onTap: () {
-                          if (isNotEmpty(_order.acceptedTime) &&
-                              (widget.homeScreenController.employees
-                                      .firstWhere((element) =>
-                                          element.phoneNumber ==
-                                          FirebaseAuth.instance.currentUser
-                                              ?.phoneNumber)
-                                      .name
-                                      ?.toLowerCase() ==
-                                  _order.acceptedBy?.toLowerCase())) {
-                            Clipboard.setData(
-                              new ClipboardData(
-                                  text: widget.order.referenceID.toString()),
-                            ).then((result) {
-                              final snackBar = SnackBar(
-                                content: Text('Copied order id to Clipboard'),
-                                action: SnackBarAction(
-                                  label: 'Done',
-                                  onPressed: () {},
-                                ),
-                              );
-                              Scaffold.of(buildContext).showSnackBar(snackBar);
-                            });
-                          } else {
-                            final snackBar = SnackBar(
-                              content: Text(
-                                  'Accept the request to be able to copy the order id.'),
-                              action: SnackBarAction(
-                                label: 'Done',
-                                onPressed: () {},
-                              ),
-                            );
-                            Scaffold.of(buildContext).showSnackBar(snackBar);
-                          }
-                        },
+                        onTap: !widget.isCustomer
+                            ? () {
+                                if (isNotEmpty(_order.acceptedTime) &&
+                                    (widget.homeScreenController.employees
+                                            .firstWhere((element) =>
+                                                element.phoneNumber ==
+                                                FirebaseAuth.instance
+                                                    .currentUser?.phoneNumber)
+                                            .name
+                                            ?.toLowerCase() ==
+                                        _order.acceptedBy?.toLowerCase())) {
+                                  Clipboard.setData(
+                                    new ClipboardData(
+                                        text: widget.order.referenceID
+                                            .toString()),
+                                  ).then((result) {
+                                    final snackBar = SnackBar(
+                                      content:
+                                          Text('Copied order id to Clipboard'),
+                                      action: SnackBarAction(
+                                        label: 'Done',
+                                        onPressed: () {},
+                                      ),
+                                    );
+                                    Scaffold.of(buildContext)
+                                        .showSnackBar(snackBar);
+                                  });
+                                } else {
+                                  final snackBar = SnackBar(
+                                    content: Text(
+                                        'Accept the request to be able to copy the order id.'),
+                                    action: SnackBarAction(
+                                      label: 'Done',
+                                      onPressed: () {},
+                                    ),
+                                  );
+                                  Scaffold.of(buildContext)
+                                      .showSnackBar(snackBar);
+                                }
+                              }
+                            : null,
                         child: Text(
                           "${Localization.of(context, 'order_summary').toUpperCase()} #${_order.referenceID}",
                           style: TextStyle(
@@ -1094,54 +1115,60 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                     children: [
                       Builder(builder: (BuildContext buildContext) {
                         return InkWell(
-                          onLongPress: () {
-                            if (_order.shipmentStatus![0] ==
-                                    ShipmentStatus.awaitingCustomerPickup ||
-                                (widget.homeScreenController.isAdmin ??
-                                    false)) {
-                              try {
-                                openWhatsappNoPrefill();
-                              } catch (e) {
-                                print("Error ${e.toString()}");
-                              }
-                            }
-                          },
-                          onTap: () {
-                            if (isNotEmpty(_order.acceptedTime) &&
-                                (widget.homeScreenController.employees
-                                        .firstWhere((element) =>
-                                            element.phoneNumber ==
-                                            FirebaseAuth.instance.currentUser
-                                                ?.phoneNumber)
-                                        .name
-                                        ?.toLowerCase() ==
-                                    _order.acceptedBy?.toLowerCase())) {
-                              Clipboard.setData(new ClipboardData(
-                                      text: widget.order.phoneNumber))
-                                  .then((result) {
-                                final snackBar = SnackBar(
-                                  content:
-                                      Text('Copied phone number to Clipboard'),
-                                  action: SnackBarAction(
-                                    label: 'Done',
-                                    onPressed: () {},
-                                  ),
-                                );
-                                Scaffold.of(buildContext)
-                                    .showSnackBar(snackBar);
-                              });
-                            } else {
-                              final snackBar = SnackBar(
-                                content: Text(
-                                    'Accept the request to be able to copy the phone number.'),
-                                action: SnackBarAction(
-                                  label: 'Done',
-                                  onPressed: () {},
-                                ),
-                              );
-                              Scaffold.of(buildContext).showSnackBar(snackBar);
-                            }
-                          },
+                          onLongPress: !widget.isCustomer
+                              ? () {
+                                  if (_order.shipmentStatus![0] ==
+                                          ShipmentStatus
+                                              .awaitingCustomerPickup ||
+                                      (widget.homeScreenController.isAdmin ??
+                                          false)) {
+                                    try {
+                                      openWhatsappNoPrefill();
+                                    } catch (e) {
+                                      print("Error ${e.toString()}");
+                                    }
+                                  }
+                                }
+                              : null,
+                          onTap: !widget.isCustomer
+                              ? () {
+                                  if (isNotEmpty(_order.acceptedTime) &&
+                                      (widget.homeScreenController.employees
+                                              .firstWhere((element) =>
+                                                  element.phoneNumber ==
+                                                  FirebaseAuth.instance
+                                                      .currentUser?.phoneNumber)
+                                              .name
+                                              ?.toLowerCase() ==
+                                          _order.acceptedBy?.toLowerCase())) {
+                                    Clipboard.setData(new ClipboardData(
+                                            text: widget.order.phoneNumber))
+                                        .then((result) {
+                                      final snackBar = SnackBar(
+                                        content: Text(
+                                            'Copied phone number to Clipboard'),
+                                        action: SnackBarAction(
+                                          label: 'Done',
+                                          onPressed: () {},
+                                        ),
+                                      );
+                                      Scaffold.of(buildContext)
+                                          .showSnackBar(snackBar);
+                                    });
+                                  } else {
+                                    final snackBar = SnackBar(
+                                      content: Text(
+                                          'Accept the request to be able to copy the phone number.'),
+                                      action: SnackBarAction(
+                                        label: 'Done',
+                                        onPressed: () {},
+                                      ),
+                                    );
+                                    Scaffold.of(buildContext)
+                                        .showSnackBar(snackBar);
+                                  }
+                                }
+                              : null,
                           child: Row(
                             children: [
                               Text(
@@ -1162,26 +1189,40 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                           ),
                         );
                       }),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 24.0, bottom: 24.0),
-                        child: Builder(builder: (BuildContext buildContext) {
-                          return InkWell(
-                            onTap: () {
-                              if (isNotEmpty(_order.acceptedTime) &&
-                                  (widget.homeScreenController.employees
-                                          .firstWhere((element) =>
-                                              element.phoneNumber ==
-                                              FirebaseAuth.instance.currentUser
-                                                  ?.phoneNumber)
-                                          .name
-                                          ?.toLowerCase() ==
-                                      _order.acceptedBy?.toLowerCase())) {
-                                Clipboard.setData(new ClipboardData(
-                                        text: widget.order.customerName))
-                                    .then((result) {
+                      if (!widget.isCustomer)
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(top: 24.0, bottom: 24.0),
+                          child: Builder(builder: (BuildContext buildContext) {
+                            return InkWell(
+                              onTap: () {
+                                if (isNotEmpty(_order.acceptedTime) &&
+                                    (widget.homeScreenController.employees
+                                            .firstWhere((element) =>
+                                                element.phoneNumber ==
+                                                FirebaseAuth.instance
+                                                    .currentUser?.phoneNumber)
+                                            .name
+                                            ?.toLowerCase() ==
+                                        _order.acceptedBy?.toLowerCase())) {
+                                  Clipboard.setData(new ClipboardData(
+                                          text: widget.order.customerName))
+                                      .then((result) {
+                                    final snackBar = SnackBar(
+                                      content: Text(
+                                          'Copied customer name to Clipboard'),
+                                      action: SnackBarAction(
+                                        label: 'Done',
+                                        onPressed: () {},
+                                      ),
+                                    );
+                                    Scaffold.of(buildContext)
+                                        .showSnackBar(snackBar);
+                                  });
+                                } else {
                                   final snackBar = SnackBar(
                                     content: Text(
-                                        'Copied customer name to Clipboard'),
+                                        'Accept the request to be able to copy the customer name.'),
                                     action: SnackBarAction(
                                       label: 'Done',
                                       onPressed: () {},
@@ -1189,41 +1230,29 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                   );
                                   Scaffold.of(buildContext)
                                       .showSnackBar(snackBar);
-                                });
-                              } else {
-                                final snackBar = SnackBar(
-                                  content: Text(
-                                      'Accept the request to be able to copy the customer name.'),
-                                  action: SnackBarAction(
-                                    label: 'Done',
-                                    onPressed: () {},
+                                }
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "${Localization.of(context, 'customer_name')} ",
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1),
                                   ),
-                                );
-                                Scaffold.of(buildContext)
-                                    .showSnackBar(snackBar);
-                              }
-                            },
-                            child: Row(
-                              children: [
-                                Text(
-                                  "${Localization.of(context, 'customer_name')} ",
-                                  style: TextStyle(
+                                  Text(
+                                    _order.customerName ?? "",
+                                    style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1),
-                                ),
-                                Text(
-                                  _order.customerName ?? "",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    letterSpacing: 1,
+                                      letterSpacing: 1,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ),
                     ],
                   ),
                 ),
@@ -1232,37 +1261,39 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                 child: Row(
                   children: [
                     InkWell(
-                      onTap: () async {
-                        try {
-                          bool isIOS =
-                              Theme.of(context).platform == TargetPlatform.iOS;
-                          var url = _order.productsLinks?[index];
-                          if (isIOS) {
-                            if (await canLaunch(url)) {
-                              await launch(url);
-                            } else if (await canLaunch(url)) {
-                              await launch(url);
-                            } else {
-                              print('Could not launch $url');
-                              throw Exception('Could not launch $url');
+                      onTap: !widget.isCustomer
+                          ? () async {
+                              try {
+                                bool isIOS = Theme.of(context).platform ==
+                                    TargetPlatform.iOS;
+                                var url = _order.productsLinks?[index];
+                                if (isIOS) {
+                                  if (await canLaunch(url)) {
+                                    await launch(url);
+                                  } else if (await canLaunch(url)) {
+                                    await launch(url);
+                                  } else {
+                                    print('Could not launch $url');
+                                    throw Exception('Could not launch $url');
+                                  }
+                                } else {
+                                  if (await canLaunch(url)) {
+                                    await launch(url);
+                                  } else if (await canLaunch(url)) {
+                                    await launch(url);
+                                  } else {
+                                    print('Could not launch $url');
+                                    throw Exception('Could not launch $url');
+                                  }
+                                }
+                              } catch (e) {
+                                print(e);
+                                showErrorBottomsheet(
+                                  'An error has occurred: $e',
+                                );
+                              }
                             }
-                          } else {
-                            if (await canLaunch(url)) {
-                              await launch(url);
-                            } else if (await canLaunch(url)) {
-                              await launch(url);
-                            } else {
-                              print('Could not launch $url');
-                              throw Exception('Could not launch $url');
-                            }
-                          }
-                        } catch (e) {
-                          print(e);
-                          showErrorBottomsheet(
-                            'An error has occurred: $e',
-                          );
-                        }
-                      },
+                          : null,
                       child: Container(
                         width: 85,
                         height: 85,
@@ -1299,61 +1330,65 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                           Builder(
                             builder: (BuildContext buildContext) {
                               return InkWell(
-                                onLongPress: () {
-                                  Clipboard.setData(new ClipboardData(
-                                          text: _order.productsLinks?[index]))
-                                      .then((result) {
-                                    final snackBar = SnackBar(
-                                      content: Text(
-                                          'Copied product link to Clipboard'),
-                                      action: SnackBarAction(
-                                        label: 'Done',
-                                        onPressed: () {},
-                                      ),
-                                    );
-                                    Scaffold.of(buildContext)
-                                        .showSnackBar(snackBar);
-                                  });
-                                },
-                                onTap: () async {
-                                  try {
-                                    bool isIOS = Theme.of(context).platform ==
-                                        TargetPlatform.iOS;
-                                    var url = _order.productsLinks?[index];
-                                    if (isIOS) {
-                                      if (await canLaunch(url)) {
-                                        await launch(url);
-                                      } else if (await canLaunch(url)) {
-                                        await launch(url);
-                                      } else {
-                                        print('Could not launch $url');
-                                        throw Exception(
-                                            'Could not launch $url');
+                                onLongPress: !widget.isCustomer
+                                    ? () {
+                                        Clipboard.setData(new ClipboardData(
+                                                text: _order
+                                                    .productsLinks?[index]))
+                                            .then((result) {
+                                          final snackBar = SnackBar(
+                                            content: Text(
+                                                'Copied product link to Clipboard'),
+                                            action: SnackBarAction(
+                                              label: 'Done',
+                                              onPressed: () {},
+                                            ),
+                                          );
+                                          Scaffold.of(buildContext)
+                                              .showSnackBar(snackBar);
+                                        });
                                       }
-                                    } else {
-                                      if (await canLaunch(url)) {
-                                        await launch(url);
-                                      } else if (await canLaunch(url)) {
-                                        await launch(url);
-                                      } else {
-                                        print('Could not launch $url');
-                                        throw Exception(
-                                            'Could not launch $url');
+                                    : null,
+                                onTap: !widget.isCustomer
+                                    ? () async {
+                                        try {
+                                          bool isIOS =
+                                              Theme.of(context).platform ==
+                                                  TargetPlatform.iOS;
+                                          var url =
+                                              _order.productsLinks?[index];
+                                          if (isIOS) {
+                                            if (await canLaunch(url)) {
+                                              await launch(url);
+                                            } else if (await canLaunch(url)) {
+                                              await launch(url);
+                                            } else {
+                                              print('Could not launch $url');
+                                              throw Exception(
+                                                  'Could not launch $url');
+                                            }
+                                          } else {
+                                            if (await canLaunch(url)) {
+                                              await launch(url);
+                                            } else if (await canLaunch(url)) {
+                                              await launch(url);
+                                            } else {
+                                              print('Could not launch $url');
+                                              throw Exception(
+                                                  'Could not launch $url');
+                                            }
+                                          }
+                                        } catch (e) {
+                                          print(e);
+                                          showErrorBottomsheet(
+                                            'An error has occurred: $e',
+                                          );
+                                        }
                                       }
-                                    }
-                                  } catch (e) {
-                                    print(e);
-                                    showErrorBottomsheet(
-                                      'An error has occurred: $e',
-                                    );
-                                  }
-                                },
+                                    : null,
                                 child: Container(
-                                  width: (widget.homeScreenController
-                                              .showProductPrice ??
-                                          false)
-                                      ? 100
-                                      : 150,
+                                  width:
+                                      MediaQuery.of(context).size.width - 200,
                                   child: Text(
                                     _order.productsTitles?[index],
                                     maxLines: 2,
@@ -1368,7 +1403,20 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                             },
                           ),
                           Container(
-                            width: 150,
+                            width: MediaQuery.of(context).size.width - 200,
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            child: Text(
+                              "${Localization.of(context, 'quantity:')} ${isNotEmpty(_order.productsQuantities?[index]) ? _order.productsQuantities![index] : Localization.of(context, 'not_specified')}",
+                              // maxLines: 1,
+                              style: TextStyle(
+                                // fontSize: 15,
+                                // overflow: TextOverflow.ellipsis,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width - 200,
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "${Localization.of(context, 'color:')} ${isNotEmpty(_order.productsColors?[index]) ? _order.productsColors![index] : Localization.of(context, 'not_specified')}",
@@ -1381,7 +1429,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                             ),
                           ),
                           Container(
-                            width: 150,
+                            width: MediaQuery.of(context).size.width - 200,
                             margin: EdgeInsets.symmetric(vertical: 2),
                             child: Text(
                               "${Localization.of(context, 'size:')} ${isNotEmpty(_order.productsSizes?[index]) ? _order.productsSizes![index] : Localization.of(context, 'not_specified')}",
@@ -1414,40 +1462,34 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                         ],
                       ),
                     ),
-                    Spacer(),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 8,
-                      ),
-                      height: 40,
-                      width: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          width: 1,
-                          color: Colors.black.withOpacity(0.3),
-                        ),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(13),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsetsDirectional.only(
-                            start: 12,
-                            end: 12,
-                            top: num.tryParse(
-                                        _order.productsQuantities![index])! >
-                                    1000
-                                ? 0
-                                : 10),
-                        child: Text(
-                          " ${(num.tryParse(_order.productsQuantities![index])! < 100) && (num.tryParse(_order.productsQuantities![index])! > 10) ? " " : ""}${num.tryParse(_order.productsQuantities![index])! < 10 ? "  " : ""}${num.tryParse(_order.productsQuantities![index])! > 100 && num.tryParse(_order.productsQuantities![index])! < 1000 ? "" : ""}" +
-                              _order.productsQuantities![index],
-                          style: TextStyle(fontSize: 14),
-                        ),
-                      ),
-                    ),
-                    Spacer(),
+                    // Spacer(),
+                    // Container(
+                    //   margin: EdgeInsets.symmetric(
+                    //     vertical: 8,
+                    //   ),
+                    //   height: 40,
+                    //   width: 60,
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.white,
+                    //     border: Border.all(
+                    //       width: 1,
+                    //       color: Colors.black.withOpacity(0.3),
+                    //     ),
+                    //     borderRadius: BorderRadius.all(
+                    //       Radius.circular(13),
+                    //     ),
+                    //   ),
+                    //   child: Padding(
+                    //     padding: EdgeInsetsDirectional.only(
+                    //         start: 12, end: 12, top: true ? 0 : 10),
+                    //     child: Text(
+                    //       " ${""}${"  " }${""}" +
+                    //           _order.productsQuantities![index],
+                    //       style: TextStyle(fontSize: 14),
+                    //     ),
+                    //   ),
+                    // ),
+                    // Spacer(),
                     if ((widget.homeScreenController.showProductPrice ?? false))
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,

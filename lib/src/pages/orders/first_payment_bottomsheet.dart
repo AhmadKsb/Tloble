@@ -11,6 +11,7 @@ import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 import 'package:gsheets/gsheets.dart';
 import 'package:vibration/vibration.dart';
+import 'package:http/http.dart' as http;
 
 // GoogleAuth credentials
 var _credentials = r'''
@@ -46,12 +47,24 @@ class FirstPaymentBottomsheet extends StatefulWidget {
 class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
   bool _isLoading = false;
   String? firstPayment;
+  late NavigatorState _nav;
 
   FocusNode firstPaymentNode = new FocusNode();
+  String? country;
+  String? transportation;
+  PersistentBottomSheetController? bottomSheetController;
 
   @override
   void initState() {
+    country = widget.homeScreenController?.defaultCountry;
+    transportation = widget.homeScreenController?.defaultTransportation;
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    _nav = Navigator.of(context);
+    super.didChangeDependencies();
   }
 
   @override
@@ -72,69 +85,383 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
             textAlign: TextAlign.start,
           ),
           SizedBox(height: 9),
+          Center(
+            child: Container(
+              width: 75,
+              child: DropdownButton<dynamic>(
+                // Initial Value
+                isExpanded: true,
+                value: country as String,
+
+                // Down Arrow Icon
+                icon: const Icon(Icons.keyboard_arrow_down),
+
+                // Array list of items
+                items: widget.homeScreenController!.countries
+                    ?.whereType<String>() // Filter to include only strings
+                    .toList()
+                    .map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: Text(items),
+                  );
+                }).toList(),
+                // After selecting the desired option,it will
+                // change button value to selected value
+                onChanged: (dynamic newValue) {
+                  setState(() {
+                    country = newValue!;
+                  });
+                },
+              ),
+            ),
+          ),
+
+          Center(
+            child: Container(
+              width: 75,
+              child: DropdownButton<dynamic>(
+                // Initial Value
+                isExpanded: true,
+                value: transportation as String,
+
+                // Down Arrow Icon
+                icon: const Icon(Icons.keyboard_arrow_down),
+
+                // Array list of items
+                items: widget.homeScreenController!.transportation
+                    ?.whereType<String>() // Filter to include only strings
+                    .toList()
+                    .map((String items) {
+                  return DropdownMenuItem(
+                    value: items,
+                    child: Text(items),
+                  );
+                }).toList(),
+                // After selecting the desired option,it will
+                // change button value to selected value
+                onChanged: (dynamic newValue) {
+                  setState(() {
+                    transportation = newValue!;
+                  });
+                },
+              ),
+            ),
+          ),
           _buildFirstPayment(),
-          _buildSubmitBtn()
+          _buildFirstNext(),
+          // _buildSubmitBtn()
         ],
       ),
     );
   }
 
-  Widget _buildSubmitBtn() {
+  int i = 0;
+  List<String> ordersIDList = [];
+  List<String> ordersLinksList = [];
+  List<String> ordersImagesList = [];
+  List<String> ordersDetailsList = [];
+  List<String> ordersCustomerPriceList = [];
+  List<String> ordersOrderedPriceList = [];
+  List<String> ordersRemarksPriceList = [];
+
+  String? orderID;
+  String? link;
+  String? image;
+  String? orderDetails;
+  String? remarks;
+  bool? shouldReset;
+
+  // * 7.4
+  String? customerPrice;
+
+  // / 7.15 and UAE 3.65
+  String? orderedPrice;
+
+  Widget _buildFirstNext() {
+    return Builder(
+      builder: (BuildContext buildContext) {
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: 62,
+            vertical: 16,
+          ),
+          child: RaisedButtonV2(
+            disabled: firstPayment?.isEmpty ?? true,
+            onPressed: () async {
+              shouldReset = true;
+              print("order id " + (orderID ?? ""));
+              if (orderID?.isNotEmpty ?? false) ordersIDList.add(orderID ?? "");
+              if (link?.isNotEmpty ?? false) ordersLinksList.add(link ?? "");
+              if (image?.isNotEmpty ?? false) ordersImagesList.add(image ?? "");
+              if (orderDetails?.isNotEmpty ?? false)
+                ordersDetailsList.add(orderDetails ?? "");
+              if (customerPrice?.isNotEmpty ?? false)
+                ordersCustomerPriceList.add(customerPrice ?? "");
+              if (orderedPrice?.isNotEmpty ?? false)
+                ordersOrderedPriceList.add(orderedPrice ?? "");
+              if (remarks?.isNotEmpty ?? false)
+                ordersRemarksPriceList.add(remarks ?? "");
+
+              if ((shouldReset ?? true)) {
+                print("FFFF");
+                orderID = null;
+                link = null;
+                image = null;
+                orderDetails =
+                    "- Quantity: ${widget.order?.productsQuantities![i]}${(isEmpty(widget.order?.productsColors?[i]) || ((widget.order?.productsColors![i].toString().toLowerCase() == "Not specified".toLowerCase()) || (widget.order?.productsColors![i].toString().toLowerCase() == "not specified") || (widget.order?.productsColors![i].toString().toLowerCase() == "غير محدد"))) ? "" : "\n- Color: ${widget.order?.productsColors![i]}"}${(isEmpty(widget.order?.productsSizes?[i]) || ((widget.order?.productsSizes![i].toString().toLowerCase() == "Not specified".toLowerCase()) || (widget.order?.productsSizes![i].toString().toLowerCase() == "not specified") || (widget.order?.productsSizes![i].toString().toLowerCase() == "غير محدد"))) ? "" : "\n- Size: ${widget.order?.productsSizes![i]}"}";
+
+                // orderDetails = null;
+                remarks = " ";
+                customerPrice = null;
+                // 7.15 and UAE 3.65
+                orderedPrice = null;
+                shouldReset = false;
+              }
+
+              i++;
+
+              _nav.pop();
+
+              bottomSheetController = await showBottomsheet(
+                context: buildContext,
+                height: MediaQuery.of(buildContext).size.height * 0.85,
+                dismissOnTouchOutside: false,
+                isScrollControlled: true,
+                upperWidget: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    GestureDetector(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 16.0,
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            color: Colors.black,
+                            size: 30,
+                          ),
+                        ),
+                        onTap: () {
+                          _nav.pop();
+                        }),
+                  ],
+                ),
+                body: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Builder(
+                    builder: (BuildContext buildContextt) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          _buildFields(
+                              buildContextt,
+                              Localization.of(buildContextt, 'orderId_z'),
+                              orderID),
+                          _buildFields(buildContextt,
+                              Localization.of(buildContextt, 'link_z'), link),
+                          _buildFields(buildContextt,
+                              Localization.of(buildContextt, 'image_z'), image),
+                          _buildFields(
+                              buildContextt,
+                              Localization.of(buildContextt, 'order_details_z'),
+                              orderDetails,
+                              maxLines: 3),
+                          _buildFields(
+                              buildContextt,
+                              Localization.of(
+                                  buildContextt, 'customer_price_z'),
+                              customerPrice),
+                          _buildFields(
+                              buildContextt,
+                              Localization.of(buildContextt, 'ordered_price_z'),
+                              orderedPrice),
+                          _buildFields(
+                              buildContextt,
+                              Localization.of(buildContextt, 'remarks_z'),
+                              remarks,
+                              maxLines: 3),
+                          if (i <
+                              (widget.order?.productsQuantities?.length ?? 0))
+                            _buildFirstNext(),
+                          if (i >=
+                              (widget.order?.productsQuantities?.length ?? 0))
+                            _buildSubmitBtn(buildContextt),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+            label: Localization.of(buildContext, 'next'),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFields(BuildContext buildContext, String label, String? text,
+      {int maxLines = 1}) {
+    return Container(
+      width: MediaQuery.of(buildContext).size.width,
+      margin: const EdgeInsets.only(top: 10.0),
+      alignment: Alignment.center,
+      padding: EdgeInsetsDirectional.only(start: 0.0, end: 10.0),
+      child: TextFormField(
+        keyboardType:
+            (label == Localization.of(buildContext, 'ordered_price_z') ||
+                    label == Localization.of(buildContext, 'customer_price_z'))
+                ? TextInputType.numberWithOptions(decimal: true)
+                : TextInputType.text,
+        enabled: !_isLoading,
+        initialValue: text,
+        onChanged: (txt) {
+          // setState(() {
+          if (label == Localization.of(buildContext, 'orderId_z'))
+            orderID = txt;
+          if (label == Localization.of(buildContext, 'link_z')) link = txt;
+          if (label == Localization.of(buildContext, 'image_z')) image = txt;
+          if (label == Localization.of(buildContext, 'order_details_z'))
+            orderDetails = txt;
+          if (label == Localization.of(buildContext, 'customer_price_z'))
+            customerPrice = txt;
+          if (label == Localization.of(buildContext, 'remarks_z'))
+            remarks = txt;
+          if (label == Localization.of(buildContext, 'ordered_price_z'))
+            orderedPrice = (num.parse(txt) /
+                    ((country.toString().toLowerCase() == "uae")
+                        ? num.parse(
+                            widget.homeScreenController?.aedConversion ?? "1")
+                        : (widget.homeScreenController?.yuanRate ?? 1)))
+                .toString();
+          // });
+        },
+        maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          counterText: "",
+          labelStyle: TextStyle(
+            color: Colors.black,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+        ),
+        textAlign: TextAlign.start,
+      ),
+    );
+  }
+
+  Widget _buildSubmitBtn(BuildContext buildContext) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 16.0),
       child: RaisedButtonV2(
         isLoading: _isLoading,
         disabled: _isLoading || (firstPayment?.isEmpty ?? true),
-        label: capitalize(Localization.of(context, 'submit')),
-        onPressed: _onSubmit,
+        label: capitalize(Localization.of(buildContext, 'submit')),
+        onPressed: () => _onSubmit(buildContext),
       ),
     );
   }
 
-  void _onSubmit() async {
-    setState(() {
-      if (widget.isBottomSheetLoading != null)
-        widget.isBottomSheetLoading!(true);
-    });
+  void _onSubmit(BuildContext buildContext) async {
+    if (orderID?.isNotEmpty ?? false) ordersIDList.add(orderID ?? "");
+    if (link?.isNotEmpty ?? false) ordersLinksList.add(link ?? "");
+    if (image?.isNotEmpty ?? false) ordersImagesList.add(image ?? "");
+    if (orderDetails?.isNotEmpty ?? false)
+      ordersDetailsList.add(orderDetails ?? "");
+    if (customerPrice?.isNotEmpty ?? false)
+      ordersCustomerPriceList.add(customerPrice ?? "");
+    if (orderedPrice?.isNotEmpty ?? false)
+      ordersOrderedPriceList.add(orderedPrice ?? "");
+    if (remarks?.isNotEmpty ?? false) ordersRemarksPriceList.add(remarks ?? "");
 
+    orderID = null;
+    link = null;
+    image = null;
+    // orderDetails =
+    // "- Quantity: ${widget.order?.productsQuantities![i]}${(isEmpty(widget.order?.productsColors?[i]) || ((widget.order?.productsColors![i].toString().toLowerCase() == "Not specified".toLowerCase()) || (widget.order?.productsColors![i].toString().toLowerCase() == "not specified") || (widget.order?.productsColors![i].toString().toLowerCase() == "غير محدد"))) ? "" : "\n- Color: ${widget.order?.productsColors![i]}"}${(isEmpty(widget.order?.productsSizes?[i]) || ((widget.order?.productsSizes![i].toString().toLowerCase() == "Not specified".toLowerCase()) || (widget.order?.productsSizes![i].toString().toLowerCase() == "not specified") || (widget.order?.productsSizes![i].toString().toLowerCase() == "غير محدد"))) ? "" : "\n- Size: ${widget.order?.productsSizes![i]}"}";
+
+    // orderDetails = null;
+    remarks = " ";
+    customerPrice = null;
+    // 7.15 and UAE 3.65
+    orderedPrice = null;
+    shouldReset = false;
+    // setState(() {
+    if (widget.isBottomSheetLoading != null) widget.isBottomSheetLoading!(true);
+    // });
     try {
-      await _updateFirstPaymentOrder();
+      print(ordersIDList.toString());
+      print(ordersLinksList.toString());
+      print(ordersImagesList.toString());
+      print(ordersDetailsList.toString());
+      print(ordersCustomerPriceList.toString());
+      print(ordersOrderedPriceList.toString());
+      print(ordersRemarksPriceList.toString());
 
-      showSuccessBottomsheet();
-      setState(() {
-        if (widget.isBottomSheetLoading != null)
-          widget.isBottomSheetLoading!(false);
-      });
+      await _updateFirstPaymentOrder(buildContext);
+      showSuccessBottomsheet(buildContext);
+      // setState(() {
+      if (widget.isBottomSheetLoading != null)
+        widget.isBottomSheetLoading!(false);
+      // });
     } catch (e) {
-      showErrorBottomsheet(
-        replaceVariable(
-              Localization.of(
-                context,
-                'an_error_has_occurred_value',
-              ),
-              'value',
-              "${e.toString()}",
-            ) ??
-            "",
-      );
-      setState(() {
-        if (widget.isBottomSheetLoading != null)
-          widget.isBottomSheetLoading!(false);
-      });
+      print(e);
+      // showErrorBottomsheet(e.toString());
+      // setState(() {
+      if (widget.isBottomSheetLoading != null)
+        widget.isBottomSheetLoading!(false);
+      // });
     }
   }
 
-  Future<void> _updateFirstPaymentOrder() async {
+  Future<void> _updateFirstPaymentOrder(BuildContext buildContext) async {
     try {
-      setState(() {
-        _isLoading = true;
-      });
+      // setState(() {
+      _isLoading = true;
+      // });
 
       final gsheets = GSheets(_credentials);
       final ss = await gsheets
           .spreadsheet(widget.homeScreenController?.spreadSheetID ?? "");
       final sheet = ss
           .worksheetByTitle(widget.homeScreenController?.worksheetTitle ?? "");
+      // final phonee = widget.order?.phoneNumber?.replaceAll("+", "");
+      for (int j = 0; j < i; j++) {
+        String linksss = ordersImagesList[j].substring(0, 2) == "//"
+            ? "https://" + ordersImagesList[j]
+            : ordersImagesList[j];
+        await http.get(
+          Uri.parse(
+            ((country.toString().toLowerCase() == "uae")
+                    ? widget.homeScreenController?.UAESpreadSheetScriptURL!
+                    : widget
+                        .homeScreenController?.ChinaSpreadSheetScriptURL!)! +
+                "?transportation=$transportation" +
+                "&orderID=${Uri.encodeComponent(ordersIDList[j])}" +
+                "&image=\=hyperlink(\"${Uri.encodeComponent(ordersLinksList[j])}\", IMAGE(\"${linksss}\",4,150,150))" +
+                "&orderDetails=${Uri.encodeComponent(ordersDetailsList[j])}" +
+                "&remarks=${Uri.encodeComponent(ordersRemarksPriceList[j])}" +
+                "&requestID=%23 ${widget.order?.referenceID}" +
+                "&customerName=${widget.order?.customerName}" +
+                "&phoneNumber=%2B${widget.order?.phoneNumber?.replaceAll("+", "")}" +
+                "&customerPrice=${ordersCustomerPriceList[j]}" +
+                "&customerLink=\=hyperlink(\"${Uri.encodeComponent(widget.order?.productsLinks?[j])}\", \"Product Link\")" +
+                "&orderedPrice=${ordersOrderedPriceList[j]}",
+          ),
+        );
+      }
 
       await Future.wait(
         [
@@ -146,7 +473,7 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
           ),
           sheet.values.insertValueByKeys(
             getShipmentStatusForEmployeeString(
-                  context,
+                  buildContext,
                   ShipmentStatus.paid,
                 ) ??
                 "",
@@ -176,45 +503,45 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
               .collection(
                   widget.homeScreenController?.SearchInOrdersCollectionName ??
                       "")
-              .doc("${widget.order?.orderSenderPhoneNumber} ${widget.order?.sentTime}")
+              .doc(
+                  "${widget.order?.orderSenderPhoneNumber} ${widget.order?.sentTime}")
               .update({
             'firstPayment': firstPayment,
             'shipmentStatus': [ShipmentStatus.paid.value],
           }),
         ],
       );
-      setState(() {
-        _isLoading = false;
-      });
+      // setState(() {
+      _isLoading = false;
+      // });
     } catch (e) {
-      print(e);
-      showErrorBottomsheet(
-        replaceVariable(
-              Localization.of(context, 'an_error_has_occurred_value'),
-              'value',
-              e.toString(),
-            ) ??
-            "",
-      );
-      setState(() {
-        _isLoading = false;
-      });
+      print("Error first payment ${e}");
+      showErrorBottomsheet(e.toString());
+      // setState(() {
+      _isLoading = false;
+      // });
     }
   }
 
-  void showSuccessBottomsheet() async {
-    if (!mounted) return;
+  @override
+  void dispose() {
+    bottomSheetController?.close();
+    super.dispose();
+  }
+
+  void showSuccessBottomsheet(BuildContext buildContext) async {
+    // if (!mounted) return;
     String animResource;
     animResource = 'assets/flare/success.flr';
-    setState(() {
-      Vibration.vibrate();
-    });
+    // setState(() {
+    Vibration.vibrate();
+    // });
 
-    await showBottomsheet(
-      context: context,
+    bottomSheetController = await showBottomsheet(
+      context: buildContext,
       isScrollControlled: true,
       dismissOnTouchOutside: false,
-      height: MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(buildContext).size.height * 0.3,
       upperWidget: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -233,18 +560,19 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
           ),
           Center(
             child: Container(
-              width: MediaQuery.of(context).size.width / 1.5,
+              width: MediaQuery.of(buildContext).size.width / 1.5,
               child: Center(
                 child: Text(
-                  Localization.of(
-                    context,
-                    'first_payment_updated',
-                  ),
+                  // Localization.of(
+                  //   context,
+                  //   'first_payment_updated',
+                  // ),
+                  "First payment updated successfully",
                   textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                        fontSize: 14,
-                        color: Colors.black,
-                      ),
+                  // style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                  //       fontSize: 14,
+                  //       color: Colors.black,
+                  //     ),
                 ),
               ),
             ),
@@ -255,15 +583,15 @@ class _FirstPaymentBottomsheetState extends State<FirstPaymentBottomsheet> {
       bottomWidget: Padding(
         padding: EdgeInsets.symmetric(horizontal: 18),
         child: Container(
-          width: MediaQuery.of(context).size.width,
+          width: MediaQuery.of(buildContext).size.width,
           child: Padding(
             padding: EdgeInsets.only(bottom: 8),
             child: RaisedButtonV2(
-              label: Localization.of(context, 'done'),
+              label: Localization.of(buildContext, 'done'),
               onPressed: () {
-                if (!mounted) return;
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                // if (!mounted) return;
+                Navigator.of(buildContext).pop();
+                Navigator.of(buildContext).pop();
               },
             ),
           ),

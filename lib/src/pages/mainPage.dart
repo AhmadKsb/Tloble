@@ -1245,6 +1245,56 @@ class _MainPageState extends State<MainPage>
             if (!phoneNumberIsNull)
               ListTile(
                 title: Text(
+                  Localization.of(context, 'check_my_order'),
+                  style: TextStyle(fontWeight: FontWeight.w400),
+                ),
+                onTap: () {
+                  showBottomsheet(
+                    context: context,
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    dismissOnTouchOutside: false,
+                    isScrollControlled: true,
+                    upperWidget: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        GestureDetector(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16.0,
+                                vertical: 16.0,
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                color: Colors.black,
+                                size: 30,
+                              ),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                return isButtonLoading
+                                    ? null
+                                    : Navigator.of(context).pop();
+                              });
+                            })
+                      ],
+                    ),
+                    body: CheckCustomersOrderBottomsheet(
+                      controller: homeScreenController,
+                      isCustomer: true,
+                      isBottomSheetLoading: (isLoad) {
+                        setState(() {
+                          isButtonLoading = isLoad;
+                        });
+                      },
+                    ),
+                  );
+                  setState(() {});
+                },
+              ),
+
+            if (!phoneNumberIsNull)
+              ListTile(
+                title: Text(
                   Localization.of(context, 'send_feedback_s'),
                   style: TextStyle(fontWeight: FontWeight.w400),
                 ),

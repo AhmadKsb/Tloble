@@ -14,10 +14,12 @@ import 'package:vibration/vibration.dart';
 class CheckCustomersOrderBottomsheet extends StatefulWidget {
   final HomeScreenController? controller;
   final ValueChanged<bool>? isBottomSheetLoading;
+  final bool isCustomer;
 
   CheckCustomersOrderBottomsheet({
     this.controller,
     this.isBottomSheetLoading,
+    this.isCustomer = false,
   });
 
   @override
@@ -44,7 +46,9 @@ class _CheckCustomersOrderBottomsheetState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text(
-            Localization.of(context, 'check_customers_order'),
+            widget.isCustomer
+                ? Localization.of(context, 'check_my_order')
+                : Localization.of(context, 'check_customers_order'),
             textAlign: TextAlign.start,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -85,6 +89,7 @@ class _CheckCustomersOrderBottomsheetState
         await Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => OrderScreen(
+              isCustomer: widget.isCustomer,
               homeScreenController: widget.controller!,
               order: Order.fromJson(data.docs[0].data()),
             ),

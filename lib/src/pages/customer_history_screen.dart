@@ -289,7 +289,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Container(
-                        width: 150,
+                        width: MediaQuery.of(context).size.width - 200,
                         margin: EdgeInsets.symmetric(vertical: 2),
                         child: Text(
                           "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
@@ -302,7 +302,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                         ),
                       ),
                       Container(
-                        width: 150,
+                        width: MediaQuery.of(context).size.width - 200,
                         margin: EdgeInsets.symmetric(vertical: 2),
                         child: Text(
                           "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",
@@ -557,7 +557,20 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                       ),
                       SizedBox(height: 4),
                       Container(
-                        width: 150,
+                        width: MediaQuery.of(context).size.width - 200,
+                        margin: EdgeInsets.symmetric(vertical: 2),
+                        child: Text(
+                          "${Localization.of(context, 'quantity:')} ${isNotEmpty(order.productsQuantities?[index]) ? order.productsQuantities![index] : Localization.of(context, 'not_specified')}",
+                          // maxLines: 1,
+                          style: TextStyle(
+                            // fontSize: 15,
+                            // overflow: TextOverflow.ellipsis,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width - 200,
                         margin: EdgeInsets.symmetric(vertical: 2),
                         child: Text(
                           "${Localization.of(context, 'color:')} ${isNotEmpty(order.productsColors?[index]) ? order.productsColors![index] : Localization.of(context, 'not_specified')}",
@@ -570,7 +583,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                         ),
                       ),
                       Container(
-                        width: 150,
+                        width: MediaQuery.of(context).size.width - 200,
                         margin: EdgeInsets.symmetric(vertical: 2),
                         child: Text(
                           "${Localization.of(context, 'size:')} ${isNotEmpty(order.productsSizes?[index]) ? order.productsSizes![index] : Localization.of(context, 'not_specified')}",
