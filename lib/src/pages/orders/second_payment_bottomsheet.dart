@@ -176,7 +176,8 @@ class _SecondPaymentBottomsheetState extends State<SecondPaymentBottomsheet> {
               .collection(
                   widget.homeScreenController?.SearchInOrdersCollectionName ??
                       "")
-              .doc("${widget.order?.orderSenderPhoneNumber} ${widget.order?.sentTime}")
+              .doc(
+                  "${widget.order?.orderSenderPhoneNumber} ${widget.order?.sentTime}")
               .update({
             'secondPayment': secondPayment,
             'shipmentStatus': [ShipmentStatus.completed.value],
@@ -291,12 +292,7 @@ class _SecondPaymentBottomsheetState extends State<SecondPaymentBottomsheet> {
       padding: EdgeInsetsDirectional.only(start: 0.0, end: 10.0),
       child: TextFormField(
         focusNode: secondPaymentNode,
-        keyboardType: TextInputType.number,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(
-            RegExp(r"[+0-9]"),
-          ),
-        ],
+        keyboardType: TextInputType.numberWithOptions(decimal: true),
         enabled: !_isLoading,
         onChanged: (phoneNumber) {
           setState(() {

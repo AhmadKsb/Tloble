@@ -22,6 +22,7 @@ class HomeScreenController {
 
   num? _newsUpdateDuration,
       _loadUpdateDuration,
+      _shippingCost,
       _yuanRate,
       _fiftyToHundred,
       _hundredToThousand,
@@ -108,6 +109,7 @@ class HomeScreenController {
       _checkForOpeningHours,
       _showSellRate,
       _hideContents,
+      _showCheckMyOrder,
       _showDeactivateAccount,
       _showOTPResendButton,
       _hideLoginFromMainPage,
@@ -177,6 +179,12 @@ class HomeScreenController {
   String? spreadSheetScriptURL;
   String? UAESpreadSheetScriptURL;
   String? ChinaSpreadSheetScriptURL;
+
+  String? UAEWarehouseSpreadSheetScriptURL;
+  String? ChinaWarehouseSpreadSheetScriptURL;
+
+  String? TlobleUAESpreadSheetScriptURL;
+  String? TlobleChinaSpreadSheetScriptURL;
   HomeScreenControllerView? homeScreenControllerView;
 
   String? spreadSheetID;
@@ -457,6 +465,11 @@ class HomeScreenController {
   bool? get hideContents => _hideContents;
   set hideContents(value) {
     _hideContents = value;
+  }
+
+  bool? get showCheckMyOrder => _showCheckMyOrder;
+  set showCheckMyOrder(value) {
+    _showCheckMyOrder = value;
   }
 
   bool? get showDeactivateAccount => _showDeactivateAccount;
@@ -829,6 +842,11 @@ class HomeScreenController {
     _yuanRate = value;
   }
 
+  num? get shippingCost => _shippingCost;
+  set shippingCost(value) {
+    _shippingCost = value;
+  }
+
   num? get myProfitFromSignals => _myProfitFromSignals;
   set myProfitFromSignals(value) {
     _myProfitFromSignals = value;
@@ -1098,6 +1116,7 @@ class HomeScreenController {
     _newsUpdateDuration = appInfoSnapshot?['newsUpdateDuration'] ?? 5;
     _loadUpdateDuration = appInfoSnapshot?['loadUpdateDuration'] ?? 5;
     _yuanRate = appInfoSnapshot?['yuanRate'] ?? 1;
+    _shippingCost = appInfoSnapshot?['shippingCost'] ?? 1;
     _myPercentageFromSignals = appInfoSnapshot?['myPercentageFromSignals'] ?? 2;
     _coinsToJoinTelegram = appInfoSnapshot?['coinsToJoinTelegram'] ?? 61;
     _myProfitFromSignals = appInfoSnapshot?['myProfitFromSignals'] ?? 0;
@@ -1251,11 +1270,14 @@ class HomeScreenController {
     spreadSheetScriptURL = appInfoSnapshot?['spreadSheetScriptURL'] ??
         'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
 
-    UAESpreadSheetScriptURL = appInfoSnapshot?['UAESpreadSheetScriptURL'] ??
-        'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
-
+    UAESpreadSheetScriptURL = appInfoSnapshot?['UAESpreadSheetScriptURL'];
     ChinaSpreadSheetScriptURL = appInfoSnapshot?['ChinaSpreadSheetScriptURL'] ??
         'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
+
+    UAEWarehouseSpreadSheetScriptURL = appInfoSnapshot?['UAEWarehouseSpreadSheetScriptURL'];
+    ChinaWarehouseSpreadSheetScriptURL = appInfoSnapshot?['ChinaWarehouseSpreadSheetScriptURL'];
+    TlobleUAESpreadSheetScriptURL = appInfoSnapshot?['TlobleUAESpreadSheetScriptURL'];
+    TlobleChinaSpreadSheetScriptURL = appInfoSnapshot?['TlobleChinaSpreadSheetScriptURL'];
 
     spreadSheetID = appInfoSnapshot?['spreadSheetID'] ??
         '1_FMmquecebW5jTZalv3Ti5Wqv3bzx7nyTxMuzQdq-H8';
@@ -1297,6 +1319,7 @@ class HomeScreenController {
     _checkForRoot = appInfoSnapshot?['checkForRoot'] ?? false;
     _showSellRate = appInfoSnapshot?['showSellRate'] ?? false;
     _hideContents = appInfoSnapshot?['hideContents'] ?? false;
+    _showCheckMyOrder = appInfoSnapshot?['showCheckMyOrder'] ?? false;
     _showDeactivateAccount = appInfoSnapshot?['showDeactivateAccount'] ?? false;
     _showOTPResendButton = appInfoSnapshot?['showOTPResendButton'] ?? false;
     _hideLoginFromMainPage = appInfoSnapshot?['hideLoginFromMainPage'] ?? false;

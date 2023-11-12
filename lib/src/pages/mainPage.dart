@@ -1242,7 +1242,8 @@ class _MainPageState extends State<MainPage>
                 ),
               ),
 
-            if (!phoneNumberIsNull)
+            if (!phoneNumberIsNull &&
+                (homeScreenController.showCheckMyOrder ?? false))
               ListTile(
                 title: Text(
                   Localization.of(context, 'check_my_order'),

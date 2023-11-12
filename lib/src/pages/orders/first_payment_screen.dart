@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +17,7 @@ import 'package:http/http.dart' as http;
 
 import '../../themes/light_color.dart';
 import '../../themes/theme.dart';
+import '../../utils/WKNetworkImage.dart';
 import '../../widgets/title_text.dart';
 
 // GoogleAuth credentials
@@ -294,7 +297,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
 
   // * 7.4
   String? customerPrice;
-
+  var imageLoaded;
   // / 7.15 and UAE 3.65
   String? orderedPrice;
 
@@ -359,6 +362,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               SizedBox(height: 64),
+              // imageWidget,
               Text(
                 Localization.of(context, 'Item ') + (i + 1).toString(),
                 textAlign: TextAlign.start,
@@ -372,6 +376,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                 onChanged: (i, value) {
                   ordersIDList[i] = value;
                   print(ordersIDList[i]);
+                  setState(() {});
                   // orderID = txt;
                 },
               ),
@@ -383,6 +388,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                 onChanged: (i, value) {
                   ordersLinksList[i] = value;
                   print(ordersLinksList[i]);
+                  setState(() {});
                   // link = txt;
                 },
               ),
@@ -391,9 +397,22 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                 Localization.of(buildContextt, 'image_z'),
                 ordersImagesList[i],
                 index: i,
-                onChanged: (i, value) {
+                onChanged: (i, value) async {
                   ordersImagesList[i] = value;
                   print(ordersImagesList[i]);
+                  try {
+                    final response =
+                        await http.get(Uri.parse(ordersImagesList[i]));
+                    imageLoaded = MemoryImage(
+                      Uint8List.fromList(List<int>.from(response.bodyBytes)),
+                    );
+                    imageWidget;
+                    setState(() {});
+                  } catch (e) {
+                    // Handle error loading image
+                    print('Error loading image: $e');
+                  }
+                  setState(() {});
                   // image = txt;
                 },
               ),
@@ -493,6 +512,25 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
     );
   }
 
+  Widget get imageWidget {
+    return Container(
+      key: Key(imageLoaded.toString()), // Add this line
+      width: 130,
+      height: 130,
+      decoration: BoxDecoration(
+        shape: (imageLoaded == null)
+            ? BoxShape.circle
+            : BoxShape.rectangle,
+        image: DecorationImage(
+          // fit: widget.fit ?? BoxFit.fill,
+          image: (imageLoaded == null)
+              ? AssetImage("assets/images/image_loading.gif")
+              : imageLoaded,
+        ),
+      ),
+    );
+  }
+
   Widget _buildSubmitBtn(BuildContext buildContext) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 32.0),
@@ -573,16 +611,13 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
 
       /// fix multiple items
       for (int j = 0; j < ordersDetailsList.length; j++) {
-        String linksss = ((ordersImagesList[j].length ?? 0) > 2)
+        String linksss = ((ordersImagesList[j].length) > 2)
             ? ordersImagesList[j].substring(0, 2) == "//"
                 ? "https://" + ordersImagesList[j]
                 : ordersImagesList[j]
             : "";
 
         if ((ordersDetailsList.length - 1 == j)) {
-          print("HERE $j");
-          print("HERE ${ordersIDList.length}");
-
           await http.get(
             Uri.parse(
               ((country.toString().toLowerCase() == "uae")
@@ -602,6 +637,44 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                   "&orderedPrice=${(num.parse(orderedPriceField ?? "0") / ((country.toString().toLowerCase() == "uae") ? num.parse(widget.homeScreenController?.aedConversion ?? "1") : (widget.homeScreenController?.yuanRate ?? 1))).toString()}",
             ),
           );
+
+          print("BEFORE)");
+
+          /// Our warehouse spreadsheet
+          await http.get(
+            Uri.parse(
+              ((country.toString().toLowerCase() == "uae")
+                      ? widget.homeScreenController
+                          ?.UAEWarehouseSpreadSheetScriptURL!
+                      : widget.homeScreenController
+                          ?.ChinaWarehouseSpreadSheetScriptURL!)! +
+                  "?transportation=$transportation" +
+                  "&orderID=${Uri.encodeComponent(((ordersIDList.length - 1) >= j) ? ordersIDList[j] : "")}" +
+                  "&image=\=hyperlink(\"${Uri.encodeComponent(((ordersLinksList.length - 1) >= j) ? ordersLinksList[j] : "")}\", IMAGE(\"${linksss}\",4,150,150))" +
+                  "&orderDetails=${Uri.encodeComponent(((ordersDetailsList.length - 1) >= j) ? ordersDetailsList[j] : "")}" +
+                  "&remarks=${Uri.encodeComponent(((ordersRemarksPriceList.length - 1) >= j) ? ordersRemarksPriceList[j] : "")}",
+            ),
+          );
+          print("after");
+
+          /// Our employee's spreadsheet
+          await http.get(
+            Uri.parse(
+              ((country.toString().toLowerCase() == "uae")
+                      ? widget
+                          .homeScreenController?.TlobleUAESpreadSheetScriptURL!
+                      : widget.homeScreenController
+                          ?.TlobleChinaSpreadSheetScriptURL!)! +
+                  "?transportation=$transportation" +
+                  "&orderID=${Uri.encodeComponent(((ordersIDList.length - 1) >= j) ? ordersIDList[j] : "")}" +
+                  "&image=\=hyperlink(\"${""}\", IMAGE(\"${linksss}\",4,150,150))" +
+                  "&orderDetails=${Uri.encodeComponent(((ordersDetailsList.length - 1) >= j) ? ordersDetailsList[j] : "")}" +
+                  "&remarks=${Uri.encodeComponent(((ordersRemarksPriceList.length - 1) >= j) ? ordersRemarksPriceList[j] : "")}" +
+                  "&requestID=%23 ${widget.order?.referenceID}" +
+                  "&customerName=${widget.order?.customerName}" +
+                  "&phoneNumber=%2B${widget.order?.phoneNumber?.replaceAll("+", "")}",
+            ),
+          );
         } else if (j != ordersDetailsList.length) {
           await http.get(
             Uri.parse(
@@ -617,60 +690,95 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                   "&requestID=%23 ${widget.order?.referenceID}" +
                   "&customerName=${widget.order?.customerName}" +
                   "&phoneNumber=%2B${widget.order?.phoneNumber?.replaceAll("+", "")}" +
-                  "&customerLink=\=hyperlink(\"${Uri.encodeComponent(((ordersLinksList.length ?? 0) > j) ? ordersLinksList[j] : "")}\", \"Product Link\")",
+                  "&customerLink=\=hyperlink(\"${Uri.encodeComponent(((ordersLinksList.length) > j) ? ordersLinksList[j] : "")}\", \"Product Link\")",
+            ),
+          );
+
+          /// Our warehouse spreadsheet
+          await http.get(
+            Uri.parse(
+              ((country.toString().toLowerCase() == "uae")
+                      ? widget.homeScreenController
+                          ?.UAEWarehouseSpreadSheetScriptURL!
+                      : widget.homeScreenController
+                          ?.ChinaWarehouseSpreadSheetScriptURL!)! +
+                  "?transportation=$transportation" +
+                  "&orderID=${Uri.encodeComponent(((ordersIDList.length - 1) >= j) ? ordersIDList[j] : "")}" +
+                  "&image=\=hyperlink(\"${Uri.encodeComponent(((ordersLinksList.length - 1) >= j) ? ordersLinksList[j] : "")}\", IMAGE(\"${linksss}\",4,150,150))" +
+                  "&orderDetails=${Uri.encodeComponent(((ordersDetailsList.length - 1) >= j) ? ordersDetailsList[j] : "")}" +
+                  "&remarks=${Uri.encodeComponent(((ordersRemarksPriceList.length - 1) >= j) ? ordersRemarksPriceList[j] : "")}",
+            ),
+          );
+
+          /// Our employee's spreadsheet
+          await http.get(
+            Uri.parse(
+              ((country.toString().toLowerCase() == "uae")
+                      ? widget
+                          .homeScreenController?.TlobleUAESpreadSheetScriptURL!
+                      : widget.homeScreenController
+                          ?.TlobleChinaSpreadSheetScriptURL!)! +
+                  "?transportation=$transportation" +
+                  "&orderID=${Uri.encodeComponent(((ordersIDList.length - 1) >= j) ? ordersIDList[j] : "")}" +
+                  "&image=\=hyperlink(\"${""}\", IMAGE(\"${linksss}\",4,150,150))" +
+                  "&orderDetails=${Uri.encodeComponent(((ordersDetailsList.length - 1) >= j) ? ordersDetailsList[j] : "")}" +
+                  "&remarks=${Uri.encodeComponent(((ordersRemarksPriceList.length - 1) >= j) ? ordersRemarksPriceList[j] : "")}" +
+                  "&requestID=%23 ${widget.order?.referenceID}" +
+                  "&customerName=${widget.order?.customerName}" +
+                  "&phoneNumber=%2B${widget.order?.phoneNumber?.replaceAll("+", "")}",
             ),
           );
         }
       }
 
-      // await Future.wait(
-      //   [
-      //     sheet!.values.insertValueByKeys(
-      //       firstPayment!,
-      //       columnKey: 'First Payment',
-      //       rowKey: "# ${widget.order?.referenceID}",
-      //       eager: false,
-      //     ),
-      //     sheet.values.insertValueByKeys(
-      //       getShipmentStatusForEmployeeString(
-      //             buildContext,
-      //             ShipmentStatus.paid,
-      //           ) ??
-      //           "",
-      //       columnKey: 'Shipment Status',
-      //       rowKey: "# ${widget.order?.referenceID}",
-      //       eager: false,
-      //     ),
-      //     FirebaseFirestore.instance
-      //         .collection('Orders')
-      //         .doc('Orders')
-      //         .collection(widget.order?.sentTime?.split(" at")[0] ?? "")
-      //         .doc(widget.order?.sentTime)
-      //         .update({
-      //       'firstPayment': firstPayment,
-      //       'shipmentStatus': [ShipmentStatus.paid.value],
-      //     }),
-      //     FirebaseFirestore.instance
-      //         .collection('Customers')
-      //         .doc(widget.order?.orderSenderPhoneNumber)
-      //         .collection("History")
-      //         .doc(widget.order?.sentTime)
-      //         .update({
-      //       'firstPayment': firstPayment,
-      //       'shipmentStatus': [ShipmentStatus.paid.value],
-      //     }),
-      //     FirebaseFirestore.instance
-      //         .collection(
-      //             widget.homeScreenController?.SearchInOrdersCollectionName ??
-      //                 "")
-      //         .doc(
-      //             "${widget.order?.orderSenderPhoneNumber} ${widget.order?.sentTime}")
-      //         .update({
-      //       'firstPayment': firstPayment,
-      //       'shipmentStatus': [ShipmentStatus.paid.value],
-      //     }),
-      //   ],
-      // );
+      await Future.wait(
+        [
+          sheet!.values.insertValueByKeys(
+            firstPayment!,
+            columnKey: 'First Payment',
+            rowKey: "# ${widget.order?.referenceID}",
+            eager: false,
+          ),
+          sheet.values.insertValueByKeys(
+            getShipmentStatusForEmployeeString(
+                  buildContext,
+                  ShipmentStatus.paid,
+                ) ??
+                "",
+            columnKey: 'Shipment Status',
+            rowKey: "# ${widget.order?.referenceID}",
+            eager: false,
+          ),
+          FirebaseFirestore.instance
+              .collection('Orders')
+              .doc('Orders')
+              .collection(widget.order?.sentTime?.split(" at")[0] ?? "")
+              .doc(widget.order?.sentTime)
+              .update({
+            'firstPayment': firstPayment,
+            'shipmentStatus': [ShipmentStatus.paid.value],
+          }),
+          FirebaseFirestore.instance
+              .collection('Customers')
+              .doc(widget.order?.orderSenderPhoneNumber)
+              .collection("History")
+              .doc(widget.order?.sentTime)
+              .update({
+            'firstPayment': firstPayment,
+            'shipmentStatus': [ShipmentStatus.paid.value],
+          }),
+          FirebaseFirestore.instance
+              .collection(
+                  widget.homeScreenController?.SearchInOrdersCollectionName ??
+                      "")
+              .doc(
+                  "${widget.order?.orderSenderPhoneNumber} ${widget.order?.sentTime}")
+              .update({
+            'firstPayment': firstPayment,
+            'shipmentStatus': [ShipmentStatus.paid.value],
+          }),
+        ],
+      );
       setState(() {
         _isLoading = false;
       });
