@@ -10,6 +10,7 @@ import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/models/customer.dart';
 import 'package:flutter_ecommerce_app/src/models/order.dart';
 import 'package:flutter_ecommerce_app/src/pages/orders/first_payment_bottomsheet.dart';
+import 'package:flutter_ecommerce_app/src/pages/orders/first_payment_screen.dart';
 import 'package:flutter_ecommerce_app/src/pages/orders/second_payment_bottomsheet.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'package:flutter_ecommerce_app/src/themes/theme.dart';
@@ -252,6 +253,76 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                             horizontal: 62,
                             vertical: 16,
                           ),
+                          child: Builder(
+                            builder: (BuildContext buildContext) =>
+                                RaisedButtonV2(
+                              isLoading: _isLoading,
+                              onPressed: () async {
+                                if (isEmpty(_order.acceptedTime)) {
+                                  bool wasAbleToGetUpdatedOrder =
+                                      await _getUpdatedOrder(popFirst: true);
+                                  if (wasAbleToGetUpdatedOrder) {
+                                    await _updateAcceptedTime();
+                                    try {
+                                      Clipboard.setData(
+                                        new ClipboardData(
+                                            text: getWhatsappMessage()),
+                                      ).then((result) {
+                                        final snackBar = SnackBar(
+                                          content: Text(
+                                              'Copied whatsapp text to clipboard'),
+                                          action: SnackBarAction(
+                                            label: 'Done',
+                                            onPressed: () {},
+                                          ),
+                                        );
+                                        Scaffold.of(buildContext)
+                                            .showSnackBar(snackBar);
+                                      });
+                                      await _getUpdatedOrder();
+                                    } catch (e) {
+                                      print(e);
+                                      showErrorBottomsheet(
+                                        replaceVariable(
+                                              Localization.of(context,
+                                                  'an_error_has_occurred_value'),
+                                              'value',
+                                              e.toString(),
+                                            ) ??
+                                            "",
+                                      );
+                                    }
+                                  }
+                                } else {
+                                  Clipboard.setData(
+                                    new ClipboardData(
+                                        text: getWhatsappMessage()),
+                                  ).then((result) {
+                                    final snackBar = SnackBar(
+                                      content: Text(
+                                          'Copied whatsapp text to clipboard'),
+                                      action: SnackBarAction(
+                                        label: 'Done',
+                                        onPressed: () {},
+                                      ),
+                                    );
+                                    Scaffold.of(buildContext)
+                                        .showSnackBar(snackBar);
+                                  });
+                                }
+                              },
+                              label: Localization.of(
+                                context,
+                                'Copy whatsapp message',
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 62,
+                            vertical: 16,
+                          ),
                           child: RaisedButtonV2(
                             disabled: _isLoading,
                             // || isNotEmpty(_order.acceptedTime),
@@ -390,76 +461,90 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                         ShipmentStatus.customerRejected),
                             isLoading: _isLoading,
                             onPressed: () async {
-                              bool wasAbleToGetUpdatedOrder =
-                                  await _getUpdatedOrder();
-                              if (wasAbleToGetUpdatedOrder) {
-                                if (isNotEmpty(_order.acceptedTime)) {
-                                  try {
-                                    await showBottomsheet(
-                                      context: context,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              0.5,
-                                      dismissOnTouchOutside: false,
-                                      isScrollControlled: true,
-                                      upperWidget: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: <Widget>[
-                                          GestureDetector(
-                                              child: Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: 16.0,
-                                                  vertical: 16.0,
-                                                ),
-                                                child: Icon(
-                                                  Icons.close,
-                                                  color: Colors.black,
-                                                  size: 30,
-                                                ),
-                                              ),
-                                              onTap: () {
-                                                setState(() {
-                                                  return _isLoading
-                                                      ? null
-                                                      : Navigator.of(context)
-                                                          .pop();
-                                                });
-                                              })
-                                        ],
-                                      ),
-                                      body: FirstPaymentBottomsheet(
-                                        homeScreenController:
-                                            widget.homeScreenController,
-                                        order: _order,
-                                        isBottomSheetLoading: (isLoad) {
-                                          setState(() {
-                                            _isLoading = isLoad;
-                                          });
-                                        },
-                                      ),
-                                    );
-
-                                    await _getUpdatedOrder();
-                                  } catch (e) {
-                                    print(e);
-                                    showErrorBottomsheet(
-                                      replaceVariable(
-                                            Localization.of(context,
-                                                'an_error_has_occurred_value'),
-                                            'value',
-                                            e.toString(),
-                                          ) ??
-                                          "",
-                                    );
-                                  }
-                                } else {
-                                  showErrorBottomsheet(
-                                    Localization.of(context,
-                                        'you_should_first_contact_this_customer'),
-                                  );
-                                }
-                              }
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => FirstPaymentScreen(
+                                    homeScreenController:
+                                        widget.homeScreenController,
+                                    order: widget.order,
+                                    isBottomSheetLoading: (isLoad) {
+                                      setState(() {
+                                        _isLoading = isLoad;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              );
+                              // bool wasAbleToGetUpdatedOrder =
+                              //     await _getUpdatedOrder();
+                              // if (wasAbleToGetUpdatedOrder) {
+                              //   if (isNotEmpty(_order.acceptedTime)) {
+                              //     try {
+                              //       await showBottomsheet(
+                              //         context: context,
+                              //         height:
+                              //             MediaQuery.of(context).size.height *
+                              //                 0.5,
+                              //         dismissOnTouchOutside: false,
+                              //         isScrollControlled: true,
+                              //         upperWidget: Row(
+                              //           mainAxisAlignment:
+                              //               MainAxisAlignment.end,
+                              //           children: <Widget>[
+                              //             GestureDetector(
+                              //                 child: Padding(
+                              //                   padding: EdgeInsets.symmetric(
+                              //                     horizontal: 16.0,
+                              //                     vertical: 16.0,
+                              //                   ),
+                              //                   child: Icon(
+                              //                     Icons.close,
+                              //                     color: Colors.black,
+                              //                     size: 30,
+                              //                   ),
+                              //                 ),
+                              //                 onTap: () {
+                              //                   setState(() {
+                              //                     return _isLoading
+                              //                         ? null
+                              //                         : Navigator.of(context)
+                              //                             .pop();
+                              //                   });
+                              //                 })
+                              //           ],
+                              //         ),
+                              //         body: FirstPaymentBottomsheet(
+                              //           homeScreenController:
+                              //               widget.homeScreenController,
+                              //           order: _order,
+                              //           isBottomSheetLoading: (isLoad) {
+                              //             setState(() {
+                              //               _isLoading = isLoad;
+                              //             });
+                              //           },
+                              //         ),
+                              //       );
+                              //
+                              //       await _getUpdatedOrder();
+                              //     } catch (e) {
+                              //       print(e);
+                              //       showErrorBottomsheet(
+                              //         replaceVariable(
+                              //               Localization.of(context,
+                              //                   'an_error_has_occurred_value'),
+                              //               'value',
+                              //               e.toString(),
+                              //             ) ??
+                              //             "",
+                              //       );
+                              //     }
+                              //   } else {
+                              //     showErrorBottomsheet(
+                              //       Localization.of(context,
+                              //           'you_should_first_contact_this_customer'),
+                              //     );
+                              //   }
+                              // }
                             },
                             label: Localization.of(context, 'first_payment'),
                           ),
@@ -883,6 +968,49 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
           'https://wa.me/${_order.orderSenderPhoneNumber}?text=Hello%2C%20we%20received%20your%20feedback.');
     } catch (e) {
       print("Open Whatsapp Error: ${e.toString()}");
+    }
+  }
+
+  String getWhatsappMessage() {
+    if (_order.locale == "en") {
+      // if (true) {
+      String text =
+          "Welcome to Tloble! We're thrilled to have you as our valued customer. Our goal is to provide you with a seamless and enjoyable experience.\nLet us first confirm your order.\n\n";
+
+      text += "Summary for Order *#${_order.referenceID}*";
+      for (int index = 0;
+          index < (_order.productsTitles?.length ?? 0);
+          index++) {
+        text +=
+            "\n\n* *${(isEmpty(_order.productsTitles?[index]) || ((_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) || (_order.productsTitles![index].toString().toLowerCase() == "product") || (_order.productsTitles![index].toString().toLowerCase() == "المنتج"))) ? "${_order.productsTitles?[index]} ${index + 1}" : _order.productsTitles?[index]}*\n- Quantity: ${_order.productsQuantities?[index]}${isNotEmpty(_order.productsColors?[index]) ? "\n- Color: ${_order.productsColors?[index]}" : "\n- Color: Not specified"}${isNotEmpty(_order.productsSizes?[index]) ? "\n- Size: ${_order.productsSizes?[index]}" : "\n- Size: Not specified"}${isNotEmpty(_order.productsLinks?[index]) ? "\n- Link: ${_order.productsLinks?[index]}" : ""}\n";
+      }
+      text +=
+          "\n\nWe will begin processing your order after receiving the payment. You may pay through *OMT*, *Whish*, *USDT* or *cash* at our office.";
+      return text;
+    } else {
+      String text =
+          "مرحبا بكم في Tloble! نحن سعداء بوجودك كعميل لدينا. هدفنا هو أن نقدم لك تجربة سلسة وممتعة.\n";
+      text += "دعونا أولا تأكيد طلبك.";
+      text += "\n\n";
+      text += "ملخص الطلب رقم *#${_order.referenceID.toString()}*";
+
+      for (int index = 0;
+          index < (_order.productsTitles?.length ?? 0);
+          index++) {
+        text += """\n
+${(isEmpty(_order.productsTitles?[index]) || ((_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) || (_order.productsTitles![index].toString().toLowerCase() == "product") || (_order.productsTitles![index].toString().toLowerCase() == "المنتج"))) ? "*المنتج ${index + 1}* " : "*" + _order.productsTitles![index].toString().trim() + "*"}
+${isNotEmpty(_order.productsQuantities?[index]) ? "- الكمية: ${_order.productsQuantities![index]}" : ""}
+${isNotEmpty(_order.productsColors?[index]) ? "- اللون: ${_order.productsColors![index]}" : "- اللون: غير محدد"}
+${isNotEmpty(_order.productsSizes?[index]) ? "- الحجم: ${_order.productsSizes![index]}" : "- الحجم: غير محدد"}
+${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsLinks![index]}" : ""}
+""";
+        //- الرابط: ${_order.productsLinks[index]}
+      }
+      text += """\n
+سنبدأ معالجة طلبك بعد تلقي الدفع. يمكنك الدفع من خلال *USDT* ،*Whish* ،*OMT* أو *الدفع* في مكتبنا.
+""";
+
+      return text;
     }
   }
 

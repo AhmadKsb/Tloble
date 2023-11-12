@@ -13,6 +13,7 @@ class RaisedButtonV2 extends StatelessWidget {
     this.disabled = false,
     this.disabledColor,
     this.green = false,
+    this.backgroundColor,
   });
 
   @required
@@ -23,6 +24,7 @@ class RaisedButtonV2 extends StatelessWidget {
   final bool isLoading;
   final bool green;
   final TextStyle? labelStyle;
+  final MaterialStateProperty<Color?>? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -39,10 +41,10 @@ class RaisedButtonV2 extends StatelessWidget {
         shape: MaterialStateProperty.all(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         ),
-        backgroundColor: MaterialStateProperty.all<Color>(
-            (disabled && !isLoading)
+        backgroundColor: backgroundColor ??
+            MaterialStateProperty.all<Color>((disabled && !isLoading)
                 ? (disabledColor ?? Colors.grey)
-                : LightColor.orange),
+                : green ? Colors.green : LightColor.orange),
       ),
       child: Container(
         alignment: Alignment.center,
