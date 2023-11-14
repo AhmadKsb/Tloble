@@ -461,7 +461,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                         ShipmentStatus.customerRejected),
                             isLoading: _isLoading,
                             onPressed: () async {
-                              Navigator.of(context).push(
+                              await Navigator.of(context).push(
                                 MaterialPageRoute(
                                   builder: (context) => FirstPaymentScreen(
                                     homeScreenController:
@@ -475,6 +475,10 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                   ),
                                 ),
                               );
+
+                              /// test this
+                              await _getUpdatedOrder();
+
                               // bool wasAbleToGetUpdatedOrder =
                               //     await _getUpdatedOrder();
                               // if (wasAbleToGetUpdatedOrder) {

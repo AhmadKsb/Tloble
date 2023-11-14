@@ -372,6 +372,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                 buildContextt,
                 Localization.of(buildContextt, 'orderId_z'),
                 ordersIDList[i],
+                maxLines: 2,
                 index: i,
                 onChanged: (i, value) {
                   ordersIDList[i] = value;
@@ -420,7 +421,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                 buildContextt,
                 Localization.of(buildContextt, 'order_details_z'),
                 ordersDetailsList[i],
-                maxLines: 3,
+                maxLines: 8,
                 index: i,
                 onChanged: (i, value) {
                   ordersDetailsList[i] = value;
@@ -432,7 +433,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                 buildContextt,
                 Localization.of(buildContextt, 'remarks_z'),
                 ordersRemarksPriceList[i],
-                maxLines: 3,
+                maxLines: 4,
                 index: i,
                 onChanged: (i, value) {
                   ordersRemarksPriceList[i] = value;
@@ -480,7 +481,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
             (label == Localization.of(buildContext, 'ordered_price_z') ||
                     label == Localization.of(buildContext, 'customer_price_z'))
                 ? TextInputType.numberWithOptions(decimal: true)
-                : TextInputType.text,
+                : TextInputType.multiline,
         enabled: !_isLoading,
         initialValue: text,
         onChanged: (txt) {
@@ -518,9 +519,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
       width: 130,
       height: 130,
       decoration: BoxDecoration(
-        shape: (imageLoaded == null)
-            ? BoxShape.circle
-            : BoxShape.rectangle,
+        shape: (imageLoaded == null) ? BoxShape.circle : BoxShape.rectangle,
         image: DecorationImage(
           // fit: widget.fit ?? BoxFit.fill,
           image: (imageLoaded == null)
@@ -634,7 +633,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                   "&phoneNumber=%2B${widget.order?.phoneNumber?.replaceAll("+", "")}" +
                   "&customerPrice=$firstPayment" +
                   "&customerLink=\=hyperlink(\"${Uri.encodeComponent(((ordersLinksList.length - 1) >= j) ? ordersLinksList[j] : "")}\", \"Product Link\")" +
-                  "&orderedPrice=${(num.parse(orderedPriceField ?? "0") / ((country.toString().toLowerCase() == "uae") ? num.parse(widget.homeScreenController?.aedConversion ?? "1") : (widget.homeScreenController?.yuanRate ?? 1))).toString()}",
+                  "&orderedPrice=${((num.parse(orderedPriceField ?? "0") * ((country.toString().toLowerCase() == "uae") ? (widget.homeScreenController?.uaeCommission ?? 1) : (widget.homeScreenController?.chinaCommission ?? 1))) / ((country.toString().toLowerCase() == "uae") ? num.parse(widget.homeScreenController?.aedConversion ?? "1") : (widget.homeScreenController?.yuanRate ?? 1))).toString()}",
             ),
           );
 

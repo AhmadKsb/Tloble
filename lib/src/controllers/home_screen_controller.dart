@@ -24,6 +24,8 @@ class HomeScreenController {
       _loadUpdateDuration,
       _shippingCost,
       _yuanRate,
+      _uaeCommission,
+      _chinaCommission,
       _fiftyToHundred,
       _hundredToThousand,
       _thousandToThreeThousand,
@@ -842,6 +844,16 @@ class HomeScreenController {
     _yuanRate = value;
   }
 
+  num? get chinaCommission => _chinaCommission;
+  set chinaCommission(value) {
+    _chinaCommission = value;
+  }
+
+  num? get uaeCommission => _uaeCommission;
+  set uaeCommission(value) {
+    _uaeCommission = value;
+  }
+
   num? get shippingCost => _shippingCost;
   set shippingCost(value) {
     _shippingCost = value;
@@ -1116,6 +1128,8 @@ class HomeScreenController {
     _newsUpdateDuration = appInfoSnapshot?['newsUpdateDuration'] ?? 5;
     _loadUpdateDuration = appInfoSnapshot?['loadUpdateDuration'] ?? 5;
     _yuanRate = appInfoSnapshot?['yuanRate'] ?? 1;
+    _uaeCommission = appInfoSnapshot?['uaeCommission'] ?? 1;
+    _chinaCommission = appInfoSnapshot?['chinaCommission'] ?? 1;
     _shippingCost = appInfoSnapshot?['shippingCost'] ?? 1;
     _myPercentageFromSignals = appInfoSnapshot?['myPercentageFromSignals'] ?? 2;
     _coinsToJoinTelegram = appInfoSnapshot?['coinsToJoinTelegram'] ?? 61;
@@ -1274,10 +1288,14 @@ class HomeScreenController {
     ChinaSpreadSheetScriptURL = appInfoSnapshot?['ChinaSpreadSheetScriptURL'] ??
         'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
 
-    UAEWarehouseSpreadSheetScriptURL = appInfoSnapshot?['UAEWarehouseSpreadSheetScriptURL'];
-    ChinaWarehouseSpreadSheetScriptURL = appInfoSnapshot?['ChinaWarehouseSpreadSheetScriptURL'];
-    TlobleUAESpreadSheetScriptURL = appInfoSnapshot?['TlobleUAESpreadSheetScriptURL'];
-    TlobleChinaSpreadSheetScriptURL = appInfoSnapshot?['TlobleChinaSpreadSheetScriptURL'];
+    UAEWarehouseSpreadSheetScriptURL =
+        appInfoSnapshot?['UAEWarehouseSpreadSheetScriptURL'];
+    ChinaWarehouseSpreadSheetScriptURL =
+        appInfoSnapshot?['ChinaWarehouseSpreadSheetScriptURL'];
+    TlobleUAESpreadSheetScriptURL =
+        appInfoSnapshot?['TlobleUAESpreadSheetScriptURL'];
+    TlobleChinaSpreadSheetScriptURL =
+        appInfoSnapshot?['TlobleChinaSpreadSheetScriptURL'];
 
     spreadSheetID = appInfoSnapshot?['spreadSheetID'] ??
         '1_FMmquecebW5jTZalv3Ti5Wqv3bzx7nyTxMuzQdq-H8';
