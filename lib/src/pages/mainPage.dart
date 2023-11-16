@@ -11,6 +11,7 @@ import 'package:flutter_ecommerce_app/src/mixins/home_screen_controller_mixin.da
 import 'package:flutter_ecommerce_app/src/models/employee.dart';
 import 'package:flutter_ecommerce_app/src/models/order.dart';
 import 'package:flutter_ecommerce_app/src/pages/home_page.dart';
+import 'package:flutter_ecommerce_app/src/pages/orders/quotation_screen.dart';
 import 'package:flutter_ecommerce_app/src/pages/shopping_cart_page.dart';
 import 'package:flutter_ecommerce_app/src/pages/BottomSheets/unban_user_bottomsheet.dart';
 import 'package:flutter_ecommerce_app/src/pages/upcoming_orders.dart';
@@ -43,6 +44,7 @@ import 'customer_history_screen.dart';
 import 'feedback/feedback_list_screen.dart';
 import 'feedback/send_us_your_feedbacks_screen.dart';
 import 'orders/all_orders_screen.dart';
+import 'orders/first_payment_screen.dart';
 import 'orders/paid_orders_screen.dart';
 import 'dart:ui';
 import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
@@ -1185,7 +1187,29 @@ class _MainPageState extends State<MainPage>
                   },
                 ),
               ),
-
+            if (homeScreenController.employees
+                    .firstWhere(
+                        (element) =>
+                            element.phoneNumber ==
+                            FirebaseAuth.instance.currentUser?.phoneNumber,
+                        orElse: () => Employee(name: null))
+                    .name !=
+                null)
+              ListTile(
+                title: Text(
+                  Localization.of(context, 'quotation'),
+                  style: TextStyle(fontWeight: FontWeight.w400),
+                ),
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => QuotationScreen(
+                        homeScreenController: homeScreenController,
+                      ),
+                    ),
+                  );
+                },
+              ),
             if (homeScreenController.employees
                     .firstWhere(
                         (element) =>

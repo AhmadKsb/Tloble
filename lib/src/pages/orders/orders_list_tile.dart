@@ -5,6 +5,7 @@ import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/models/order.dart';
 import 'package:flutter_ecommerce_app/src/utils/string_util.dart';
 
+import '../../models/employee.dart';
 import 'order_screen.dart';
 
 class OrdersListTile extends StatefulWidget {
@@ -180,7 +181,7 @@ class _OrdersListTileState extends State<OrdersListTile> {
                                       ),
                                       'value',
                                       dateTimeTruncated,
-                                    )} ${Localization.of(context, 'by')} ${widget.controller?.employees.firstWhere((element) => element.name?.toLowerCase() == widget.order?.acceptedBy?.toLowerCase()).name}",
+                                    )} ${Localization.of(context, 'by')} ${widget.controller?.employees.firstWhere((element) => element.name?.toLowerCase() == widget.order?.acceptedBy?.toLowerCase(), orElse: () => Employee()).name}",
                                   style: Theme.of(context)
                                       .textTheme
                                       .subtitle1

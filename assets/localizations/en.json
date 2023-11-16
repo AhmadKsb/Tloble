@@ -1414,5 +1414,8 @@
    "remarks_z": "Remarks",
    "customer_price_z": "Customer Price in $",
    "ordered_price_z": "Ordered Price in AED or Yuan",
-   "check_my_order": "Check my order"
+   "check_my_order": "Check my order",
+   "copy_whatsapp_message": "Copy whatsapp message",
+   "quotation": "Quotation",
+   "selling_price": "Selling Price"
 }

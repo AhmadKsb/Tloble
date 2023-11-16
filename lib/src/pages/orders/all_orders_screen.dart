@@ -58,17 +58,16 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
     String? selectedDate,
     DateTime? selectedDateFormatted,
   }) async {
-    if (_controller == null || widget.controller == null) {
-      await loadHomeScreenController();
-      _controller = homeScreenController;
-    }
-    if (newController != null) _controller = newController;
-
     setState(() {
       _state = PageState.loading;
       dateSelected = selectedDateFormatted ?? DateTime.now();
     });
 
+    if (_controller == null || widget.controller == null) {
+      await loadHomeScreenController();
+      _controller = homeScreenController;
+    }
+    if (newController != null) _controller = newController;
 
     try {
       prefss = await SharedPreferences.getInstance();
@@ -439,13 +438,13 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
   String getBalance() {
     balance = 0;
     // if (balance == 0) {
-      orders.forEach((element) {
-        if (balance == null) balance = 0;
-        balance += Order.fromJson(element.data() as Map<dynamic, dynamic>)
-                .firstPayment! +
-            Order.fromJson(element.data() as Map<dynamic, dynamic>)
-                .secondPayment!;
-      });
+    orders.forEach((element) {
+      if (balance == null) balance = 0;
+      balance += Order.fromJson(element.data() as Map<dynamic, dynamic>)
+              .firstPayment! +
+          Order.fromJson(element.data() as Map<dynamic, dynamic>)
+              .secondPayment!;
+    });
     // }
     return balance.toString();
   }
