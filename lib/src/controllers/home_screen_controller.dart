@@ -180,6 +180,7 @@ class HomeScreenController {
   String? smallAmountsGoogleSheetURL;
   String? spreadSheetScriptURL;
   String? UAESpreadSheetScriptURL;
+  String? GSHChinaSpreadSheetScriptURL;
   String? ChinaSpreadSheetScriptURL;
   String? QuotationSpreadSheetScriptURL;
 
@@ -1286,6 +1287,7 @@ class HomeScreenController {
         'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
 
     UAESpreadSheetScriptURL = appInfoSnapshot?['UAESpreadSheetScriptURL'];
+    GSHChinaSpreadSheetScriptURL = appInfoSnapshot?['GSHChinaSpreadSheetScriptURL'];
     ChinaSpreadSheetScriptURL = appInfoSnapshot?['ChinaSpreadSheetScriptURL'] ??
         'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
 

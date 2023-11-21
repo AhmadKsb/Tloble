@@ -110,9 +110,14 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
+                        _buildFirstPayment(),
+                        _buildOrderedPrice(),
+                        SizedBox(height: 32),
                         Center(
                           child: Container(
-                            width: 75,
+                            width: (country.toString().toLowerCase() == "uae")
+                                ? 90
+                                : 130,
                             child: DropdownButton<dynamic>(
                               isExpanded: true,
                               underline: Container(
@@ -140,12 +145,12 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                             ),
                           ),
                         ),
-
                         Center(
                           child: Container(
-                            width: 75,
+                            width: 90,
                             child: DropdownButton<dynamic>(
                               // Initial Value
+
                               underline: Container(
                                 width: 20,
                                 color: Colors.transparent,
@@ -179,8 +184,6 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
                             ),
                           ),
                         ),
-                        _buildFirstPayment(),
-                        _buildOrderedPrice(),
                         _buildItemInfoBox(),
                         if (i > 0)
                           Padding(
@@ -361,7 +364,7 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              SizedBox(height: 64),
+              SizedBox(height: 32),
               // imageWidget,
               Text(
                 Localization.of(context, 'Item ') + (i + 1).toString(),
@@ -646,8 +649,11 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
               ((country.toString().toLowerCase() == "uae")
                       ? widget.homeScreenController
                           ?.UAEWarehouseSpreadSheetScriptURL!
-                      : widget.homeScreenController
-                          ?.ChinaWarehouseSpreadSheetScriptURL!)! +
+                      : (country.toString().toLowerCase() == "china (abed)")
+                          ? widget.homeScreenController
+                              ?.ChinaWarehouseSpreadSheetScriptURL!
+                          : widget.homeScreenController
+                              ?.GSHChinaSpreadSheetScriptURL!)! +
                   "?transportation=$transportation" +
                   "&orderID=${Uri.encodeComponent(((ordersIDList.length - 1) >= j) ? ordersIDList[j] : "")}" +
                   "&image=\=hyperlink(\"${Uri.encodeComponent(((ordersLinksList.length - 1) >= j) ? ordersLinksList[j] : "")}\", IMAGE(\"${linksss}\",4,150,150))" +
@@ -700,8 +706,11 @@ class _FirstPaymentScreenState extends State<FirstPaymentScreen> {
               ((country.toString().toLowerCase() == "uae")
                       ? widget.homeScreenController
                           ?.UAEWarehouseSpreadSheetScriptURL!
-                      : widget.homeScreenController
-                          ?.ChinaWarehouseSpreadSheetScriptURL!)! +
+                      : (country.toString().toLowerCase() == "china (abed)")
+                          ? widget.homeScreenController
+                              ?.ChinaWarehouseSpreadSheetScriptURL!
+                          : widget.homeScreenController
+                              ?.GSHChinaSpreadSheetScriptURL!)! +
                   "?transportation=$transportation" +
                   "&orderID=${Uri.encodeComponent(((ordersIDList.length - 1) >= j) ? ordersIDList[j] : "")}" +
                   "&image=\=hyperlink(\"${Uri.encodeComponent(((ordersLinksList.length - 1) >= j) ? ordersLinksList[j] : "")}\", IMAGE(\"${linksss}\",4,150,150))" +

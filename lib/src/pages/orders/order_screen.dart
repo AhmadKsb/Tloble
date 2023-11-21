@@ -989,7 +989,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
             "\n\n* *${(isEmpty(_order.productsTitles?[index]) || ((_order.productsTitles![index].toString().toLowerCase() == Localization.of(context, "product").toLowerCase()) || (_order.productsTitles![index].toString().toLowerCase() == "product") || (_order.productsTitles![index].toString().toLowerCase() == "المنتج"))) ? "${_order.productsTitles?[index]} ${index + 1}" : _order.productsTitles?[index]}*\n- Quantity: ${_order.productsQuantities?[index]}${isNotEmpty(_order.productsColors?[index]) ? "\n- Color: ${_order.productsColors?[index]}" : "\n- Color: Not specified"}${isNotEmpty(_order.productsSizes?[index]) ? "\n- Size: ${_order.productsSizes?[index]}" : "\n- Size: Not specified"}${isNotEmpty(_order.productsLinks?[index]) ? "\n- Link: ${_order.productsLinks?[index]}" : ""}\n";
       }
       text +=
-          "\n\nWe will begin processing your order after receiving the payment. You may pay through *OMT*, *Whish*, *USDT* or *cash* at our office.";
+          "\n\nAfter confirming your order, you may pay us through *OMT*, *Whish*, *USDT* or *cash* at our office.";
       return text;
     } else {
       String text =
@@ -1011,7 +1011,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
         //- الرابط: ${_order.productsLinks[index]}
       }
       text += """\n
-سنبدأ معالجة طلبك بعد تلقي الدفع. يمكنك الدفع من خلال *USDT* ،*Whish* ،*OMT* أو *الدفع* في مكتبنا.
+بعد تأكيد طلبك، يمكنك الدفع لنا من خلال *USDT* ،*Whish* ،*OMT* أو *الدفع* في مكتبنا.
 """;
 
       return text;
