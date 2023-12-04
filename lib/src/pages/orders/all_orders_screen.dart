@@ -140,7 +140,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
         return Theme(
           data: ThemeData.light().copyWith(
             primaryColor: LightColor.orange,
-            accentColor: LightColor.orange,
+            // accentColor: LightColor.orange,
             colorScheme: ColorScheme.light(
               primary: LightColor.orange,
             ),
@@ -325,11 +325,11 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                       'value',
                                       DateFormat(
                                         prefss.getString(
-                                                    "swiftShop_language") ==
+                                                    "tloble_language") ==
                                                 'ar'
                                             ? 'EEEE d MMMM yyyy'
                                             : 'EEEE MMMM d, yyyy',
-                                        prefss.getString("swiftShop_language"),
+                                        prefss.getString("tloble_language"),
                                       ).format(dateSelected),
                                     ) ??
                                     "",
@@ -342,11 +342,11 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                 padding: EdgeInsets.symmetric(vertical: 16),
                                 child: Text(
                                   DateFormat(
-                                    prefss.getString("swiftShop_language") ==
+                                    prefss.getString("tloble_language") ==
                                             'ar'
                                         ? 'EEEE d MMMM yyyy'
                                         : 'EEEE MMMM d, yyyy',
-                                    prefss.getString("swiftShop_language"),
+                                    prefss.getString("tloble_language"),
                                   ).format(dateSelected),
                                   style: TextStyle(
                                     fontSize: 16,
@@ -404,7 +404,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                 itemCount: orders.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return OrdersListTile(
-                                    order: Order.fromJson(orders[index].data()
+                                    order: Orders.fromJson(orders[index].data()
                                         as Map<dynamic, dynamic>),
                                     controller: _controller!,
                                     isLastRow: index == orders.length - 1,
@@ -440,9 +440,9 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
     // if (balance == 0) {
     orders.forEach((element) {
       if (balance == null) balance = 0;
-      balance += Order.fromJson(element.data() as Map<dynamic, dynamic>)
+      balance += Orders.fromJson(element.data() as Map<dynamic, dynamic>)
               .firstPayment! +
-          Order.fromJson(element.data() as Map<dynamic, dynamic>)
+          Orders.fromJson(element.data() as Map<dynamic, dynamic>)
               .secondPayment!;
     });
     // }

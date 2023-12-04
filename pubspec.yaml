@@ -11,13 +11,12 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.10+24
+version: 1.0.12+26
 
 environment:
-  sdk: ">=2.15.0 <3.0.0"
+  sdk: ">=2.15.0 <3.3.3"
 
 dependency_overrides:
-  firebase_core_platform_interface: 4.5.1
   archive: ^3.1.2
   highlighter_coachmark: ^0.0.3
 
@@ -30,35 +29,36 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.3
-  google_fonts: 2.2.0
-  http: 0.13.3
+  google_fonts: ^6.1.0
+  http: ^1.1.2
   tutorial_coach_mark: ^1.2.11
   highlighter_coachmark: ^0.0.3
   flare_flutter: ^3.0.2
   cached_network_image: ^3.0.0
-  permission_handler: 10.0.0
+  permission_handler: ^11.1.0
   shared_preferences: ^2.0.9
   nuts_activity_indicator: ^1.0.0
-  firebase_messaging: 14.0.1
-  firebase_core: 2.1.0
+  firebase_messaging: ^14.7.6
+  firebase_core: ^2.24.0
+  carrier_info: ^2.0.8
   firebase_database: ^10.0.1
-  firebase_auth: 4.0.1
-  firebase_storage: 11.0.1
+  firebase_auth: ^4.15.0
+  firebase_storage: ^11.5.3
   cloud_firestore: ^4.0.1
-  package_info_plus: ^1.0.0
+  package_info_plus: ^5.0.1
   store_redirect: ^2.0.0
-  flutter_local_notifications: ^8.0.0
-  vibration: 1.7.4
+  flutter_local_notifications: ^16.2.0
+  vibration: ^1.8.4
   country_pickers: ^2.0.0
   country_picker: ^2.0.12
   flutter_phoenix: ^1.0.0
-  flutter_svg: ^0.20.0-nullsafety.3
-  dropdown_button2: ^1.9.3
+  flutter_svg: ^2.0.9
+  dropdown_button2: ^2.3.9
   url_launcher: ^6.0.0
-  intl: ^0.17.0
+  intl: ^0.18.1
   flutter_share: ^2.0.0
-  gsheets: 0.3.0
-  flutter_slidable: ^0.6.0
+  gsheets: ^0.5.0
+  flutter_slidable: ^3.0.1
 
 
 dev_dependencies:

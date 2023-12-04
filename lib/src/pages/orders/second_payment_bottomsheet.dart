@@ -30,7 +30,7 @@ var _credentials = r'''
 
 class SecondPaymentBottomsheet extends StatefulWidget {
   final HomeScreenController? homeScreenController;
-  final Order? order;
+  final Orders? order;
   final ValueChanged<bool>? isBottomSheetLoading;
 
   SecondPaymentBottomsheet({

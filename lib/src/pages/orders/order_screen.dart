@@ -45,7 +45,7 @@ var _credentials = r'''
 
 class OrderScreen extends StatefulWidget {
   final HomeScreenController homeScreenController;
-  final Order order;
+  final Orders order;
   final bool isCustomer;
 
   OrderScreen({
@@ -69,7 +69,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
   bool requestTimerRunning = false;
   bool _isLoading = false;
   var scaffoldKey = GlobalKey<ScaffoldState>();
-  late Order _order;
+  late Orders _order;
 
   num rate = 1;
   var refreshKey = GlobalKey<RefreshIndicatorState>();
@@ -276,7 +276,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                             onPressed: () {},
                                           ),
                                         );
-                                        Scaffold.of(buildContext)
+                                        ScaffoldMessenger.of(context)
                                             .showSnackBar(snackBar);
                                       });
                                       await _getUpdatedOrder();
@@ -306,7 +306,7 @@ class _OrderScreenState extends State<OrderScreen> with WidgetsBindingObserver {
                                         onPressed: () {},
                                       ),
                                     );
-                                    Scaffold.of(buildContext)
+                                    ScaffoldMessenger.of(context)
                                         .showSnackBar(snackBar);
                                   });
                                 }
@@ -1086,7 +1086,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
           .get();
 
       if (data.docs.isNotEmpty) {
-        _order = Order.fromJson(data.docs[0].data());
+        _order = Orders.fromJson(data.docs[0].data());
         setState(() {
           _isLoading = false;
         });
@@ -1187,7 +1187,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                         onPressed: () {},
                                       ),
                                     );
-                                    Scaffold.of(buildContext)
+                                    ScaffoldMessenger.of(context)
                                         .showSnackBar(snackBar);
                                   });
                                 } else {
@@ -1199,7 +1199,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                       onPressed: () {},
                                     ),
                                   );
-                                  Scaffold.of(buildContext)
+                                  ScaffoldMessenger.of(context)
                                       .showSnackBar(snackBar);
                                 }
                               }
@@ -1274,7 +1274,8 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                               ?.toLowerCase() ==
                                           _order.acceptedBy?.toLowerCase())) {
                                     Clipboard.setData(new ClipboardData(
-                                            text: widget.order.phoneNumber))
+                                            text:
+                                                widget.order.phoneNumber ?? ""))
                                         .then((result) {
                                       final snackBar = SnackBar(
                                         content: Text(
@@ -1284,7 +1285,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                           onPressed: () {},
                                         ),
                                       );
-                                      Scaffold.of(buildContext)
+                                      ScaffoldMessenger.of(context)
                                           .showSnackBar(snackBar);
                                     });
                                   } else {
@@ -1296,7 +1297,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                         onPressed: () {},
                                       ),
                                     );
-                                    Scaffold.of(buildContext)
+                                    ScaffoldMessenger.of(context)
                                         .showSnackBar(snackBar);
                                   }
                                 }
@@ -1338,7 +1339,8 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                             ?.toLowerCase() ==
                                         _order.acceptedBy?.toLowerCase())) {
                                   Clipboard.setData(new ClipboardData(
-                                          text: widget.order.customerName))
+                                          text:
+                                              widget.order.customerName ?? ""))
                                       .then((result) {
                                     final snackBar = SnackBar(
                                       content: Text(
@@ -1348,7 +1350,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                         onPressed: () {},
                                       ),
                                     );
-                                    Scaffold.of(buildContext)
+                                    ScaffoldMessenger.of(context)
                                         .showSnackBar(snackBar);
                                   });
                                 } else {
@@ -1360,7 +1362,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                       onPressed: () {},
                                     ),
                                   );
-                                  Scaffold.of(buildContext)
+                                  ScaffoldMessenger.of(context)
                                       .showSnackBar(snackBar);
                                 }
                               },
@@ -1476,7 +1478,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                               onPressed: () {},
                                             ),
                                           );
-                                          Scaffold.of(buildContext)
+                                          ScaffoldMessenger.of(context)
                                               .showSnackBar(snackBar);
                                         });
                                       }

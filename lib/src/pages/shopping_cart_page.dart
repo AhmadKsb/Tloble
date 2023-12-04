@@ -25,7 +25,7 @@ class ShoppingCartPage extends StatefulWidget {
 }
 
 class _ShoppingCartPageState extends State<ShoppingCartPage> {
-  final SlidableController slidableController = SlidableController();
+  // final SlidableController slidableController = SlidableController();
 
   var index = -1;
   Widget _cartItems() {
@@ -41,112 +41,112 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
 
   Widget _item(var index, {bool isLastIndex = false}) {
     return Slidable(
-      actionPane: SlidableDrawerActionPane(),
-      controller: slidableController,
-      actionExtentRatio: 0.20,
+      // actionPane: SlidableDrawerActionPane(),
+      // controller: slidableController,
+      // actionExtentRatio: 0.20,
       enabled: true,
-      actions: (Localizations.localeOf(context).languageCode == 'ar')
-          ? <Widget>[
-              SlideAction(
-                color: LightColor.lightGrey.withAlpha(75),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.delete_outline,
-                      color: Colors.red,
-                      size: 24,
-                    ),
-                  ],
-                ),
-                onTap: () async {
-                  await showConfirmationBottomSheet(
-                    context: context,
-                    flare: 'assets/flare/pending.flr',
-                    title: Localization.of(
-                      context,
-                      'are_you_sure_you_want_to_remove_this_item_from_your_cart',
-                    ),
-                    confirmMessage: Localization.of(context, 'confirm'),
-                    confirmAction: () async {
-                      widget.homeScreenController!.getUpdatedCart();
-                      widget.homeScreenController!.productsTitles
-                          .removeAt(index);
-                      widget.homeScreenController!.productsLinks
-                          .removeAt(index);
-                      widget.homeScreenController!.productsQuantities
-                          .removeAt(index);
-                      widget.homeScreenController!.productsColors
-                          .removeAt(index);
-                      widget.homeScreenController!.productsSizes
-                          .removeAt(index);
-                      widget.homeScreenController!.productsPrices
-                          .removeAt(index);
-                      widget.homeScreenController!.productsImages
-                          .removeAt(index);
-                      await widget.homeScreenController!.updateCart();
-
-                      widget.homeScreenController!.refreshView();
-
-                      setState(() {});
-                    },
-                    cancelMessage: Localization.of(context, 'cancel'),
-                  );
-                },
-              ),
-            ]
-          : null,
-      secondaryActions: (Localizations.localeOf(context).languageCode == 'ar')
-          ? null
-          : <Widget>[
-              SlideAction(
-                color: LightColor.lightGrey.withAlpha(75),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.delete_outline,
-                      color: Colors.red,
-                      size: 24,
-                    ),
-                  ],
-                ),
-                onTap: () async {
-                  await showConfirmationBottomSheet(
-                    context: context,
-                    flare: 'assets/flare/pending.flr',
-                    title: Localization.of(
-                      context,
-                      'are_you_sure_you_want_to_remove_this_item_from_your_cart',
-                    ),
-                    confirmMessage: Localization.of(context, 'confirm'),
-                    confirmAction: () async {
-                      widget.homeScreenController!.getUpdatedCart();
-                      widget.homeScreenController!.productsTitles
-                          .removeAt(index);
-                      widget.homeScreenController!.productsLinks
-                          .removeAt(index);
-                      widget.homeScreenController!.productsQuantities
-                          .removeAt(index);
-                      widget.homeScreenController!.productsColors
-                          .removeAt(index);
-                      widget.homeScreenController!.productsSizes
-                          .removeAt(index);
-                      widget.homeScreenController!.productsPrices
-                          .removeAt(index);
-                      widget.homeScreenController!.productsImages
-                          .removeAt(index);
-                      await widget.homeScreenController!.updateCart();
-
-                      widget.homeScreenController!.refreshView();
-
-                      setState(() {});
-                    },
-                    cancelMessage: Localization.of(context, 'cancel'),
-                  );
-                },
-              ),
-            ],
+      // actions: (Localizations.localeOf(context).languageCode == 'ar')
+      //     ? <Widget>[
+      //         SlideAction(
+      //           color: LightColor.lightGrey.withAlpha(75),
+      //           child: Column(
+      //             mainAxisAlignment: MainAxisAlignment.center,
+      //             children: <Widget>[
+      //               Icon(
+      //                 Icons.delete_outline,
+      //                 color: Colors.red,
+      //                 size: 24,
+      //               ),
+      //             ],
+      //           ),
+      //           onTap: () async {
+      //             await showConfirmationBottomSheet(
+      //               context: context,
+      //               flare: 'assets/flare/pending.flr',
+      //               title: Localization.of(
+      //                 context,
+      //                 'are_you_sure_you_want_to_remove_this_item_from_your_cart',
+      //               ),
+      //               confirmMessage: Localization.of(context, 'confirm'),
+      //               confirmAction: () async {
+      //                 widget.homeScreenController!.getUpdatedCart();
+      //                 widget.homeScreenController!.productsTitles
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsLinks
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsQuantities
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsColors
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsSizes
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsPrices
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsImages
+      //                     .removeAt(index);
+      //                 await widget.homeScreenController!.updateCart();
+      //
+      //                 widget.homeScreenController!.refreshView();
+      //
+      //                 setState(() {});
+      //               },
+      //               cancelMessage: Localization.of(context, 'cancel'),
+      //             );
+      //           },
+      //         ),
+      //       ]
+      //     : null,
+      // secondaryActions: (Localizations.localeOf(context).languageCode == 'ar')
+      //     ? null
+      //     : <Widget>[
+      //         SlideAction(
+      //           color: LightColor.lightGrey.withAlpha(75),
+      //           child: Column(
+      //             mainAxisAlignment: MainAxisAlignment.center,
+      //             children: <Widget>[
+      //               Icon(
+      //                 Icons.delete_outline,
+      //                 color: Colors.red,
+      //                 size: 24,
+      //               ),
+      //             ],
+      //           ),
+      //           onTap: () async {
+      //             await showConfirmationBottomSheet(
+      //               context: context,
+      //               flare: 'assets/flare/pending.flr',
+      //               title: Localization.of(
+      //                 context,
+      //                 'are_you_sure_you_want_to_remove_this_item_from_your_cart',
+      //               ),
+      //               confirmMessage: Localization.of(context, 'confirm'),
+      //               confirmAction: () async {
+      //                 widget.homeScreenController!.getUpdatedCart();
+      //                 widget.homeScreenController!.productsTitles
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsLinks
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsQuantities
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsColors
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsSizes
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsPrices
+      //                     .removeAt(index);
+      //                 widget.homeScreenController!.productsImages
+      //                     .removeAt(index);
+      //                 await widget.homeScreenController!.updateCart();
+      //
+      //                 widget.homeScreenController!.refreshView();
+      //
+      //                 setState(() {});
+      //               },
+      //               cancelMessage: Localization.of(context, 'cancel'),
+      //             );
+      //           },
+      //         ),
+      //       ],
       child: Container(
         margin: EdgeInsets.only(bottom: isLastIndex ? 0 : 36),
         // height: 80,

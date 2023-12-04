@@ -85,7 +85,7 @@ class MyAppState extends State<MyApp> {
     });
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? language = prefs.getString("swiftShop_language");
+      String? language = prefs.getString("tloble_language");
       _locale = (isNotEmpty(language) ? Locale(language!) : Locale('ar'));
       setState(() {
         _state = PageState.loaded;

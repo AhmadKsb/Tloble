@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyBGAhBWUfS8IxYj1v6Y6SRE6YxXHiEMxv0</string>
+	<string>AIzaSyBqjI6hv0IGnyw_y25V-E-1QXmtWFZzL8Y</string>
 	<key>GCM_SENDER_ID</key>
-	<string>199247579885</string>
+	<string>1026444625994</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.swiftShop.lb</string>
 	<key>PROJECT_ID</key>
-	<string>swiftlb-aec19</string>
+	<string>tloblelb</string>
 	<key>STORAGE_BUCKET</key>
-	<string>swiftlb-aec19.appspot.com</string>
+	<string>tloblelb.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:199247579885:ios:8932b1d4a684654a615ae4</string>
+	<string>1:1026444625994:ios:a847fa36454444a88e7eb3</string>
 </dict>
 </plist>

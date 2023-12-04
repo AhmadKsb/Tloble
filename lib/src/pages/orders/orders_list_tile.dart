@@ -9,7 +9,7 @@ import '../../models/employee.dart';
 import 'order_screen.dart';
 
 class OrdersListTile extends StatefulWidget {
-  final Order? order;
+  final Orders? order;
   final HomeScreenController? controller;
   final String? selectedTime;
   final String? selectedPhoneNumber;

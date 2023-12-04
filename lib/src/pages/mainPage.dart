@@ -1,10 +1,11 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
 import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/mixins/home_screen_controller_mixin.dart';
@@ -28,6 +29,7 @@ import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store_redirect/store_redirect.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 
 import '../../main.dart';
@@ -44,10 +46,8 @@ import 'customer_history_screen.dart';
 import 'feedback/feedback_list_screen.dart';
 import 'feedback/send_us_your_feedbacks_screen.dart';
 import 'orders/all_orders_screen.dart';
-import 'orders/first_payment_screen.dart';
 import 'orders/paid_orders_screen.dart';
 import 'dart:ui';
-import 'package:flutter_ecommerce_app/src/utils/BottomSheets/operation_status.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 
 GlobalKey shoppingCartKey = GlobalObjectKey("shoppingCartKey");
@@ -106,7 +106,7 @@ class _MainPageState extends State<MainPage>
     if (!forceRefresh) setHomeScreenControllerView(this);
     await loadHomeScreenController();
 
-    checkForUpdate();
+    checkForCustomError();
 
     if ((homeScreenController.shouldLoadAgainAfterTimer ?? false)) _loadAgain();
   }
@@ -115,6 +115,60 @@ class _MainPageState extends State<MainPage>
     if (adminPanelNames.isEmpty &&
         (homeScreenController.feedbackReceiversList?.isNotEmpty ?? false))
       _buildAdminPanelWidgets();
+  }
+
+  void checkForCustomError() {
+    print(homeScreenController.isBanned);
+    if ((homeScreenController.isBanned ?? false)) {
+      showUpdateBottomSheet(
+        message: Localization.of(context, 'you_are_banned'),
+        hasOnPress: false,
+      );
+    } else if (homeScreenController.showOrderThroughWhatsapp ?? false) {
+      showUpdateBottomSheet(
+        messageWidget: Center(
+          child: Padding(
+            padding: EdgeInsets.only(top: 12, bottom: 24, left: 12, right: 12),
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: Localization.of(
+                        context, 'the_app_is_temporary_unavailable'),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text: Localization.of(context, 'or_whatsapp_on'),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.blue,
+                    ),
+                    recognizer: new TapGestureRecognizer()
+                      ..onTap = () {
+                        try {
+                          launch(
+                              'https://wa.me/+96170504287?text=${Uri.encodeComponent("Hello, I want to order")}');
+                        } catch (e) {
+                          print("Open Whatsapp Error: ${e.toString()}");
+                        }
+                      },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        hasOnPress: false,
+      );
+    } else {
+      checkForUpdate();
+    }
   }
 
   void checkForUpdate() {
@@ -137,7 +191,52 @@ class _MainPageState extends State<MainPage>
             iosVersionSplitAtPlus[1];
         if (num.parse(consoleString) > num.parse(currentVersion))
           showUpdateBottomSheet(
-            Localization.of(context, 'newer_version_available'),
+            messageWidget: Center(
+              child: Padding(
+                padding:
+                    EdgeInsets.only(top: 12, bottom: 24, left: 12, right: 12),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            Localization.of(context, 'newer_version_available'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                      TextSpan(
+                        text: Localization.of(context, 'or_whatsapp_on'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.blue,
+                        ),
+                        recognizer: new TapGestureRecognizer()
+                          ..onTap = () {
+                            try {
+                              launch(
+                                  'https://wa.me/+96170504287?text=${Uri.encodeComponent("Hello, I want to order")}');
+                            } catch (e) {
+                              print("Open Whatsapp Error: ${e.toString()}");
+                            }
+                          },
+                      ),
+                      TextSpan(
+                        text: Localization.of(context, 'to_submit_your_order'),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 18,
+                            color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           );
       } else {
         List<String> androidVersionSplitAtPlus =
@@ -150,7 +249,52 @@ class _MainPageState extends State<MainPage>
             androidVersionSplitAtPlus[1];
         if (num.parse(consoleString) > num.parse(currentVersion))
           showUpdateBottomSheet(
-            Localization.of(context, 'newer_version_available'),
+            messageWidget: Center(
+              child: Padding(
+                padding:
+                    EdgeInsets.only(top: 12, bottom: 24, left: 12, right: 12),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            Localization.of(context, 'newer_version_available'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                      TextSpan(
+                        text: Localization.of(context, 'or_whatsapp_on'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.blue,
+                        ),
+                        recognizer: new TapGestureRecognizer()
+                          ..onTap = () {
+                            try {
+                              launch(
+                                  'https://wa.me/+96170504287?text=${Uri.encodeComponent("Hello, I want to order")}');
+                            } catch (e) {
+                              print("Open Whatsapp Error: ${e.toString()}");
+                            }
+                          },
+                      ),
+                      TextSpan(
+                        text: Localization.of(context, 'to_submit_your_order'),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 18,
+                            color: Colors.black),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           );
       }
     }
@@ -444,17 +588,30 @@ class _MainPageState extends State<MainPage>
     return targets;
   }
 
-  void showUpdateBottomSheet(String error) async {
+  void showUpdateBottomSheet(
+      {Widget? messageWidget, bool hasOnPress = true, String? message}) async {
     if (!mounted) return;
     await showActionBottomSheet(
       context: context,
       status: OperationStatus.error,
-      message: error,
-      popOnPress: true,
+      message: message,
+      messageWidget: messageWidget,
+      popOnPress: false,
       dismissOnTouchOutside: false,
-      buttonMessage: Localization.of(context, 'update_app'),
+      buttonMessage: hasOnPress
+          ? Localization.of(context, 'update_app')
+          : Localization.of(context, 'whatsapp'),
       onPressed: () {
-        updateApp();
+        if (hasOnPress) {
+          updateApp();
+        } else {
+          try {
+            launch(
+                'https://wa.me/+96170504287?text=${Uri.encodeComponent("Hello, I want to order")}');
+          } catch (e) {
+            print("Open Whatsapp Error: ${e.toString()}");
+          }
+        }
       },
     );
   }
@@ -496,7 +653,7 @@ class _MainPageState extends State<MainPage>
               );
               prefss = await SharedPreferences.getInstance();
               await prefss.setString(
-                'swiftShop_language',
+                'tloble_language',
                 isArabic ? "en" : "ar",
               );
 
@@ -1370,7 +1527,7 @@ class _MainPageState extends State<MainPage>
                       confirmAction: () async {
                         try {
                           // await FirebaseMessaging.instance.unsubscribeFromTopic(
-                          //     'swiftShop_notifications_${FirebaseAuth.instance.currentUser?.phoneNumber.toString().substring(1)}');
+                          //     'tloble_notifications_${FirebaseAuth.instance.currentUser?.phoneNumber.toString().substring(1)}');
 
                           await FirebaseAuth.instance
                               .signOut()

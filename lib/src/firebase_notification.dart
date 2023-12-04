@@ -107,12 +107,12 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'Notification',
       'Notification',
-      'Notification',
+      // 'Notification',
       importance: Importance.high,
       priority: Priority.max,
       ticker: 'ticker',
     );
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails(
+    var iOSPlatformChannelSpecifics = DarwinNotificationDetails(
       presentSound: true,
       presentAlert: true,
       presentBadge: true,
@@ -150,7 +150,7 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
     var initializationSettingsAndroid =
         AndroidInitializationSettings('@drawable/ic_notification');
 
-    var initializationSettingsIOS = IOSInitializationSettings(
+    var initializationSettingsIOS = DarwinInitializationSettings(
       onDidReceiveLocalNotification: onDidReceiveLocalNotification,
     );
 
@@ -161,7 +161,7 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
 
     flutterLocalNotificationsPlugin?.initialize(
       initializationSettings,
-      onSelectNotification: onSelectNotification,
+      // onSelectNotification: onSelectNotification,
     );
   }
 
@@ -177,7 +177,7 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
 
     if ((data['feedback'] != null) &&
         (prefs
-                .getStringList('swiftShop_feedback_receivers')
+                .getStringList('tloble_feedback_receivers')
                 ?.contains(FirebaseAuth.instance.currentUser?.phoneNumber) ??
             false)) {
       Feedback.Feedback feedback = Feedback.Feedback.fromJson(data);
@@ -193,10 +193,10 @@ class _FirebaseNotificationState extends State<FirebaseNotification> {
     if (data['phoneNumber'] != null &&
         data['customerName'] != null &&
         (prefs
-                .getStringList('swiftShop_employees')
+                .getStringList('tloble_employees')
                 ?.contains(FirebaseAuth.instance.currentUser?.phoneNumber) ??
             false)) {
-      // Order order = Order.fromJson(data);
+      // Order order = Orders.fromJson(data);
 
       Navigator.of(context).push(
         MaterialPageRoute(

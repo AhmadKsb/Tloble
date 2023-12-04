@@ -64,7 +64,7 @@ class LocalizationDelegate extends LocalizationsDelegate<Localization> {
   @override
   Future<Localization> load(Locale locale) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? language = prefs.getString("swiftShop_language");
+    String? language = prefs.getString("tloble_language");
     Locale? locale = isNotEmpty(language ?? "") ? Locale(language ?? "ar") : null;
 
     Localization localization =

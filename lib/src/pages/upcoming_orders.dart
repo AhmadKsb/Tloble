@@ -28,7 +28,7 @@ class UpcomingOrdersScreen extends StatefulWidget {
 
 class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
   late PageState _state;
-  List<Order> orders = [];
+  List<Orders> orders = [];
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
 
       if (result.docs.isNotEmpty) {
         result.docs.forEach((element) {
-          orders.add(Order.fromJson(element.data()));
+          orders.add(Orders.fromJson(element.data()));
         });
       }
       orders.sort();
@@ -101,7 +101,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
 
   Widget _item(
     var index, {
-    required Order order,
+    required Orders order,
   }) {
     return Container(
       margin: EdgeInsets.only(bottom: 36),
@@ -183,7 +183,7 @@ class _UpcomingOrdersScreenState extends State<UpcomingOrdersScreen> {
                         onPressed: () {},
                       ),
                     );
-                    Scaffold.of(context).showSnackBar(snackBar);
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   });
                 },
                 onTap: () async {

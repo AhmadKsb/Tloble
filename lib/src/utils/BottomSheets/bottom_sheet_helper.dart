@@ -171,9 +171,10 @@ Future<void> showBottomSheetStatus({
   OperationStatus? status,
   String? message,
   String? buttonMessage,
+  Widget? messageWidget,
   VoidCallback? onPressed,
   bool popOnPress = false,
-  bool showCancelButton = false,
+  // bool showCancelButton = false,
   bool dismissOnTouchOutside = true,
   bool showDoneButton = true,
   Widget? extraButton,
@@ -184,7 +185,7 @@ Future<void> showBottomSheetStatus({
 }) {
   assert(context != null, "context cannot be null");
   assert(status != null, "status cannot be null");
-  assert(message != null, "message cannot be null");
+  // assert(message != null, "message cannot be null");
 
   return showModalBottomSheet(
     shape: RoundedRectangleBorder(
@@ -212,10 +213,11 @@ Future<void> showBottomSheetStatus({
         key: key,
         status: status,
         message: message,
+        messageWidget: messageWidget,
         buttonMessage: buttonMessage,
         dismissOnTouchOutside: dismissOnTouchOutside,
         showDoneButton: showDoneButton,
-        showCancelButton: showCancelButton,
+        // showCancelButton: showCancelButton,
         extraButton: extraButton,
         title: title,
         bottomWidget: bottomWidget,
@@ -236,17 +238,18 @@ Future<void> showActionBottomSheet({
   String? buttonMessage,
   VoidCallback? onPressed,
   bool popOnPress = false,
-  bool showCancelButton = false,
+  // bool showCancelButton = false,
   bool dismissOnTouchOutside = true,
   bool showDoneButton = true,
   Widget? extraButton,
+  Widget? messageWidget,
   String? title,
 
   ///Use when you want to override the default widgets under the divider
   Widget? bottomWidget,
 }) {
   assert(status != null, "status cannot be null");
-  assert(message != null, "message cannot be null");
+  // assert(message != null, "message cannot be null");
 
   return showModalBottomSheet(
     shape: RoundedRectangleBorder(
@@ -275,9 +278,10 @@ Future<void> showActionBottomSheet({
         status: status,
         message: message,
         buttonMessage: buttonMessage,
+        messageWidget: messageWidget,
         dismissOnTouchOutside: dismissOnTouchOutside,
         showDoneButton: showDoneButton,
-        showCancelButton: showCancelButton,
+        // showCancelButton: showCancelButton,
         extraButton: extraButton,
         title: title,
         bottomWidget: bottomWidget,

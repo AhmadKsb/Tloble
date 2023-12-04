@@ -24,6 +24,7 @@ class HomeScreenController {
       _loadUpdateDuration,
       _shippingCost,
       _yuanRate,
+      _loginTimerLimit,
       _uaeCommission,
       _chinaCommission,
       _fiftyToHundred,
@@ -125,6 +126,7 @@ class HomeScreenController {
       _showProductsSubtotal,
       showCustomError,
       _forceUpdate,
+      _showOrderThroughWhatsapp,
       _showMinableItemSearchBar,
       _feedbackReceiver = false,
       _scrollToEndInTelegramScreen = false,
@@ -567,9 +569,13 @@ class HomeScreenController {
   }
 
   bool? get forceUpdate => _forceUpdate;
-
   set forceUpdate(value) {
     _forceUpdate = value;
+  }
+
+  bool? get showOrderThroughWhatsapp => _showOrderThroughWhatsapp;
+  set showOrderThroughWhatsapp(value) {
+    _showOrderThroughWhatsapp = value;
   }
 
   String? get weekdayOpeningHours => _weekdayOpeningHours;
@@ -844,6 +850,11 @@ class HomeScreenController {
   num? get yuanRate => _yuanRate;
   set yuanRate(value) {
     _yuanRate = value;
+  }
+
+  num? get loginTimerLimit => _loginTimerLimit;
+  set loginTimerLimit(value) {
+    _loginTimerLimit = value;
   }
 
   num? get chinaCommission => _chinaCommission;
@@ -1130,6 +1141,7 @@ class HomeScreenController {
     _newsUpdateDuration = appInfoSnapshot?['newsUpdateDuration'] ?? 5;
     _loadUpdateDuration = appInfoSnapshot?['loadUpdateDuration'] ?? 5;
     _yuanRate = appInfoSnapshot?['yuanRate'] ?? 1;
+    _loginTimerLimit = appInfoSnapshot?['loginTimerLimit'] ?? 1;
     _uaeCommission = appInfoSnapshot?['uaeCommission'] ?? 1;
     _chinaCommission = appInfoSnapshot?['chinaCommission'] ?? 1;
     _shippingCost = appInfoSnapshot?['shippingCost'] ?? 1;
@@ -1268,12 +1280,10 @@ class HomeScreenController {
     _transportation = appInfoSnapshot?['transportation'];
 
     _allowedPeopleToAddOrRemoveRewardItems =
-        appInfoSnapshot?['allowedPeopleToAddOrRemoveRewardItems'];
-
+        appInfoSnapshot?['allowedPeopleToAddOrRemoveRewardItemss'];
     salesNumber = appInfoSnapshot?['salesNumber'];
 
     _defaultCountry = appInfoSnapshot?['defaultCountry'] ?? "Coming Soon!";
-
     _miningDisabledMessage =
         appInfoSnapshot?['miningDisabledMessage'] ?? "Coming Soon!";
     _miningDisabledMessageAR =
@@ -1282,10 +1292,8 @@ class HomeScreenController {
         appInfoSnapshot?['rewardsDisabledMessage'] ?? "Coming Soon!";
     _rewardsDisabledMessageAR =
         appInfoSnapshot?['rewardsDisabledMessageAR'] ?? "Coming Soon!";
-
     spreadSheetScriptURL = appInfoSnapshot?['spreadSheetScriptURL'] ??
         'https://script.google.com/macros/s/AKfycbxoYd7p9NNFN4AzLX4pcEeu0my9KQR28fpWdsBK6E1rAvIQT5WhnAKnRJZAeCjLrIea/exec';
-
     UAESpreadSheetScriptURL = appInfoSnapshot?['UAESpreadSheetScriptURL'];
     GSHChinaSpreadSheetScriptURL = appInfoSnapshot?['GSHChinaSpreadSheetScriptURL'];
     ChinaSpreadSheetScriptURL = appInfoSnapshot?['ChinaSpreadSheetScriptURL'] ??
@@ -1310,6 +1318,7 @@ class HomeScreenController {
         '1vKJVTEdLZqRgiWfzdv2KekF76yAGkBeyHuZiMyw6IYY';
 
     forceUpdate = appInfoSnapshot?['forceUpdate'] ?? false;
+    showOrderThroughWhatsapp = appInfoSnapshot?['showOrderThroughWhatsapp'] ?? false;
     worksheetTitle = appInfoSnapshot?['worksheetTitle'] ?? 'Sheet1';
 
     _minableItemSearchBarHintText =

@@ -91,7 +91,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
                             InkWell(
                               onLongPress: () {
                                 Clipboard.setData(new ClipboardData(
-                                        text: widget.feedback.phoneNumber))
+                                        text: widget.feedback.phoneNumber ?? ""))
                                     .then((result) {
                                   final snackBar = SnackBar(
                                     content: Text(Localization.of(context,
@@ -101,7 +101,7 @@ class _FeedbackDetailsScreenState extends State<FeedbackDetailsScreen> {
                                       onPressed: () {},
                                     ),
                                   );
-                                  Scaffold.of(context).showSnackBar(snackBar);
+                                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                 });
                               },
                               onTap: () async {

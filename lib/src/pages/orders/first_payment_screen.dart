@@ -38,7 +38,7 @@ var _credentials = r'''
 
 class FirstPaymentScreen extends StatefulWidget {
   final HomeScreenController? homeScreenController;
-  final Order? order;
+  final Orders? order;
   final ValueChanged<bool>? isBottomSheetLoading;
 
   FirstPaymentScreen({

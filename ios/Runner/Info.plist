@@ -18,6 +18,12 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>NSContactsUsageDescription</key>
+    <string>We need access to your phone to fetch SIM card data.</string>
+    <key>NSTelephonyUsageDescription</key>
+    <string>We need access to your phone to fetch SIM card data.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location for SIM information</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -27,7 +33,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>app-1-199247579885-ios-8932b1d4a684654a615ae4</string>
+				<string>app-1-1026444625994-ios-a847fa36454444a88e7eb3</string>
 			</array>
 		</dict>
 		<dict>
@@ -35,7 +41,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>app-1-199247579885-ios-8932b1d4a684654a615ae4</string>
+				<string>app-1-1026444625994-ios-a847fa36454444a88e7eb3</string>
 			</array>
 		</dict>
 		<dict>
@@ -75,6 +81,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 </dict>
 </plist>

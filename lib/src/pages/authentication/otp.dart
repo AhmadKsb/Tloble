@@ -192,6 +192,8 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
     );
   }
 
+  bool alreadyResent = false;
+
   // Returns "OTP" input part
   get _getInputPart {
     return new Column(
@@ -201,7 +203,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
         _getVerificationCodeLabel,
         _getEmailLabel,
         _getInputField,
-        if (widget.homeScreenController.showOTPResendButton ?? true)
+        if ((widget.homeScreenController.showOTPResendButton ?? true) && !alreadyResent)
           (_hideResendButton ?? false) ? _getTimerText : _getResendButton,
         _getOtpKeyboard,
         SizedBox(
@@ -249,6 +251,9 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
         ),
       ),
       onTap: () {
+        setState(() {
+          alreadyResent = true;
+        });
         _onVerifyCode();
         _startCountdown();
         // Resend you OTP via API or anything

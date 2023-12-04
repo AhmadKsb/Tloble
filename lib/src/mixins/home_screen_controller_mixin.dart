@@ -36,12 +36,12 @@ mixin HomeScreenControllerMixin {
 
     homeScreenController.getUpdatedCart();
 
-    String? activateNotification = prefs?.getString('swiftShop_notification');
+    String? activateNotification = prefs?.getString('tloble_notification');
 
     if (activateNotification == null || activateNotification != 'activate') {
-      FirebaseMessaging.instance.subscribeToTopic('swiftShop_notification');
+      FirebaseMessaging.instance.subscribeToTopic('tloble_notification');
       prefs?.setString(
-        'swiftShop_notification',
+        'tloble_notification',
         'activate',
       );
     }
@@ -81,14 +81,14 @@ mixin HomeScreenControllerMixin {
               .firstWhere((document) => document.id == 'app')).data());
 
       prefs?.setStringList(
-        'swiftShop_feedback_receivers',
+        'tloble_feedback_receivers',
         List<String>.from(homeScreenController.feedbackReceiversList
                 ?.where((element) => true) ??
             []),
       );
 
       prefs?.setStringList(
-        'swiftShop_employees',
+        'tloble_employees',
         List<String>.from(
             homeScreenController.employeesList?.where((element) => true) ?? []),
       );

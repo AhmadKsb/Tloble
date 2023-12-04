@@ -32,7 +32,7 @@ class CustomerHistoryScreen extends StatefulWidget {
 class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
   late PageState _state;
   List<QueryDocumentSnapshot> history = [];
-  List<Order> orders = [];
+  List<Orders> orders = [];
   late SharedPreferences prefss;
   int acceptedCount = 0;
   int? day, month, year, hour, minute, second;
@@ -93,7 +93,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
         var newOrders = data.docs;
         orders = [];
         newOrders.forEach((element) {
-          orders.add(Order.fromJson(element.data()));
+          orders.add(Orders.fromJson(element.data()));
         });
 
         if (newOrders.length % _limit != 0) canLoadMore = false;
@@ -133,7 +133,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
         if ((orders.length) == (newOrders.length)) canLoadMore = false;
         orders = [];
         newOrders.forEach((element) {
-          orders.add(Order.fromJson(element.data()));
+          orders.add(Orders.fromJson(element.data()));
         });
 
         if (newOrders.length % _limit != 0) canLoadMore = false;
@@ -181,7 +181,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
 
   Widget _item(
     var index, {
-    required Order order,
+    required Orders order,
   }) {
     String dateTimeTruncated;
     year = int.tryParse(order.sentTime?.split("-")[0] ?? "0");
@@ -244,7 +244,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                     onTap: () {
                       Clipboard.setData(
                         new ClipboardData(
-                            text: order.productsTitles?[index].toString()),
+                            text: order.productsTitles![index].toString()),
                       ).then((result) {
                         final snackBar = SnackBar(
                           content: Text(Localization.of(
@@ -254,7 +254,8 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                             onPressed: () {},
                           ),
                         );
-                        Scaffold.of(buildContext).showSnackBar(snackBar);
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        // Scaffold.of(buildContext).showSnackBar(snackBar);
                       });
                     },
                     child: Column(
@@ -382,7 +383,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
     );
   }
 
-  Widget customListItem(Order order, int index) {
+  Widget customListItem(Orders order, int index) {
     String dateTimeTruncated;
     year = int.tryParse(order.sentTime?.split("-")[0] ?? "0");
     month = int.tryParse(order.sentTime?.split("-")[1] ?? "0");
@@ -490,7 +491,7 @@ class _CustomerHistoryScreenState extends State<CustomerHistoryScreen> {
                           onPressed: () {},
                         ),
                       );
-                      Scaffold.of(buildContext).showSnackBar(snackBar);
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
                     });
                   },
                   child: Column(

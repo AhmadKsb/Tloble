@@ -3,6 +3,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:country_pickers/country.dart' as countryPickers;
 import 'package:country_pickers/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_ecommerce_app/src/controllers/home_screen_controller.dart';
@@ -17,6 +18,8 @@ import 'package:flutter_ecommerce_app/src/utils/UBScaffold/ub_scaffold.dart';
 import 'package:flutter_ecommerce_app/src/utils/buttons/raised_button.dart';
 import 'package:flutter_ecommerce_app/src/utils/keyboard_actions_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../utils/string_util.dart';
 import 'otp.dart';
 
 class LoginPage extends StatefulWidget {
@@ -45,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
   late PageState _state;
 
   Future<Null> validate(StateSetter updateState) async {
+    print(_phoneNumber.length);
     if (_phoneNumber.length == 7) {
       updateState(() {
         isValid = true;
@@ -67,11 +71,11 @@ class _LoginPageState extends State<LoginPage> {
     try {
       prefs = await SharedPreferences.getInstance();
       prefs?.setString(
-        'swiftShop_phoneCode',
+        'tloble_phoneCode',
         '961',
       );
       prefs?.setString(
-        'swiftShop_isoCode',
+        'tloble_isoCode',
         'LB',
       );
 
@@ -126,27 +130,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Future<void> _load() async {
-  //   prefs = await SharedPreferences.getInstance();
-  //   prefs.setString(
-  //     'swiftShop_phoneCode',
-  //     '961',
-  //   );
-  //   prefs.setString(
-  //     'swiftShop_isoCode',
-  //     'LB',
-  //   );
-  // }
-
-  void showErrorBottomsheet(String error,
-      {bool dismissOnTouchOutside = true,
-      bool showDoneButton = true,
-      bool doublePop = false}) async {
+  void showErrorBottomsheet({
+    bool dismissOnTouchOutside = true,
+    bool showDoneButton = true,
+    Widget? messageWidget,
+    bool doublePop = false,
+  }) async {
     if (!mounted) return;
     await showBottomSheetStatus(
       context: context,
       status: OperationStatus.error,
-      message: error,
+      message: null,
+      messageWidget: messageWidget,
       popOnPress: true,
       dismissOnTouchOutside: dismissOnTouchOutside,
       showDoneButton: showDoneButton,
@@ -309,11 +304,11 @@ class _LoginPageState extends State<LoginPage> {
                                                 .getCountryByPhoneCode(
                                                     country.phoneCode);
                                             prefs?.setString(
-                                              'swiftShop_phoneCode',
+                                              'tloble_phoneCode',
                                               selectedCountry?.phoneCode ?? "",
                                             );
                                             prefs?.setString(
-                                              'swiftShop_isoCode',
+                                              'tloble_isoCode',
                                               selectedCountry?.isoCode ?? "",
                                             );
                                           });
@@ -398,16 +393,188 @@ class _LoginPageState extends State<LoginPage> {
                             child: RaisedButtonV2(
                               label: Localization.of(context, 'login_register'),
                               onPressed: () async {
-                                if (_formKey.currentState?.validate() ?? true) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Otp(
-                                        homeScreenController:
-                                            widget.homeScreenController,
-                                        name: _nameController.text,
-                                        country: selectedCountry,
-                                        mobileNumber: _phoneNumber,
+                                String? lastLoginTime =
+                                    prefs?.getString("tloble_alreadyGotOTP");
+
+                                String? phoneCode =
+                                    prefs?.getString("tloble_phoneCode");
+                                if (((phoneCode?.toLowerCase() ?? "") ==
+                                        "961") ||
+                                    (isEmpty(phoneCode))) {
+                                  if (!(widget.homeScreenController.isBanned ??
+                                      false)) {
+                                    if (_formKey.currentState?.validate() ??
+                                        true) {
+                                      if (isNotEmpty(lastLoginTime)) {
+                                        if (((lastLoginTime?.split("&")[0] ??
+                                                    "") ==
+                                                "1") ||
+                                            DateTime.now()
+                                                    .difference(DateTime.parse(
+                                                        lastLoginTime?.split(
+                                                                "&")[1] ??
+                                                            ""))
+                                                    .inMinutes >=
+                                                (widget.homeScreenController.loginTimerLimit ?? 720)) {
+                                          await prefs?.setString(
+                                            'tloble_alreadyGotOTP',
+                                            ((lastLoginTime?.split("&")[0] ??
+                                                        "") ==
+                                                    "1")
+                                                ? "2&" +
+                                                    DateTime.now().toString()
+                                                : "1&" +
+                                                    DateTime.now().toString(),
+                                          );
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => Otp(
+                                                homeScreenController:
+                                                    widget.homeScreenController,
+                                                name: _nameController.text,
+                                                country: selectedCountry,
+                                                mobileNumber: _phoneNumber,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          showErrorBottomsheet(
+                                            messageWidget: Center(
+                                              child: Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 12,
+                                                    bottom: 24,
+                                                    left: 12,
+                                                    right: 12),
+                                                child: RichText(
+                                                  textAlign: TextAlign.center,
+                                                  text: TextSpan(
+                                                    children: [
+                                                      TextSpan(
+                                                        text: Localization.of(
+                                                            context,
+                                                            'show_login_limit_error'),
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          fontSize: 18,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      TextSpan(
+                                                        text: Localization.of(
+                                                            context,
+                                                            'whatsapp_on'),
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 18,
+                                                          color: Colors.blue,
+                                                        ),
+                                                        recognizer:
+                                                            new TapGestureRecognizer()
+                                                              ..onTap = () {
+                                                                try {
+                                                                  launch(
+                                                                      'https://wa.me/+96170504287?text=${Uri.encodeComponent("Hello, I want to order")}');
+                                                                } catch (e) {
+                                                                  print(
+                                                                      "Open Whatsapp Error: ${e.toString()}");
+                                                                }
+                                                              },
+                                                      ),
+                                                      TextSpan(
+                                                        text: Localization.of(
+                                                            context,
+                                                            'to_submit_your_order'),
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                            fontSize: 18,
+                                                            color:
+                                                                Colors.black),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } else {
+                                        await prefs?.setString(
+                                          'tloble_alreadyGotOTP',
+                                          "1&" + DateTime.now().toString(),
+                                        );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Otp(
+                                              homeScreenController:
+                                                  widget.homeScreenController,
+                                              name: _nameController.text,
+                                              country: selectedCountry,
+                                              mobileNumber: _phoneNumber,
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  }
+                                } else {
+                                  showErrorBottomsheet(
+                                    messageWidget: Center(
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                            top: 12,
+                                            bottom: 24,
+                                            left: 12,
+                                            right: 12),
+                                        child: RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: Localization.of(context,
+                                                    'show_login_phone_error'),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: 18,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text: Localization.of(
+                                                    context, 'whatsapp_on'),
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color: Colors.blue,
+                                                ),
+                                                recognizer:
+                                                    new TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        try {
+                                                          launch(
+                                                              'https://wa.me/+96170504287?text=${Uri.encodeComponent("Hello, I want to order")}');
+                                                        } catch (e) {
+                                                          print(
+                                                              "Open Whatsapp Error: ${e.toString()}");
+                                                        }
+                                                      },
+                                              ),
+                                              TextSpan(
+                                                text: Localization.of(context,
+                                                    'to_submit_your_order_outside_leb'),
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 18,
+                                                    color: Colors.black),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   );

@@ -292,7 +292,7 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen>
                               itemCount: orders.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return OrdersListTile(
-                                  order: Order.fromJson(orders[index].data()
+                                  order: Orders.fromJson(orders[index].data()
                                       as Map<dynamic, dynamic>),
                                   controller: _controller,
                                   isLastRow: index == orders.length - 1,

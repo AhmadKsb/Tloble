@@ -8,10 +8,11 @@ import 'operation_status.dart';
 class BottomSheetStatus extends StatelessWidget {
   final OperationStatus? status;
   final String? message;
+  final Widget? messageWidget;
   final String? buttonMessage;
   final VoidCallback? onPressed;
   final bool? dismissOnTouchOutside;
-  final bool? showCancelButton;
+  // final bool? showCancelButton;
   final bool? showDoneButton;
   final Widget? extraButton;
   final String? title;
@@ -23,10 +24,11 @@ class BottomSheetStatus extends StatelessWidget {
     Key? key,
     this.status,
     this.message,
+    this.messageWidget,
     this.buttonMessage,
     this.onPressed,
     this.dismissOnTouchOutside,
-    this.showCancelButton,
+    // this.showCancelButton,
     this.showDoneButton = true,
     this.extraButton,
     this.bottomWidget,
@@ -118,19 +120,20 @@ class BottomSheetStatus extends StatelessWidget {
             : SizedBox.shrink(),
         _getAnimatedStatusIcon(),
         SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(
-            message ?? "",
-            style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                  fontSize: 16,
-                  color: status == OperationStatus.error
-                      ? Color.fromARGB(255, 210, 34, 49)
-                      : null,
-                ),
-            textAlign: TextAlign.center,
-          ),
-        ),
+        messageWidget ??
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text(
+                message ?? "",
+                style: Theme.of(context).textTheme.bodyText2?.copyWith(
+                      fontSize: 16,
+                      color: status == OperationStatus.error
+                          ? Color.fromARGB(255, 210, 34, 49)
+                          : null,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+            ),
         status == OperationStatus.success
             ? SizedBox(height: 24)
             : SizedBox(height: 50),
@@ -165,27 +168,27 @@ class BottomSheetStatus extends StatelessWidget {
                     ),
               if (bottomWidget != null) bottomWidget!,
               if (bottomWidget == null)
-                ((showCancelButton ?? false) || extraButton != null)
+                (extraButton != null)
                     ? Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           if (extraButton != null)
                             Expanded(child: extraButton ?? SizedBox()),
                           _buildButton(context),
-                          if (showCancelButton ?? false)
-                            FlatButton(
-                              child: Text(
-                                Localization.of(context, 'cancel'),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    ?.copyWith(
-                                        fontSize: 16,
-                                        color:
-                                            Color.fromARGB(255, 210, 34, 49)),
-                              ),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
+                          // if (showCancelButton ?? false)
+                          //   FlatButton(
+                          //     child: Text(
+                          //       Localization.of(context, 'cancel'),
+                          //       style: Theme.of(context)
+                          //           .textTheme
+                          //           .bodyText2
+                          //           ?.copyWith(
+                          //               fontSize: 16,
+                          //               color:
+                          //                   Color.fromARGB(255, 210, 34, 49)),
+                          //     ),
+                          //     onPressed: () => Navigator.of(context).pop(),
+                          //   ),
                         ],
                       )
                     : _buildButton(context),

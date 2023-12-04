@@ -851,14 +851,14 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
 
             // SharedPreferences prefs = await SharedPreferences.getInstance();
             // String activateNotificationForOrders = prefs.getString(
-            //     'swiftShop_${_firebaseAuth.currentUser?.phoneNumber.toString().substring(1)}');
+            //     'tloble_${_firebaseAuth.currentUser?.phoneNumber.toString().substring(1)}');
             //
             // if (activateNotificationForOrders == null ||
             //     activateNotificationForOrders != 'activated') {
             //   await FirebaseMessaging.instance.subscribeToTopic(
-            //       'swiftShop_notifications_${_firebaseAuth.currentUser?.phoneNumber.toString().substring(1)}');
+            //       'tloble_notifications_${_firebaseAuth.currentUser?.phoneNumber.toString().substring(1)}');
             //   await prefs.setString(
-            //     'swiftShop_${_firebaseAuth.currentUser?.phoneNumber.toString().substring(1)}',
+            //     'tloble_${_firebaseAuth.currentUser?.phoneNumber.toString().substring(1)}',
             //     'activated',
             //   );
             // }
@@ -929,7 +929,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
               .doc(
                   "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
               .set(
-                Order(
+                Orders(
                   amount: 1234,
                   acceptedBy: "",
                   firstPayment: 0,
@@ -988,7 +988,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
                   "${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
               // .doc(FirebaseAuth.instance.currentUser.phoneNumber)
               .set(
-                Order(
+                Orders(
                   amount: 1234,
                   acceptedBy: "",
                   firstPayment: 0,
@@ -1046,7 +1046,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
               .doc(
                   "${FirebaseAuth.instance.currentUser?.phoneNumber} ${DateTime.now().year}-${getNumberWithPrefixZero(DateTime.now().month)}-${getNumberWithPrefixZero(DateTime.now().day)} at ${getNumberWithPrefixZero(DateTime.now().hour)}:${getNumberWithPrefixZero(DateTime.now().minute)}:${getNumberWithPrefixZero(DateTime.now().second)}")
               .set(
-                Order(
+                Orders(
                   amount: 1234,
                   acceptedBy: "",
                   firstPayment: 0,

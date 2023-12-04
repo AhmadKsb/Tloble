@@ -85,12 +85,12 @@ class _FeedbackListTileState extends State<FeedbackListTile> {
                                                   widget.feedback?.dateTime))
                                               ? DateFormat(
                                                   widget.prefs?.getString(
-                                                              "swiftShop_language") ==
+                                                              "tloble_language") ==
                                                           'ar'
                                                       ? 'EEEE d MMMM yyyy'
                                                       : 'EEEE MMMM d, yyyy',
                                                   widget.prefs?.getString(
-                                                      "swiftShop_language"),
+                                                      "tloble_language"),
                                                 ).format(
                                                   getFormattedDate(widget
                                                           .feedback?.dateTime ??

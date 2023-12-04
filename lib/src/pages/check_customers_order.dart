@@ -91,7 +91,7 @@ class _CheckCustomersOrderBottomsheetState
             builder: (context) => OrderScreen(
               isCustomer: widget.isCustomer,
               homeScreenController: widget.controller!,
-              order: Order.fromJson(data.docs[0].data()),
+              order: Orders.fromJson(data.docs[0].data()),
             ),
           ),
         );

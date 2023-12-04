@@ -3,7 +3,7 @@ import 'package:flutter_ecommerce_app/src/localization/localization.dart';
 import 'package:flutter_ecommerce_app/src/themes/light_color.dart';
 import 'dart:convert';
 
-class Order implements Comparable<Order> {
+class Orders implements Comparable<Orders> {
   num? amount;
   num? firstPayment;
   num? secondPayment;
@@ -29,7 +29,7 @@ class Order implements Comparable<Order> {
   List<ShipmentStatus>? shipmentStatus;
   List<OrderStatus>? orderStatus;
 
-  Order({
+  Orders({
     this.amount,
     this.firstPayment,
     this.secondPayment,
@@ -57,7 +57,7 @@ class Order implements Comparable<Order> {
   });
 
   @override
-  int compareTo(Order other) {
+  int compareTo(Orders other) {
     if (num.parse(shipmentStatus?[0].value ?? "-1") >
         num.parse(other.shipmentStatus?[0].value ?? "-1")) {
       return -1;
@@ -69,8 +69,8 @@ class Order implements Comparable<Order> {
     }
   }
 
-  factory Order.fromJson(Map<dynamic, dynamic> json) {
-    return Order(
+  factory Orders.fromJson(Map<dynamic, dynamic> json) {
+    return Orders(
       amount: num.tryParse(json['amount'] ?? "0"),
       firstPayment: num.tryParse(json['firstPayment'] ?? "0"),
       secondPayment: num.tryParse(json['secondPayment'] ?? "0"),
@@ -123,8 +123,8 @@ class Order implements Comparable<Order> {
     );
   }
 
-  static List<Order> fromJsonList(List json) {
-    List<Order>? orders = json.map((order) => Order.fromJson(order)).toList();
+  static List<Orders> fromJsonList(List json) {
+    List<Orders>? orders = json.map((order) => Orders.fromJson(order)).toList();
     return orders;
   }
 

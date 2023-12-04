@@ -7,7 +7,7 @@
    "select_a_city": "Select a city",
    "more_details_about_your_location": "More details about your location",
    "submit": "SUBMIT",
-   "newer_version_available": "A newer version is available at the store, please update your app",
+   "newer_version_available": "A newer version is available at the store, please update your app. You may also contact us via ",
    "admin_panel": "Admin panel",
    "select_an_item": "Select an item",
    "management": "Management",
@@ -1417,5 +1417,13 @@
    "check_my_order": "Check my order",
    "copy_whatsapp_message": "Copy whatsapp message",
    "quotation": "Quotation",
-   "selling_price": "Selling Price"
+   "selling_price": "Selling Price",
+   "show_login_phone_error": "You can only register using Lebanese numbers, you may contact us via",
+   "show_login_limit_error": "You can only register twice every 24 hours, you may contact us via",
+   "whatsapp_on": " WhatsApp on +96170504287",
+   "to_submit_your_order": " to submit your order",
+   "to_submit_your_order_outside_leb": " to submit your order from outside Lebanon",
+   "or_whatsapp_on": "WhatsApp on +96170504287",
+   "the_app_is_temporary_unavailable": "The app is temporary unavailable, please send us your order via ",
+   "you_are_banned": "You are banned"
 }

@@ -55,11 +55,10 @@ class _MyHomePageState extends State<MyHomePage>
   var itemDescription;
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
-  var _productLink;
-
   final TextEditingController _quantityController = TextEditingController(),
       _moreDetailsController = TextEditingController(),
       _colorController = TextEditingController(),
+      _productLinkController = TextEditingController(),
       _sizeController = TextEditingController();
 
   FocusNode nameNode = new FocusNode(),
@@ -185,6 +184,9 @@ class _MyHomePageState extends State<MyHomePage>
     } else {
       _controller = widget.homeScreenController!;
     }
+
+    print(widget.homeScreenController
+        ?.loginTimerLimit);
   }
 
   GlobalKey keyButton = GlobalKey();
@@ -572,14 +574,14 @@ class _MyHomePageState extends State<MyHomePage>
   //   });
   //
   //   prefs = await SharedPreferences.getInstance();
-  //   String activateNotification = prefs.getString('swiftShop_notification');
-  //   selectedCountryPhoneCode = prefs.getString('swiftShop_phoneCode');
-  //   selectedCountryIsoCode = prefs.getString('swiftShop_isoCode');
+  //   String activateNotification = prefs.getString('tloble_notification');
+  //   selectedCountryPhoneCode = prefs.getString('tloble_phoneCode');
+  //   selectedCountryIsoCode = prefs.getString('tloble_isoCode');
   //
   //   if (activateNotification == null || activateNotification != 'activate') {
-  //     FirebaseMessaging.instance.subscribeToTopic('swiftShop_notification');
+  //     FirebaseMessaging.instance.subscribeToTopic('tloble_notification');
   //     prefs.setString(
-  //       'swiftShop_notification',
+  //       'tloble_notification',
   //       'activate',
   //     );
   //   }
@@ -619,13 +621,13 @@ class _MyHomePageState extends State<MyHomePage>
   //             .firstWhere((document) => document.id == 'app')).data());
   //
   //     prefs.setStringList(
-  //       'swiftShop_feedback_receivers',
+  //       'tloble_feedback_receivers',
   //       List<String>.from(widget.homeScreenController.feedbackReceiversList
   //           .where((element) => true)),
   //     );
   //
   //     prefs.setStringList(
-  //       'swiftShop_employees',
+  //       'tloble_employees',
   //       List<String>.from(
   //           widget.homeScreenController.employeesList.where((element) => true)),
   //     );
@@ -654,12 +656,14 @@ class _MyHomePageState extends State<MyHomePage>
   // }
 
   Future<void> _loadSephora() async {
-    var originalUrl = _productLink;
-    var newLink = "https://www.sephora.ae/en/" + _productLink.split("/")[4];
+    var originalUrl = _productLinkController.text;
+    var newLink = "https://www.sephora.ae/en/" +
+        _productLinkController.text.split("/")[4];
 
     print("1NEW LINK $newLink");
     try {
-      newLink = "https://www.sephora.ae/en/" + _productLink.split("/")[6];
+      newLink = "https://www.sephora.ae/en/" +
+          _productLinkController.text.split("/")[6];
       print("2NEW LINK $newLink");
     } catch (e) {
       print("new link error");
@@ -738,9 +742,9 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> _loadAmazon() async {
-    var originalUrl = _productLink;
+    var originalUrl = _productLinkController.text;
 
-    var url = _productLink;
+    var url = _productLinkController.text;
 
     try {
       image = null;
@@ -770,15 +774,20 @@ class _MyHomePageState extends State<MyHomePage>
 
       var itemDescriptionEN;
 
-      itemDescriptionEN = screen.body
-          .split("product-title-word-break\"\>")[1]
-          .split("\<\/")[0]
-          .trim();
+      try {
+        itemDescriptionEN = screen.body
+            .split("product-title-word-break\"\>")[1]
+            .split("\<\/")[0]
+            .trim();
+      } catch (e) {}
 
       const HtmlEscape htmlEscape = HtmlEscape();
       String escaped = htmlEscape.convert(itemDescriptionEN ?? "");
 
-      imageLink = screen.body.split(escaped + "\" src=\"")[1].split("\"")[0];
+      try {
+        imageLink = screen.body.split(escaped + "\" src=\"")[1].split("\"")[0];
+      } catch (e) {}
+
 
       var imagee = await http.get(Uri.parse(imageLink));
 
@@ -809,7 +818,7 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> _loadShein() async {
-    var url = _productLink;
+    var url = _productLinkController.text;
 
     print(url);
 
@@ -854,7 +863,7 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> _loadIkea() async {
-    var url = _productLink;
+    var url = _productLinkController.text;
 
     print(url);
 
@@ -896,8 +905,8 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> _loadTheGivingMovement() async {
-    var originalUrl = _productLink;
-    var url = _productLink;
+    var originalUrl = _productLinkController.text;
+    var url = _productLinkController.text;
 
     if (url.contains("https://ar.")) {
       url = url.replaceAll("https://ar.", "https://");
@@ -918,11 +927,11 @@ class _MyHomePageState extends State<MyHomePage>
 
       if (isEmpty(screen.body)) return;
 
-      var variant = _productLink.contains("variant")
-          ? _productLink.split("variant=")[1]
+      var variant = _productLinkController.text.contains("variant")
+          ? _productLinkController.text.split("variant=")[1]
           : null;
 
-      imageLink = (_productLink.contains("variant") &&
+      imageLink = (_productLinkController.text.contains("variant") &&
               screen.body.contains("\"id\":\"$variant\",\"image\":{\"src\":\""))
           ? ("https://" +
               screen.body
@@ -969,8 +978,8 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> _loadAliExpressImage() async {
-    var originalUrl = _productLink;
-    var url = _productLink;
+    var originalUrl = _productLinkController.text;
+    var url = _productLinkController.text;
 
     try {
       image = null;
@@ -1021,9 +1030,9 @@ class _MyHomePageState extends State<MyHomePage>
   }
 
   Future<void> _loadAliBaba() async {
-    var originalUrl = _productLink;
+    var originalUrl = _productLinkController.text;
 
-    var url = _productLink;
+    var url = _productLinkController.text;
     image = null;
     imageLink = null;
     price = null;
@@ -1272,11 +1281,12 @@ class _MyHomePageState extends State<MyHomePage>
                                     ? TextDirection.rtl
                                     : TextDirection.ltr),
                             focusNode: productLink,
+                            controller: _productLinkController,
                             keyboardType: TextInputType.url,
                             onChanged: (value) async {
-                              _productLink = value;
-                              if (isEmpty(_productLink) ||
-                                  ((_productLink.length) < 5)) return;
+                              if (isEmpty(_productLinkController.text) ||
+                                  ((_productLinkController.text.length) < 5))
+                                return;
                               try {
                                 setState(() {
                                   isLoading = true;
@@ -1295,9 +1305,10 @@ class _MyHomePageState extends State<MyHomePage>
                                 });
                               }
                             },
-                            autovalidateMode: isEmpty(_productLink)
-                                ? null
-                                : AutovalidateMode.onUserInteraction,
+                            autovalidateMode:
+                                isEmpty(_productLinkController.text)
+                                    ? null
+                                    : AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value?.isEmpty ?? false) {
                                 return Localization.of(
@@ -1705,7 +1716,8 @@ class _MyHomePageState extends State<MyHomePage>
                                           );
 
                                           await widget.homeScreenController
-                                              ?.addProductsLinks(_productLink);
+                                              ?.addProductsLinks(
+                                                  _productLinkController.text);
 
                                           await widget.homeScreenController
                                               ?.addProductsQuantities(
@@ -1727,7 +1739,7 @@ class _MyHomePageState extends State<MyHomePage>
                                                   imageLink ?? "");
 
                                           _quantityController.text = "";
-                                          _productLink = "";
+                                          _productLinkController.text = "";
                                           _moreDetailsController.text = "";
                                           _colorController.text = "";
                                           _sizeController.text = "";
@@ -1795,23 +1807,25 @@ class _MyHomePageState extends State<MyHomePage>
     price = null;
     itemDescription = null;
 
-    if (isEmpty(_productLink)) return;
+    if (isEmpty(_productLinkController.text)) return;
 
-    _productLink = _productLink.trim();
+    _productLinkController.text = _productLinkController.text.trim();
 
-    if (_productLink.contains("https://")) {
-      _productLink = "https://" + _productLink.split("https://")[1];
+    if (_productLinkController.text.contains("https://")) {
+      _productLinkController.text =
+          "https://" + _productLinkController.text.split("https://")[1];
     }
 
-    if (_productLink.contains("http://")) {
-      _productLink = "http://" + _productLink.split("http://")[1];
+    if (_productLinkController.text.contains("http://")) {
+      _productLinkController.text =
+          "http://" + _productLinkController.text.split("http://")[1];
     }
 
-    var productImageLink = _productLink.toLowerCase();
+    var productImageLink = _productLinkController.text.toLowerCase();
 
     if (!(productImageLink.contains("https://")) &&
         !(productImageLink.contains("http://"))) {
-      _productLink = "https://" + productImageLink;
+      _productLinkController.text = "https://" + productImageLink;
       productImageLink = "https://" + productImageLink;
     }
 
