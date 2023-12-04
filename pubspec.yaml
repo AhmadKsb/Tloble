@@ -19,6 +19,7 @@ environment:
 dependency_overrides:
   archive: ^3.1.2
   highlighter_coachmark: ^0.0.3
+  device_info_plus: ^9.1.1
 
 
 dependencies:
