@@ -350,6 +350,7 @@ class _OrdersListTileState extends State<OrdersListTile> {
         ),
       ),
     );
+
     if (widget.shouldRefresh != null) widget.shouldRefresh!(true);
   }
 }

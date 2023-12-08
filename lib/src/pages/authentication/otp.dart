@@ -203,7 +203,8 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
         _getVerificationCodeLabel,
         _getEmailLabel,
         _getInputField,
-        if ((widget.homeScreenController.showOTPResendButton ?? true) && !alreadyResent)
+        if ((widget.homeScreenController.showOTPResendButton ?? true) &&
+            !alreadyResent)
           (_hideResendButton ?? false) ? _getTimerText : _getResendButton,
         _getOtpKeyboard,
         SizedBox(
@@ -567,8 +568,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
             var result = await FirebaseFirestore.instance
                 .collection('Customers')
                 .doc(_firebaseAuth.currentUser?.phoneNumber ?? '')
-                .snapshots()
-                .first;
+                .get(const GetOptions(source: Source.server));
             if (result.data() == null) {
               await FirebaseFirestore.instance
                   .collection('Customers')
@@ -694,8 +694,7 @@ class _OtpState extends State<Otp> with SingleTickerProviderStateMixin {
           var result = await FirebaseFirestore.instance
               .collection('Customers')
               .doc(_firebaseAuth.currentUser?.phoneNumber ?? '')
-              .snapshots()
-              .first;
+              .get(const GetOptions(source: Source.server));
           if (result.data() == null) {
             await FirebaseFirestore.instance
                 .collection('Customers')

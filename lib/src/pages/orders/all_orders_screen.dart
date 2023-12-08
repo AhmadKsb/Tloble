@@ -79,8 +79,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
             .collection('Orders')
             .doc('Orders')
             .collection(selectedDateAsString)
-            .snapshots()
-            .first
+            .get(const GetOptions(source: Source.server)),
       ]);
       orders = (data[0] as QuerySnapshot).docs;
 
@@ -324,8 +323,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                       ),
                                       'value',
                                       DateFormat(
-                                        prefss.getString(
-                                                    "tloble_language") ==
+                                        prefss.getString("tloble_language") ==
                                                 'ar'
                                             ? 'EEEE d MMMM yyyy'
                                             : 'EEEE MMMM d, yyyy',
@@ -342,8 +340,7 @@ class _AllOrdersScreenState extends State<AllOrdersScreen>
                                 padding: EdgeInsets.symmetric(vertical: 16),
                                 child: Text(
                                   DateFormat(
-                                    prefss.getString("tloble_language") ==
-                                            'ar'
+                                    prefss.getString("tloble_language") == 'ar'
                                         ? 'EEEE d MMMM yyyy'
                                         : 'EEEE MMMM d, yyyy',
                                     prefss.getString("tloble_language"),

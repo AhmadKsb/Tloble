@@ -72,7 +72,7 @@ class _PaidOrdersScreenState extends State<PaidOrdersScreen>
         // ShipmentStatus.awaitingShipment.value,
         // ShipmentStatus.orderOnTheWay.value,
         // ShipmentStatus.awaitingCustomerPickup.value,
-      ]).get();
+      ]).get(const GetOptions(source: Source.server));
 
       orders = result.docs;
 

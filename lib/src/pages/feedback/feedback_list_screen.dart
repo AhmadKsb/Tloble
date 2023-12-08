@@ -69,8 +69,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
             .collection('Feedbacks')
             .orderBy("dateTime", descending: true)
             .limit(_limit)
-            .snapshots()
-            .first,
+            .get(const GetOptions(source: Source.server)),
       ]);
 
       feedbacks = (data[0] as QuerySnapshot).docs;
@@ -100,8 +99,7 @@ class _FeedbackListScreenState extends State<FeedbackListScreen> {
             .collection('Feedbacks')
             .orderBy("dateTime", descending: true)
             .limit(_offset)
-            .snapshots()
-            .first,
+            .get(const GetOptions(source: Source.server)),
       ]);
 
       var newFeedbacks = (data[0] as QuerySnapshot).docs;

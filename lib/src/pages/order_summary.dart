@@ -804,8 +804,7 @@ class _OrderSummaryScreenState extends State<OrderSummaryScreen>
             var result = await FirebaseFirestore.instance
                 .collection('Customers')
                 .doc(customerPhoneNumber)
-                .snapshots()
-                .first;
+                .get(const GetOptions(source: Source.server));
             if (result.data() == null) {
               var newCustomer = Customer(
                 name: customerName.toString().capitalize,

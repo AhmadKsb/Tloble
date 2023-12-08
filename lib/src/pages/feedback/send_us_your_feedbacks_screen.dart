@@ -57,8 +57,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       var result = await FirebaseFirestore.instance
           .collection('Customers')
           .doc(FirebaseAuth.instance.currentUser?.phoneNumber ?? '')
-          .snapshots()
-          .first;
+          .get(const GetOptions(source: Source.server));
       if (result.data() != null) {
         customer = Customer.fromJson(result.data()!);
       }

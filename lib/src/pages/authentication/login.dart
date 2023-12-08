@@ -81,7 +81,9 @@ class _LoginPageState extends State<LoginPage> {
 
       List data = await Future.wait(
         [
-          FirebaseFirestore.instance.collection('app info').snapshots().first,
+          FirebaseFirestore.instance
+              .collection('app info')
+              .get(const GetOptions(source: Source.server)),
         ],
       );
 
@@ -415,7 +417,9 @@ class _LoginPageState extends State<LoginPage> {
                                                                 "&")[1] ??
                                                             ""))
                                                     .inMinutes >=
-                                                (widget.homeScreenController.loginTimerLimit ?? 720)) {
+                                                (widget.homeScreenController
+                                                        .loginTimerLimit ??
+                                                    720)) {
                                           await prefs?.setString(
                                             'tloble_alreadyGotOTP',
                                             ((lastLoginTime?.split("&")[0] ??

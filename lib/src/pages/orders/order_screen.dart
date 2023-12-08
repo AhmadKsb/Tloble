@@ -1264,34 +1264,12 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                               : null,
                           onTap: !widget.isCustomer
                               ? () {
-                                  if (isNotEmpty(_order.acceptedTime) &&
-                                      (widget.homeScreenController.employees
-                                              .firstWhere((element) =>
-                                                  element.phoneNumber ==
-                                                  FirebaseAuth.instance
-                                                      .currentUser?.phoneNumber)
-                                              .name
-                                              ?.toLowerCase() ==
-                                          _order.acceptedBy?.toLowerCase())) {
-                                    Clipboard.setData(new ClipboardData(
-                                            text:
-                                                widget.order.phoneNumber ?? ""))
-                                        .then((result) {
-                                      final snackBar = SnackBar(
-                                        content: Text(
-                                            'Copied phone number to Clipboard'),
-                                        action: SnackBarAction(
-                                          label: 'Done',
-                                          onPressed: () {},
-                                        ),
-                                      );
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(snackBar);
-                                    });
-                                  } else {
+                                  Clipboard.setData(new ClipboardData(
+                                          text: widget.order.phoneNumber ?? ""))
+                                      .then((result) {
                                     final snackBar = SnackBar(
                                       content: Text(
-                                          'Accept the request to be able to copy the phone number.'),
+                                          'Copied phone number to Clipboard'),
                                       action: SnackBarAction(
                                         label: 'Done',
                                         onPressed: () {},
@@ -1299,7 +1277,7 @@ ${isNotEmpty(_order.productsLinks?[index]) ? "- الرابط: ${_order.productsL
                                     );
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(snackBar);
-                                  }
+                                  });
                                 }
                               : null,
                           child: Row(

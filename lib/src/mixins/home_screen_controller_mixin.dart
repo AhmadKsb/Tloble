@@ -49,17 +49,20 @@ mixin HomeScreenControllerMixin {
     try {
       List data = await Future.wait(
         [
-          FirebaseFirestore.instance.collection('app info').snapshots().first,
+          FirebaseFirestore.instance
+              .collection('app info')
+              .get(const GetOptions(source: Source.server)),
           PackageInfo.fromPlatform(),
           FirebaseMessaging.instance.getToken(),
           SharedPreferences.getInstance(),
-          FirebaseFirestore.instance.collection('Employees').snapshots().first,
+          FirebaseFirestore.instance
+              .collection('Employees')
+              .get(const GetOptions(source: Source.server)),
           if (isNotEmpty(FirebaseAuth.instance.currentUser?.phoneNumber))
             FirebaseFirestore.instance
                 .collection('Customers')
                 .doc(FirebaseAuth.instance.currentUser?.phoneNumber ?? '')
-                .snapshots()
-                .first
+                .get(const GetOptions(source: Source.server)),
         ],
       );
 
